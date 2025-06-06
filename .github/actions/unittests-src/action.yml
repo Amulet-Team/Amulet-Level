@@ -20,7 +20,7 @@ runs:
     - name: Build
       shell: bash
       run: |
-        pip install -vv .[dev]
+        pip install -v .[dev]
         python tools/compile_tests.py
 
     - name: Test with unittest

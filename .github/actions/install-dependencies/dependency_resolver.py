@@ -15,13 +15,14 @@ from functools import lru_cache
 
 github_api_url = os.environ.get("GITHUB_API_URL", "https://api.github.com")
 
+
 @lru_cache(maxsize=None)
 def _get_github_releases(repo: str, page: int):
     print(f"Github REST request {repo} page {page}")
     query = urllib.parse.urlencode({"per_page": 100, "page": page})
     url = f"{github_api_url}/repos/{repo}/releases?{query}"
     headers = {"Accept": "application/vnd.github+json"}
-    if os.environ.get('REST_TOKEN'):
+    if os.environ.get("REST_TOKEN"):
         headers["Authorization"] = f"token {os.environ.get('REST_TOKEN')}"
     req = urllib.request.Request(url, headers=headers)
     with urllib.request.urlopen(req) as resp:
@@ -102,7 +103,9 @@ def _get_pypi_release(lib_name: str, specifier: SpecifierSet) -> Version:
     for version_str, files in releases.items():
         version = Version(version_str)
         # release must match the specifier and have a source distribution
-        if version in specifier and any(file.get("packagetype", None) == "sdist" for file in files):
+        if version in specifier and any(
+            file.get("packagetype", None) == "sdist" for file in files
+        ):
             return version
     raise NoValidVersion
 
@@ -128,7 +131,10 @@ def _find_compatible_libraries(
     processed_requirement_configurations = []
 
     # Iterate through all versions that match the specifier
-    for v in _get_compatible_tags(library_freeze.repo_name, requirements.get(library_freeze.lib_name, SpecifierSet())):
+    for v in _get_compatible_tags(
+        library_freeze.repo_name,
+        requirements.get(library_freeze.lib_name, SpecifierSet()),
+    ):
         print(f"Trying {library_freeze.lib_name}=={v}")
         # Get the requirements this library adds
         library_requirements = _get_requirements(library_freeze.repo_name, str(v))
@@ -161,7 +167,7 @@ def _find_compatible_libraries(
                     libraries,
                     MappingProxyType(new_requirements),
                     libraries_todo,
-                    MappingProxyType(new_libraries_frozen)
+                    MappingProxyType(new_libraries_frozen),
                 )
             except NoValidVersion:
                 # If dependency resolution failed below this, try the next version of the library
@@ -181,10 +187,12 @@ def _find_compatible_libraries(
 
 
 def find_compatible_libraries(
-    libraries: Iterable[tuple[str, str]],
-    requirements: Iterable[str]
+    libraries: Iterable[tuple[str, str]], requirements: Iterable[str]
 ) -> Mapping[str, Version]:
-    libraries_ = tuple(Library(_fix_library_name(lib_name), repo_name) for lib_name, repo_name in libraries)
+    libraries_ = tuple(
+        Library(_fix_library_name(lib_name), repo_name)
+        for lib_name, repo_name in libraries
+    )
     return _find_compatible_libraries(
         libraries_,
         parse_requirements(requirements),
@@ -193,15 +201,16 @@ def find_compatible_libraries(
 
 
 def find_and_save_compatible_libraries(
-    compiled_library_data: Iterable[tuple[str, str]],
-    requirements: Iterable[str]
+    compiled_library_data: Iterable[tuple[str, str]], requirements: Iterable[str]
 ) -> None:
     libraries = find_compatible_libraries(compiled_library_data, requirements)
-    with open(os.path.join(os.path.dirname(__file__), "libraries.json"), "w", encoding="utf-8") as f:
+    with open(
+        os.path.join(os.path.dirname(__file__), "libraries.json"), "w", encoding="utf-8"
+    ) as f:
         json.dump({name: str(specifier) for name, specifier in libraries.items()}, f)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     find_and_save_compatible_libraries(
         [
             ("amulet-game", "Amulet-Team/Amulet-Game"),
@@ -216,5 +225,5 @@ if __name__ == '__main__':
             f"amulet-nbt~=5.0.0.0a0",
             f"amulet-core~=2.0.2.0a0",
             f"amulet-game~=1.0.0.0a0",
-        ]
+        ],
     )

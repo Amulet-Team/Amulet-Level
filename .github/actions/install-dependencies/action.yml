@@ -55,7 +55,7 @@ runs:
     - name: Get Dependencies
       id: dep
       shell: bash
-      with:
+      env:
         REST_TOKEN: ${{ inputs.rest-token }}
       run: |
         python -c "import sys; sys.path.append(r'${{ github.action_path }}'); import dependency_resolver; import requirements; dependency_resolver.find_and_save_compatible_libraries([("amulet-game", "Amulet-Team/Amulet-Game"), ("amulet-core", "Amulet-Team/Amulet-Core"), ("amulet-nbt", "Amulet-Team/Amulet-NBT"), ("amulet-zlib", "Amulet-Team/Amulet-zlib")], requirements.get_runtime_dependencies())"

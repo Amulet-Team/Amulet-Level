@@ -204,6 +204,7 @@ def find_and_save_compatible_libraries(
     compiled_library_data: Iterable[tuple[str, str]], requirements: Iterable[str]
 ) -> None:
     libraries = find_compatible_libraries(compiled_library_data, requirements)
+    print(libraries)
     with open(
         os.path.join(os.path.dirname(__file__), "libraries.json"), "w", encoding="utf-8"
     ) as f:

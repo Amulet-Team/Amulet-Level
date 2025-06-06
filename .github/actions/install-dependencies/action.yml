@@ -58,7 +58,7 @@ runs:
       env:
         REST_TOKEN: ${{ inputs.rest-token }}
       run: |
-        python -c "import sys; sys.path.append(r'${{ github.action_path }}'); import dependency_resolver; import requirements; dependency_resolver.find_and_save_compatible_libraries([("amulet-game", "Amulet-Team/Amulet-Game"), ("amulet-core", "Amulet-Team/Amulet-Core"), ("amulet-nbt", "Amulet-Team/Amulet-NBT"), ("amulet-zlib", "Amulet-Team/Amulet-zlib")], requirements.get_runtime_dependencies())"
+        python -c "import sys; sys.path.append(r'${{ github.action_path }}'); import dependency_resolver; import requirements; dependency_resolver.find_and_save_compatible_libraries([('amulet-game', 'Amulet-Team/Amulet-Game'), ('amulet-core', 'Amulet-Team/Amulet-Core'), ('amulet-nbt', 'Amulet-Team/Amulet-NBT'), ('amulet-zlib', 'Amulet-Team/Amulet-zlib')], requirements.get_runtime_dependencies())"
         io=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-io']))")
         echo "io=$io" >> "$GITHUB_OUTPUT"
         zlib=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-zlib']))")
@@ -74,15 +74,15 @@ runs:
       id: dep2
       shell: bash
       run: |
-        io=$(python -c "import requirements; print(requirements.get_specifier_set(\"${{ steps.dep.outputs.io }}\"))")
+        io=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.io }}'))")
         echo "io=$io" >> "$GITHUB_OUTPUT"
-        zlib=$(python -c "import requirements; print(requirements.get_specifier_set(\"${{ steps.dep.outputs.zlib }}\"))")
+        zlib=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.zlib }}'))")
         echo "zlib=$zlib" >> "$GITHUB_OUTPUT"
-        nbt=$(python -c "import requirements; print(requirements.get_specifier_set(\"${{ steps.dep.outputs.nbt }}\"))")
+        nbt=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.nbt }}'))")
         echo "nbt=$nbt" >> "$GITHUB_OUTPUT"
-        core=$(python -c "import requirements; print(requirements.get_specifier_set(\"${{ steps.dep.outputs.core }}\"))")
+        core=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.core }}'))")
         echo "core=$core" >> "$GITHUB_OUTPUT"
-        game=$(python -c "import requirements; print(requirements.get_specifier_set(\"${{ steps.dep.outputs.game }}\"))")
+        game=$(python -c "import requirements; print(requirements.get_specifier_set('${{ steps.dep.outputs.game }}'))")
         echo "game=$game" >> "$GITHUB_OUTPUT"
 
     - name: Clone Amulet-zlib

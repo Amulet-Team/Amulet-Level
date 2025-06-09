@@ -42,22 +42,22 @@ private:
 
 public:
     // Does the chunk exist. This is a quick way to check if the chunk exists without loading it.
-    AMULET_CORE_EXPORT bool exists() override;
+    AMULET_LEVEL_EXPORT bool exists() override;
 
     // Get a unique copy of the chunk data.
-    AMULET_CORE_EXPORT std::unique_ptr<JavaChunk> get_java_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt);
+    AMULET_LEVEL_EXPORT std::unique_ptr<JavaChunk> get_java_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt);
 
     // Get a unique copy of the chunk data.
-    AMULET_CORE_EXPORT std::unique_ptr<Chunk> get_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt) override;
+    AMULET_LEVEL_EXPORT std::unique_ptr<Chunk> get_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt) override;
 
     // Overwrite the chunk data.
-    AMULET_CORE_EXPORT void set_java_chunk(const JavaChunk&);
+    AMULET_LEVEL_EXPORT void set_java_chunk(const JavaChunk&);
 
     // Overwrite the chunk data.
-    AMULET_CORE_EXPORT void set_chunk(const Chunk&) override;
+    AMULET_LEVEL_EXPORT void set_chunk(const Chunk&) override;
 
     // Delete the chunk from the level.
-    AMULET_CORE_EXPORT void delete_chunk() override;
+    AMULET_LEVEL_EXPORT void delete_chunk() override;
 };
 
 } // namespace Amulet

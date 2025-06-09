@@ -25,12 +25,12 @@ protected:
     void init(std::shared_ptr<JavaRawChunkType> raw_data) { _raw_data = raw_data; }
     void init() { _raw_data = std::make_shared<JavaRawChunkType>(); }
     // Serialise the component data
-    AMULET_CORE_EXPORT std::optional<std::string> serialise() const;
+    AMULET_LEVEL_EXPORT std::optional<std::string> serialise() const;
     // Deserialise the component
-    AMULET_CORE_EXPORT void deserialise(std::optional<std::string>);
+    AMULET_LEVEL_EXPORT void deserialise(std::optional<std::string>);
 
 public:
-    AMULET_CORE_EXPORT static const std::string ComponentID;
+    AMULET_LEVEL_EXPORT static const std::string ComponentID;
     std::shared_ptr<JavaRawChunkType> get_raw_data()
     {
         if (_raw_data) {

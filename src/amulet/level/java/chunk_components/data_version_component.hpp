@@ -18,12 +18,12 @@ protected:
     // Default constructor
     void init(std::int64_t data_version) { _data_version = data_version; }
     // Serialise the component data
-    AMULET_CORE_EXPORT std::optional<std::string> serialise() const;
+    AMULET_LEVEL_EXPORT std::optional<std::string> serialise() const;
     // Deserialise the component
-    AMULET_CORE_EXPORT void deserialise(std::optional<std::string>);
+    AMULET_LEVEL_EXPORT void deserialise(std::optional<std::string>);
 
 public:
-    AMULET_CORE_EXPORT static const std::string ComponentID;
+    AMULET_LEVEL_EXPORT static const std::string ComponentID;
     std::int64_t get_data_version()
     {
         if (_data_version) {

@@ -51,19 +51,19 @@ public:
 
     // The public mutex.
     // Thread safe.
-    AMULET_CORE_EXPORT OrderedMutex& get_mutex();
+    AMULET_LEVEL_EXPORT OrderedMutex& get_mutex();
 
     // The dimension identifier this chunk is from.
     // Thread safe.
-    AMULET_CORE_EXPORT const std::string& get_dimension_id() const;
+    AMULET_LEVEL_EXPORT const std::string& get_dimension_id() const;
 
     // Get the chunk x coordinate.
     // Thread safe.
-    AMULET_CORE_EXPORT std::int64_t get_cx() const;
+    AMULET_LEVEL_EXPORT std::int64_t get_cx() const;
 
     // Get the chunk z coordinate.
     // Thread safe.
-    AMULET_CORE_EXPORT std::int64_t get_cz() const;
+    AMULET_LEVEL_EXPORT std::int64_t get_cz() const;
 
     // Does the chunk exist. This is a quick way to check if the chunk exists without loading it.
     virtual bool exists() = 0;

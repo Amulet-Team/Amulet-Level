@@ -55,30 +55,30 @@ public:
 
     // Load an existing Java level from the given directory.
     // Thread safe.
-    AMULET_CORE_EXPORT static std::unique_ptr<JavaLevel> load(const std::filesystem::path&);
+    AMULET_LEVEL_EXPORT static std::unique_ptr<JavaLevel> load(const std::filesystem::path&);
 
     // Create a new Java level at the given directory.
     // Thread safe.
-    AMULET_CORE_EXPORT static std::unique_ptr<JavaLevel> create(const JavaCreateArgsV1&);
+    AMULET_LEVEL_EXPORT static std::unique_ptr<JavaLevel> create(const JavaCreateArgsV1&);
 
     // LevelMetadata
 
     // Is the level open.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT bool is_open() override;
+    AMULET_LEVEL_EXPORT bool is_open() override;
 
     // The platform string for the level.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT const std::string get_platform() override;
+    AMULET_LEVEL_EXPORT const std::string get_platform() override;
 
     // The maximum game version the level has been opened with.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT const VersionNumber get_max_game_version() override;
+    AMULET_LEVEL_EXPORT const VersionNumber get_max_game_version() override;
 
     // Is this level a supported version.
     // This is true for all versions we support and false for snapshots and unsupported newer versions.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT bool is_supported() override;
+    AMULET_LEVEL_EXPORT bool is_supported() override;
 
     // The thumbnail for the level.
     // External Read:SharedReadWrite lock required.
@@ -86,41 +86,41 @@ public:
 
     // The name of the level.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT const std::string get_level_name() override;
+    AMULET_LEVEL_EXPORT const std::string get_level_name() override;
 
     // The time when the level was last modified.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT std::chrono::system_clock::time_point get_modified_time() override;
+    AMULET_LEVEL_EXPORT std::chrono::system_clock::time_point get_modified_time() override;
 
     // The size of the sub-chunk. Must be a cube.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT size_t get_sub_chunk_size() override;
+    AMULET_LEVEL_EXPORT size_t get_sub_chunk_size() override;
 
     // DiskLevel
 
     // The path to the level on disk.
     // External Read:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT const std::filesystem::path& get_path() override;
+    AMULET_LEVEL_EXPORT const std::filesystem::path& get_path() override;
 
     // Level
 
     // Open the level.
     // If the level is already open, this does nothing.
     // External ReadWrite:Unique lock required.
-    AMULET_CORE_EXPORT void open() override;
+    AMULET_LEVEL_EXPORT void open() override;
 
     // Clear all unsaved changes and restore points.
     // External ReadWrite:Unique lock required.
-    AMULET_CORE_EXPORT void purge() override;
+    AMULET_LEVEL_EXPORT void purge() override;
 
     // Save changes to the level.
     // External ReadWrite:Unique lock required.
-    AMULET_CORE_EXPORT void save() override;
+    AMULET_LEVEL_EXPORT void save() override;
 
     // Close the level.
     // If the level is not open, this does nothing.
     // External ReadWrite:Unique lock required.
-    AMULET_CORE_EXPORT void close() override;
+    AMULET_LEVEL_EXPORT void close() override;
 
     // Create a new history restore point.
     // Any changes made after this point can be reverted by calling undo.
@@ -159,41 +159,41 @@ public:
     // The identifiers for all dimensions in the level
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    AMULET_CORE_EXPORT std::vector<std::string> get_dimension_ids() override;
+    AMULET_LEVEL_EXPORT std::vector<std::string> get_dimension_ids() override;
 
     // Get a dimension.
     // External Read:SharedReadWrite lock required.
     // External ReadWrite:SharedReadWrite lock required when calling code in Dimension (and its children) that need write permission.
-    AMULET_CORE_EXPORT std::shared_ptr<JavaDimension> get_java_dimension(const DimensionID&);
+    AMULET_LEVEL_EXPORT std::shared_ptr<JavaDimension> get_java_dimension(const DimensionID&);
 
     // Get a dimension.
     // External Read:SharedReadWrite lock required.
     // External ReadWrite:SharedReadWrite lock required when calling code in Dimension (and its children) that need write permission.
-    AMULET_CORE_EXPORT std::shared_ptr<Dimension> get_dimension(const DimensionID&) override;
+    AMULET_LEVEL_EXPORT std::shared_ptr<Dimension> get_dimension(const DimensionID&) override;
 
     // CompactibleLevel
 
     // Compact the level data to reduce file size.
     // External ReadWrite:SharedReadWrite lock required.
-    AMULET_CORE_EXPORT void compact() override;
+    AMULET_LEVEL_EXPORT void compact() override;
 
     // ReloadableLevel
 
     // Reload the level metadata.
     // This can only be done when the level is not open.
     // External ReadWrite:Unique lock required.
-    AMULET_CORE_EXPORT void reload_metadata() override;
+    AMULET_LEVEL_EXPORT void reload_metadata() override;
 
     // Reload the level.
     // This is like closing and opening the level but does not release locks.
     // This can only be done when the level is open.
     // External ReadWrite:Unique lock required.
-    AMULET_CORE_EXPORT void reload() override;
+    AMULET_LEVEL_EXPORT void reload() override;
 
     // Access the raw level instance.
     // Before calling any mutating functions, the caller must call `purge` (optionally saving before)
     // External ReadWrite:Unique lock required.
-    AMULET_CORE_EXPORT JavaRawLevel& get_raw_level();
+    AMULET_LEVEL_EXPORT JavaRawLevel& get_raw_level();
 };
 
 } // namespace Amulet

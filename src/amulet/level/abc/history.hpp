@@ -72,13 +72,13 @@ namespace detail {
 
         std::unique_ptr<Amulet::LevelDB> db;
 
-        AMULET_CORE_EXPORT HistoryManagerPrivate();
+        AMULET_LEVEL_EXPORT HistoryManagerPrivate();
 
         // Destroy all future redo bins.
-        AMULET_CORE_EXPORT void invalidate_future();
+        AMULET_LEVEL_EXPORT void invalidate_future();
 
         // Are there bins ahead of the history index.
-        AMULET_CORE_EXPORT bool has_redo();
+        AMULET_LEVEL_EXPORT bool has_redo();
     };
 
 } // namespace
@@ -416,12 +416,12 @@ private:
     std::shared_ptr<detail::HistoryManagerPrivate> _h;
 
 public:
-    AMULET_CORE_EXPORT HistoryManager();
+    AMULET_LEVEL_EXPORT HistoryManager();
 
     // The public mutex.
     // Note the mutex is shared with the HistoryManagerLayer class.
     // Thread safe.
-    AMULET_CORE_EXPORT std::shared_mutex& get_mutex();
+    AMULET_LEVEL_EXPORT std::shared_mutex& get_mutex();
 
     // Get a new history layer.
     // Unique lock required.
@@ -441,31 +441,31 @@ public:
 
     // Reset all history data.
     // Unique lock required.
-    AMULET_CORE_EXPORT void reset();
+    AMULET_LEVEL_EXPORT void reset();
 
     // Mark the current state as the saved state.
     // Unique lock required.
-    AMULET_CORE_EXPORT void mark_saved();
+    AMULET_LEVEL_EXPORT void mark_saved();
 
     // Create a new undo bin that new changes will be put in.
     // Unique lock required.
-    AMULET_CORE_EXPORT void create_undo_bin();
+    AMULET_LEVEL_EXPORT void create_undo_bin();
 
     // Get the number of times undo can be called.
     // Shared or unique lock required.
-    AMULET_CORE_EXPORT size_t get_undo_count();
+    AMULET_LEVEL_EXPORT size_t get_undo_count();
 
     // Undo the changes made in the current bin.
     // Unique lock required.
-    AMULET_CORE_EXPORT void undo();
+    AMULET_LEVEL_EXPORT void undo();
 
     // Get the number of times redo can be called.
     // Shared or unique lock required.
-    AMULET_CORE_EXPORT size_t get_redo_count();
+    AMULET_LEVEL_EXPORT size_t get_redo_count();
 
     // Redo the changes in the next bin.
     // Unique lock required.
-    AMULET_CORE_EXPORT void redo();
+    AMULET_LEVEL_EXPORT void redo();
 };
 
 } // namespace Amulet

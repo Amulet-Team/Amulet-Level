@@ -20,31 +20,31 @@ private:
     std::map<NamespacedName, std::uint32_t> _name_to_index;
 
 public:
-    AMULET_CORE_EXPORT IdRegistry() = default;
+    AMULET_LEVEL_EXPORT IdRegistry() = default;
 
     // The public mutex.
     // Thread safe.
-    AMULET_CORE_EXPORT std::shared_mutex& get_mutex();
+    AMULET_LEVEL_EXPORT std::shared_mutex& get_mutex();
 
     // Convert a numerical id to its namespaced id.
     // External shared lock required.
-    AMULET_CORE_EXPORT NamespacedName numerical_id_to_namespace_id(std::uint32_t index) const;
+    AMULET_LEVEL_EXPORT NamespacedName numerical_id_to_namespace_id(std::uint32_t index) const;
 
     // Convert a namespaced id to its numerical id.
     // External shared lock required.
-    AMULET_CORE_EXPORT std::uint32_t namespace_id_to_numerical_id(const NamespacedName& name) const;
+    AMULET_LEVEL_EXPORT std::uint32_t namespace_id_to_numerical_id(const NamespacedName& name) const;
 
     // Register a namespaced id to its numerical id.
     // External unique lock required.
-    AMULET_CORE_EXPORT void register_id(std::uint32_t index, const NamespacedName& name);
+    AMULET_LEVEL_EXPORT void register_id(std::uint32_t index, const NamespacedName& name);
 
     // The number of ids registered.
     // External shared lock required.
-    AMULET_CORE_EXPORT size_t size() const;
+    AMULET_LEVEL_EXPORT size_t size() const;
 
     // A read-only view of ids registered.
     // External shared lock required.
-    AMULET_CORE_EXPORT const std::map<std::uint32_t, NamespacedName>& ids() const;
+    AMULET_LEVEL_EXPORT const std::map<std::uint32_t, NamespacedName>& ids() const;
 };
 
 } // namespace Amulet

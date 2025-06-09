@@ -34,31 +34,31 @@ private:
 
 public:
     // Destructor
-    AMULET_CORE_EXPORT ~JavaDimension() override;
+    AMULET_LEVEL_EXPORT ~JavaDimension() override;
 
     // Get the dimension id for this dimension.
     // Thread safe.
-    AMULET_CORE_EXPORT const DimensionID& get_dimension_id() const override;
+    AMULET_LEVEL_EXPORT const DimensionID& get_dimension_id() const override;
 
     // The editable region of the dimension.
     // Thread safe.
-    AMULET_CORE_EXPORT std::variant<SelectionBox, SelectionGroup> get_bounds() const override;
+    AMULET_LEVEL_EXPORT std::variant<SelectionBox, SelectionGroup> get_bounds() const override;
 
     // Get the default block for this dimension.
     // Thread safe.
-    AMULET_CORE_EXPORT const BlockStack& get_default_block() const override;
+    AMULET_LEVEL_EXPORT const BlockStack& get_default_block() const override;
 
     // Get the default biome for this dimension.
     // Thread safe.
-    AMULET_CORE_EXPORT const Biome& get_default_biome() const override;
+    AMULET_LEVEL_EXPORT const Biome& get_default_biome() const override;
 
     // Get a chunk handle for a specific chunk.
     // Thread safe.
-    AMULET_CORE_EXPORT std::shared_ptr<JavaChunkHandle> get_java_chunk_handle(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT std::shared_ptr<JavaChunkHandle> get_java_chunk_handle(std::int64_t cx, std::int64_t cz);
 
     // Get a chunk handle for a specific chunk.
     // Thread safe.
-    AMULET_CORE_EXPORT std::shared_ptr<ChunkHandle> get_chunk_handle(std::int64_t cx, std::int64_t cz) override;
+    AMULET_LEVEL_EXPORT std::shared_ptr<ChunkHandle> get_chunk_handle(std::int64_t cx, std::int64_t cz) override;
 };
 
 } // namespace Amulet

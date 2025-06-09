@@ -15,6 +15,8 @@ AMULET_NBT_REQUIREMENT = "~=5.0.0.0a0"
 AMULET_CORE_REQUIREMENT = "~=2.0.2.0a0"
 # AMULET_GAME_REQUIREMENT = "~=1.0"
 AMULET_GAME_REQUIREMENT = "~=1.0.0.0a0"
+# AMULET_UTILS_REQUIREMENT = "~=1.1"
+AMULET_UTILS_REQUIREMENT = "~=1.1.0.0a0"
 
 
 if os.environ.get("AMULET_IO_REQUIREMENT", None):
@@ -35,6 +37,16 @@ if os.environ.get("AMULET_CORE_REQUIREMENT", None):
 if os.environ.get("AMULET_GAME_REQUIREMENT", None):
     AMULET_GAME_REQUIREMENT = (
         f"{AMULET_GAME_REQUIREMENT},{os.environ['AMULET_GAME_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_UTILS_REQUIREMENT", None):
+    AMULET_UTILS_REQUIREMENT = (
+        f"{AMULET_UTILS_REQUIREMENT},{os.environ['AMULET_UTILS_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_PYBIND11_EXTENSIONS_REQUIREMENT", None):
+    AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = (
+        f"{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT},{os.environ['AMULET_PYBIND11_EXTENSIONS_REQUIREMENT']}"
     )
 
 
@@ -80,13 +92,27 @@ if os.environ.get("AMULET_FREEZE_COMPILER", None):
     else:
         AMULET_GAME_REQUIREMENT = get_specifier_set(amulet.game.__version__)
 
+    try:
+        import amulet.utils
+    except ImportError:
+        pass
+    else:
+        AMULET_UTILS_REQUIREMENT = get_specifier_set(amulet.utils.__version__)
+
+    try:
+        import amulet.pybind11_extensions
+    except ImportError:
+        pass
+    else:
+        AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = get_specifier_set(amulet.pybind11_extensions.__version__)
+
 
 def get_build_dependencies() -> list:
     return [
         f"pybind11{PYBIND11_REQUIREMENT}",
         f"amulet_pybind11_extensions{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT}",
-        f"amulet_io{AMULET_IO_REQUIREMENT}",
         f"amulet-compiler-version{AMULET_COMPILER_VERSION_REQUIREMENT}",
+        f"amulet_io{AMULET_IO_REQUIREMENT}",
         f"amulet_nbt{AMULET_NBT_REQUIREMENT}",
         f"amulet-core{AMULET_CORE_REQUIREMENT}",
         f"amulet-game{AMULET_GAME_REQUIREMENT}",
@@ -95,9 +121,11 @@ def get_build_dependencies() -> list:
 
 def get_runtime_dependencies() -> list[str]:
     return [
+        f"pybind11{PYBIND11_REQUIREMENT}",
+        f"amulet_pybind11_extensions{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT}",
         f"amulet-compiler-target{AMULET_COMPILER_TARGET_REQUIREMENT}",
-        f"amulet-io{AMULET_IO_REQUIREMENT}",
         f"amulet-compiler-version{AMULET_COMPILER_VERSION_REQUIREMENT}",
+        f"amulet-io{AMULET_IO_REQUIREMENT}",
         f"amulet-nbt{AMULET_NBT_REQUIREMENT}",
         f"amulet-core{AMULET_CORE_REQUIREMENT}",
         f"amulet-game{AMULET_GAME_REQUIREMENT}",

@@ -39,6 +39,7 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
         import amulet.nbt
         import amulet.core
         import amulet.game
+        import amulet.utils
 
         ext_dir = (
             (Path.cwd() / self.get_ext_fullpath("")).parent.resolve()
@@ -72,6 +73,7 @@ class CMakeBuild(cmdclass.get("build_ext", build_ext)):
                 f"-Damulet_nbt_DIR={fix_path(amulet.nbt.__path__[0])}",
                 f"-Damulet_core_DIR={fix_path(amulet.core.__path__[0])}",
                 f"-Damulet_game_DIR={fix_path(amulet.game.__path__[0])}",
+                f"-Damulet_utils_DIR={fix_path(amulet.utils.__path__[0])}",
                 f"-Damulet_level_DIR={fix_path(level_src_dir)}",
                 f"-DAMULET_LEVEL_EXT_DIR={fix_path(ext_dir)}",
                 f"-DCMAKE_INSTALL_PREFIX=install",

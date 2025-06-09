@@ -10,6 +10,7 @@ import amulet.io
 import amulet.nbt
 import amulet.core
 import amulet.game
+import amulet.utils
 import amulet.level
 import amulet.test_utils
 
@@ -46,6 +47,7 @@ def main() -> None:
             f"-Damulet_nbt_DIR={fix_path(amulet.nbt.__path__[0])}",
             f"-Damulet_core_DIR={fix_path(amulet.core.__path__[0])}",
             f"-Damulet_game_DIR={fix_path(amulet.game.__path__[0])}",
+            f"-Damulet_utils_DIR={fix_path(amulet.utils.__path__[0])}",
             f"-Damulet_level_DIR={fix_path(amulet.level.__path__[0])}",
             f"-Damulet_test_utils_DIR={fix_path(amulet.test_utils.__path__[0])}",
             "-B",

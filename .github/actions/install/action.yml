@@ -22,6 +22,12 @@ inputs:
   game-specifier:
     description: 'The PEP 440 version specifier for the Game library'
     required: true
+  utils-specifier:
+    description: 'The PEP 440 version specifier for the Utils library'
+    required: true
+  pyext-specifier:
+    description: 'The PEP 440 version specifier for the pybind11-extensions library'
+    required: true
   level-specifier:
     description: 'The PEP 440 version specifier for the Level library'
     required: true
@@ -37,7 +43,7 @@ runs:
       shell: bash
       continue-on-error: true
       run: |
-        python -m pip install --only-binary amulet-level amulet-compiler-version${{ inputs.compiler-specifier }} amulet-io${{ inputs.io-specifier }} amulet-nbt${{ inputs.nbt-specifier }} amulet-core${{ inputs.core-specifier }} amulet-game${{ inputs.game-specifier }} amulet-level${{ inputs.level-specifier }}
+        python -m pip install --only-binary amulet-level amulet-compiler-version${{ inputs.compiler-specifier }} amulet-io${{ inputs.io-specifier }} amulet-nbt${{ inputs.nbt-specifier }} amulet-core${{ inputs.core-specifier }} amulet-game${{ inputs.game-specifier }} amulet-utils${{ inputs.utils-specifier }} amulet-pybind11_extensions${{ inputs.pyext-specifier }} amulet-level${{ inputs.level-specifier }}
 
     - name: Build
       if: steps.install.outcome == 'failure'
@@ -48,6 +54,8 @@ runs:
         AMULET_NBT_REQUIREMENT: ${{ inputs.nbt-specifier }}
         AMULET_CORE_REQUIREMENT: ${{ inputs.core-specifier }}
         AMULET_GAME_REQUIREMENT: ${{ inputs.game-specifier }}
+        AMULET_UTILS_REQUIREMENT: ${{ inputs.utils-specifier }}
+        AMULET_PYBIND11_EXTENSIONS_REQUIREMENT: ${{ inputs.pyext-specifier }}
       run: |
         python -m build --wheel "${{ github.action_path }}"/../../..
 

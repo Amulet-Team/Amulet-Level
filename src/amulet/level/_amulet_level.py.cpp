@@ -15,12 +15,12 @@ void init_module(py::module m)
     pyext::init_compiler_config(m);
     pyext::check_compatibility(py::module::import("amulet.game"), m);
 
-    init_level_abc(m);
-    m.attr("Level") = py::module::import("amulet.level.abc").attr("Level");
+    auto abc = init_level_abc(m);
+    m.attr("Level") = abc.attr("Level");
 
-    init_level_loader(m);
-    m.attr("get_level") = py::module::import("amulet.level.loader").attr("get_level");
-    m.attr("NoValidLevelLoader") = py::module::import("amulet.level.loader").attr("NoValidLevelLoader");
+    auto loader = init_level_loader(m);
+    m.attr("get_level") = loader.attr("get_level");
+    m.attr("NoValidLevelLoader") = loader.attr("NoValidLevelLoader");
 
     // from .temporary_level import TemporaryLevel
 

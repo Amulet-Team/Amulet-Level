@@ -5,9 +5,15 @@
 namespace py = pybind11;
 namespace pyext = Amulet::pybind11_extensions;
 
+void init_test_abc(py::module m_parent);
+void init_test_java(py::module m_parent);
+
 void init_module(py::module m){
     pyext::init_compiler_config(m);
     pyext::check_compatibility(py::module::import("amulet.level"), m);
+
+    init_test_abc(m);
+    init_test_java(m);
 }
 
 PYBIND11_MODULE(_test_amulet_level, m) {

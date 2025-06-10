@@ -10,6 +10,8 @@ import amulet.nbt
 import amulet.core
 import amulet.game
 import amulet.utils
+import amulet.leveldb
+import amulet.zlib
 import amulet.test_utils
 
 
@@ -45,6 +47,8 @@ def main():
             f"-Damulet_core_DIR={fix_path(amulet.core.__path__[0])}",
             f"-Damulet_game_DIR={fix_path(amulet.game.__path__[0])}",
             f"-Damulet_utils_DIR={fix_path(amulet.utils.__path__[0])}",
+            f"-Damulet_zlib_DIR={fix_path(amulet.zlib.__path__[0])}",
+            f"-Dleveldb_mcpe_DIR={fix_path(amulet.leveldb.__path__[0])}",
             f"-Damulet_level_DIR={fix_path(os.path.join(RootDir, 'src', 'amulet', 'level'))}",
             f"-Damulet_test_utils_DIR={fix_path(amulet.test_utils.__path__[0])}",
             f"-DCMAKE_INSTALL_PREFIX=install",

@@ -4,12 +4,13 @@
 #include <shared_mutex>
 #include <variant>
 
-#include "chunk_handle.hpp"
-#include "raw_dimension.hpp"
-#include <amulet/dll.hpp>
+#include <amulet/level/dll.hpp>
 #include <amulet/level/abc/chunk_handle.hpp>
 #include <amulet/level/abc/dimension.hpp>
 #include <amulet/level/abc/history.hpp>
+
+#include "chunk_handle.hpp"
+#include "raw_dimension.hpp"
 
 namespace Amulet {
 

@@ -1,7 +1,7 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <pybind11_extensions/py_module.hpp>
+#include <amulet/pybind11_extensions/py_module.hpp>
 
 #include "region.hpp"
 
@@ -12,7 +12,7 @@ py::module init_anvil_dimension(py::module);
 
 void init_java_anvil(py::module m_parent)
 {
-    auto m = pybind11_extensions::def_subpackage(m_parent, "anvil");
+    auto m = Amulet::pybind11_extensions::def_subpackage(m_parent, "anvil");
 
     auto region = init_anvil_region(m);
     auto dimension = init_anvil_dimension(m);

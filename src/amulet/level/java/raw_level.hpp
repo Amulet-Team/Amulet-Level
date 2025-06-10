@@ -7,18 +7,22 @@
 #include <shared_mutex>
 #include <stdexcept>
 
-#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
 
-#include <amulet/dll.hpp>
-#include <amulet/image/image.hpp>
-#include <amulet/level/abc/registry.hpp>
+#include <amulet/utils/image.hpp>
+
+#include <amulet/core/version/version.hpp>
+
 #include <amulet/utils/lock_file.hpp>
 #include <amulet/utils/mutex.hpp>
 #include <amulet/utils/signal.hpp>
-#include <amulet/version/version.hpp>
+
+#include <amulet/level/dll.hpp>
+#include <amulet/level/abc/registry.hpp>
 
 #include "dimension.hpp"
 #include "raw_dimension.hpp"
+
 
 namespace Amulet {
 
@@ -65,7 +69,7 @@ class JavaRawLevel {
 private:
     OrderedMutex _public_mutex;
     std::filesystem::path _path;
-    AmuletNBT::NamedTag _level_dat;
+    Amulet::NBT::NamedTag _level_dat;
     VersionNumber _data_version;
 
     // Data that is only valid when the level is open.
@@ -75,7 +79,7 @@ private:
     // Construct a new instance. Path is the directory containing the level.dat file.
     JavaRawLevel(const std::filesystem::path path)
         : _path(path)
-        , _level_dat("", std::make_shared<AmuletNBT::CompoundTag>())
+        , _level_dat("", std::make_shared<Amulet::NBT::CompoundTag>())
         , _data_version({})
     {
     }
@@ -159,12 +163,12 @@ public:
 
     // The NamedTag stored in the level.dat file. Returns a unique copy.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT AmuletNBT::NamedTag get_level_dat() const;
+    AMULET_LEVEL_EXPORT Amulet::NBT::NamedTag get_level_dat() const;
 
     // Set the level.dat NamedTag
     // This calls `reload` if the data version changed.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void set_level_dat(const AmuletNBT::NamedTag&);
+    AMULET_LEVEL_EXPORT void set_level_dat(const Amulet::NBT::NamedTag&);
 
     // The platform identifier. "java"
     // Thread safe.

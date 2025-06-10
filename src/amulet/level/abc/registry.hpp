@@ -6,7 +6,7 @@
 #include <string>
 #include <utility>
 
-#include <amulet/dll.hpp>
+#include <amulet/level/dll.hpp>
 
 namespace Amulet {
 

@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <mutex>
 
-#include <amulet/chunk/chunk.hpp>
+#include <amulet/core/chunk/chunk.hpp>
 
 #include "dimension.hpp"
 #include "region.hpp"
@@ -230,7 +230,7 @@ bool AnvilDimensionLayer::has_chunk(std::int64_t cx, std::int64_t cz)
     return region->has_value(cx, cz);
 }
 
-AmuletNBT::NamedTag AnvilDimensionLayer::get_chunk_data(std::int64_t cx, std::int64_t cz)
+Amulet::NBT::NamedTag AnvilDimensionLayer::get_chunk_data(std::int64_t cx, std::int64_t cz)
 {
     std::shared_ptr<AnvilRegion> region;
     try {
@@ -244,7 +244,7 @@ AmuletNBT::NamedTag AnvilDimensionLayer::get_chunk_data(std::int64_t cx, std::in
     return region->get_value(cx, cz);
 }
 
-void AnvilDimensionLayer::set_chunk_data(std::int64_t cx, std::int64_t cz, const AmuletNBT::NamedTag& tag)
+void AnvilDimensionLayer::set_chunk_data(std::int64_t cx, std::int64_t cz, const Amulet::NBT::NamedTag& tag)
 {
     auto region = get_region(cx >> 5, cz >> 5, true);
     auto& region_mutex = region->get_mutex();

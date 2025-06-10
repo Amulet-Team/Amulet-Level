@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include <pybind11_extensions/py_module.hpp>
+#include <amulet/pybind11_extensions/py_module.hpp>
 
 namespace py = pybind11;
 
@@ -13,7 +13,7 @@ py::module init_level_abc_level(py::module);
 
 py::module init_level_abc(py::module m_parent)
 {
-    auto m = pybind11_extensions::def_subpackage(m_parent, "abc");
+    auto m = Amulet::pybind11_extensions::def_subpackage(m_parent, "abc");
 
     auto m_registry = init_registry(m);
     m.attr("IdRegistry") = m_registry.attr("IdRegistry");

@@ -11,9 +11,11 @@
 #include <utility>
 #include <vector>
 
-#include <amulet/dll.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
+
 #include <amulet/utils/mutex.hpp>
-#include <amulet_nbt/tag/named_tag.hpp>
+
+#include <amulet/level/dll.hpp>
 
 #include "sector_manager.hpp"
 
@@ -235,16 +237,16 @@ public:
     // Get the value for this coordinate.
     // Coordinates are in world space.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT AmuletNBT::NamedTag get_value(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT Amulet::NBT::NamedTag get_value(std::int64_t cx, std::int64_t cz);
     
-    // AMULET_LEVEL_EXPORT std::vector<std::optional<AmuletNBT::NamedTag>> get_batch(std::vector<std::pair<std::int64_t, std::int64_t>>& coords);
+    // AMULET_LEVEL_EXPORT std::vector<std::optional<Amulet::NBT::NamedTag>> get_batch(std::vector<std::pair<std::int64_t, std::int64_t>>& coords);
 
     // Set the value for this coordinate.
     // Coordinates are in world space.
     // External ReadWrite:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT void set_value(std::int64_t cx, std::int64_t cz, const AmuletNBT::NamedTag& tag);
+    AMULET_LEVEL_EXPORT void set_value(std::int64_t cx, std::int64_t cz, const Amulet::NBT::NamedTag& tag);
     
-    // AMULET_LEVEL_EXPORT void set_batch(std::vector<std::tuple<std::int64_t, std::int64_t, AmuletNBT::NamedTag>>& batch);
+    // AMULET_LEVEL_EXPORT void set_batch(std::vector<std::tuple<std::int64_t, std::int64_t, Amulet::NBT::NamedTag>>& batch);
 
     // Delete the chunk data.
     // Coordinates are in world space.

@@ -7,14 +7,15 @@
 #include <stdexcept>
 #include <variant>
 
-#include <amulet_nbt/nbt_encoding/binary.hpp>
-#include <amulet_nbt/string_encoding.hpp>
-#include <amulet_nbt/tag/compound.hpp>
-#include <amulet_nbt/tag/copy.hpp>
-#include <amulet_nbt/zlib.hpp>
+#include <amulet/nbt/nbt_encoding/binary.hpp>
+#include <amulet/nbt/string_encoding/string_encoding.hpp>
+#include <amulet/nbt/tag/compound.hpp>
+#include <amulet/nbt/tag/copy.hpp>
 
 #include <amulet/utils/lock_file.hpp>
 #include <amulet/utils/logging.hpp>
+
+#include <amulet/zlib/zlib.hpp>
 
 #include "raw_level.hpp"
 
@@ -40,15 +41,15 @@ std::unique_ptr<JavaRawLevel> JavaRawLevel::load(const std::filesystem::path& pa
     return self;
 }
 
-static void _write_level_dat(const std::filesystem::path& level_dat_path, const AmuletNBT::NamedTag& level_dat)
+static void _write_level_dat(const std::filesystem::path& level_dat_path, const Amulet::NBT::NamedTag& level_dat)
 {
     auto level_dat_temp_path = level_dat_path;
     level_dat_temp_path += ".tmp";
     // Encode
-    std::string encoded_level_dat = AmuletNBT::encode_nbt(level_dat, std::endian::big, AmuletNBT::utf8_to_mutf8);
+    std::string encoded_level_dat = Amulet::NBT::encode_nbt(level_dat, std::endian::big, Amulet::NBT::utf8_to_mutf8);
     // Compress
     std::string compressed_level_dat;
-    AmuletNBT::compress_gzip(encoded_level_dat, compressed_level_dat);
+    zlib::compress_gzip(encoded_level_dat, compressed_level_dat);
     // Write to file
     std::ofstream level_dat_f(level_dat_temp_path, std::ios::out | std::ios::binary);
     if (!level_dat_f) {
@@ -73,28 +74,28 @@ std::unique_ptr<JavaRawLevel> JavaRawLevel::create(const JavaCreateArgsV1& args)
     std::filesystem::create_directories(args.path);
 
     // Get the data version
-    AmuletNBT::IntTagNative data_version;
+    Amulet::NBT::IntTagNative data_version;
     if (args.version.size() == 1) {
-        data_version = static_cast<AmuletNBT::IntTagNative>(args.version[0]);
+        data_version = static_cast<Amulet::NBT::IntTagNative>(args.version[0]);
     } else {
         throw std::runtime_error("NotImplementedError");
         // data_version = get_game_version("java", version).max_version
     }
 
     // Get the current unix time in milliseconds
-    auto time_now = static_cast<AmuletNBT::LongTagNative>(
+    auto time_now = static_cast<Amulet::NBT::LongTagNative>(
         std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch())
             .count());
 
     // Create the level.dat file
-    auto root = std::make_shared<AmuletNBT::CompoundTag>();
-    auto data = std::make_shared<AmuletNBT::CompoundTag>();
+    auto root = std::make_shared<Amulet::NBT::CompoundTag>();
+    auto data = std::make_shared<Amulet::NBT::CompoundTag>();
     root->emplace("Data", data);
-    data->emplace("version", AmuletNBT::IntTag(19133));
-    data->emplace("DataVersion", AmuletNBT::IntTag(data_version));
-    data->emplace("LastPlayed", AmuletNBT::LongTag(time_now));
-    data->emplace("LevelName", AmuletNBT::StringTag(args.level_name));
+    data->emplace("version", Amulet::NBT::IntTag(19133));
+    data->emplace("DataVersion", Amulet::NBT::IntTag(data_version));
+    data->emplace("LastPlayed", Amulet::NBT::LongTag(time_now));
+    data->emplace("LevelName", Amulet::NBT::StringTag(args.level_name));
     _write_level_dat(args.path / "level.dat", { "", root });
 
     return load(args.path);
@@ -113,9 +114,9 @@ bool JavaRawLevel::is_open() const
 VersionNumber JavaRawLevel::_get_data_version()
 {
     try {
-        auto& root = std::get<AmuletNBT::CompoundTagPtr>(_level_dat.tag_node);
-        auto& data = std::get<AmuletNBT::CompoundTagPtr>(root->at("Data"));
-        auto& data_version = std::get<AmuletNBT::IntTag>(data->at("DataVersion"));
+        auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
+        auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
+        auto& data_version = std::get<Amulet::NBT::IntTag>(data->at("DataVersion"));
         return { data_version.value };
     } catch (...) {
         return { -1 };
@@ -144,9 +145,9 @@ void JavaRawLevel::reload_metadata()
     level_dat_f.read(&level_dat[0], level_dat_size);
     // Decompress the file
     std::string decompressed_level_dat;
-    AmuletNBT::decompress_zlib_gzip(level_dat, decompressed_level_dat);
+    zlib::decompress_zlib_gzip(level_dat, decompressed_level_dat);
     // Decode the binary NBT.
-    _level_dat = AmuletNBT::decode_nbt(decompressed_level_dat, std::endian::big, AmuletNBT::mutf8_to_utf8);
+    _level_dat = Amulet::NBT::decode_nbt(decompressed_level_dat, std::endian::big, Amulet::NBT::mutf8_to_utf8);
 
     // Load the data version.
     _data_version = _get_data_version();
@@ -217,18 +218,18 @@ const std::filesystem::path& JavaRawLevel::get_path() const
     return _path;
 }
 
-AmuletNBT::NamedTag JavaRawLevel::get_level_dat() const
+Amulet::NBT::NamedTag JavaRawLevel::get_level_dat() const
 {
-    return AmuletNBT::deep_copy(_level_dat);
+    return Amulet::NBT::deep_copy(_level_dat);
 }
 
-void JavaRawLevel::set_level_dat(const AmuletNBT::NamedTag& level_dat)
+void JavaRawLevel::set_level_dat(const Amulet::NBT::NamedTag& level_dat)
 {
     if (!is_open()) {
         throw std::runtime_error("Level is not open.");
     }
     // Copy the level.dat to internal storage
-    _level_dat = AmuletNBT::deep_copy(level_dat);
+    _level_dat = Amulet::NBT::deep_copy(level_dat);
 
     // Save to level.dat
     _write_level_dat(_path / "level.dat", _level_dat);
@@ -245,20 +246,20 @@ std::string JavaRawLevel::get_platform() const
 }
 
 // Get the "Data" CompoundTag from a level.dat NamedTag.
-static AmuletNBT::CompoundTag& get_level_dat_data(AmuletNBT::NamedTag& level_dat)
+static Amulet::NBT::CompoundTag& get_level_dat_data(Amulet::NBT::NamedTag& level_dat)
 {
-    if (!std::holds_alternative<AmuletNBT::CompoundTagPtr>(level_dat.tag_node)) {
+    if (!std::holds_alternative<Amulet::NBT::CompoundTagPtr>(level_dat.tag_node)) {
         throw std::runtime_error("Level.dat root is not a CompoundTag.");
     }
-    auto& root = std::get<AmuletNBT::CompoundTagPtr>(level_dat.tag_node);
+    auto& root = std::get<Amulet::NBT::CompoundTagPtr>(level_dat.tag_node);
     auto it = root->find("Data");
     if (it == root->end()) {
         throw std::runtime_error("Level.dat does not contain \"Data\" entry.");
     }
-    if (!std::holds_alternative<AmuletNBT::CompoundTagPtr>(it->second)) {
+    if (!std::holds_alternative<Amulet::NBT::CompoundTagPtr>(it->second)) {
         throw std::runtime_error("Level.dat[\"Data\"] is not a CompoundTag.");
     }
-    return *std::get<AmuletNBT::CompoundTagPtr>(it->second);
+    return *std::get<Amulet::NBT::CompoundTagPtr>(it->second);
 }
 
 VersionNumber JavaRawLevel::get_data_version() const
@@ -280,7 +281,7 @@ void JavaRawLevel::set_data_version(const VersionNumber& data_version)
     if (data_version[0] == -1) {
         data.erase("DataVersion");
     } else {
-        data.insert_or_assign("DataVersion", AmuletNBT::IntTag(static_cast<AmuletNBT::IntTagNative>(data_version[0])));
+        data.insert_or_assign("DataVersion", Amulet::NBT::IntTag(static_cast<Amulet::NBT::IntTagNative>(data_version[0])));
     }
     set_level_dat(level_dat);
 }
@@ -304,10 +305,10 @@ std::chrono::system_clock::time_point JavaRawLevel::get_modified_time() const
 {
 
     try {
-        auto& root = std::get<AmuletNBT::CompoundTagPtr>(_level_dat.tag_node);
-        auto& data = std::get<AmuletNBT::CompoundTagPtr>(root->at("Data"));
+        auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
+        auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         return std::chrono::system_clock::time_point(std::chrono::milliseconds(
-            std::get<AmuletNBT::LongTag>(data->at("LastPlayed")).value));
+            std::get<Amulet::NBT::LongTag>(data->at("LastPlayed")).value));
     } catch (...) {
         return std::chrono::system_clock::time_point(std::chrono::milliseconds(0));
     }
@@ -316,9 +317,9 @@ std::chrono::system_clock::time_point JavaRawLevel::get_modified_time() const
 std::string JavaRawLevel::get_level_name() const
 {
     try {
-        auto& root = std::get<AmuletNBT::CompoundTagPtr>(_level_dat.tag_node);
-        auto& data = std::get<AmuletNBT::CompoundTagPtr>(root->at("Data"));
-        return std::get<AmuletNBT::StringTag>(data->at("LevelName"));
+        auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
+        auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
+        return std::get<Amulet::NBT::StringTag>(data->at("LevelName"));
     } catch (...) {
         return "Undefined";
     }
@@ -328,7 +329,7 @@ void JavaRawLevel::set_level_name(const std::string& level_name)
 {
     auto level_dat = get_level_dat();
     auto& data = get_level_dat_data(level_dat);
-    data.insert_or_assign("LevelName", AmuletNBT::StringTag(level_name));
+    data.insert_or_assign("LevelName", Amulet::NBT::StringTag(level_name));
     set_level_dat(level_dat);
 }
 
@@ -343,13 +344,13 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionID& dimension_id
     }
 
     // Look for a dimension configuration
-    AmuletNBT::CompoundTagPtr dimension_settings;
+    Amulet::NBT::CompoundTagPtr dimension_settings;
     try {
-        auto& root = std::get<AmuletNBT::CompoundTagPtr>(_level_dat.tag_node);
-        auto& data = std::get<AmuletNBT::CompoundTagPtr>(root->at("Data"));
-        auto& world_gen_settings = std::get<AmuletNBT::CompoundTagPtr>(data->at("WorldGenSettings"));
-        auto& dimensions = std::get<AmuletNBT::CompoundTagPtr>(world_gen_settings->at("dimensions"));
-        dimension_settings = std::get<AmuletNBT::CompoundTagPtr>(dimensions->at(dimension_id));
+        auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
+        auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
+        auto& world_gen_settings = std::get<Amulet::NBT::CompoundTagPtr>(data->at("WorldGenSettings"));
+        auto& dimensions = std::get<Amulet::NBT::CompoundTagPtr>(world_gen_settings->at("dimensions"));
+        dimension_settings = std::get<Amulet::NBT::CompoundTagPtr>(dimensions->at(dimension_id));
     } catch (...) {
         return DefaultSelection;
     }
@@ -358,7 +359,7 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionID& dimension_id
     return std::visit(
         [&](auto&& dimension_type) {
             using T = std::decay_t<decltype(dimension_type)>;
-            if constexpr (std::is_same_v<AmuletNBT::StringTag, T>) {
+            if constexpr (std::is_same_v<Amulet::NBT::StringTag, T>) {
                 // Reference type. Load the dimension data
                 auto colon_index = dimension_type.find(':');
                 std::string namespace_;
@@ -420,12 +421,12 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionID& dimension_id
                 } else {
                     error("Could not find dimension_type " + namespace_ + ":" + base_name);
                 }
-            } else if constexpr (std::is_same_v<AmuletNBT::CompoundTagPtr, T>) {
+            } else if constexpr (std::is_same_v<Amulet::NBT::CompoundTagPtr, T>) {
                 // Inline type
-                AmuletNBT::IntTagNative min_y = [&dimension_type] {
+                Amulet::NBT::IntTagNative min_y = [&dimension_type] {
                     auto it = dimension_type->find("min_y");
                     if (it != dimension_type->end()) {
-                        auto* ptr = std::get_if<AmuletNBT::IntTag>(&it->second);
+                        auto* ptr = std::get_if<Amulet::NBT::IntTag>(&it->second);
                         if (ptr) {
                             return ptr->value & ~15;
                         }
@@ -433,10 +434,10 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionID& dimension_id
                     return 0;
                 }();
 
-                AmuletNBT::IntTagNative height = [&dimension_type] {
+                Amulet::NBT::IntTagNative height = [&dimension_type] {
                     auto it = dimension_type->find("height");
                     if (it != dimension_type->end()) {
-                        auto* ptr = std::get_if<AmuletNBT::IntTag>(&it->second);
+                        auto* ptr = std::get_if<Amulet::NBT::IntTag>(&it->second);
                         if (ptr) {
                             return ptr->value & ~15;
                         }

@@ -5,14 +5,16 @@
 #include <map>
 #include <string>
 
-#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
 
-#include <amulet/biome/biome.hpp>
-#include <amulet/block/block.hpp>
-#include <amulet/dll.hpp>
-#include <amulet/level/abc/dimension.hpp>
-#include <amulet/selection/group.hpp>
+#include <amulet/core/biome/biome.hpp>
+#include <amulet/core/block/block.hpp>
+#include <amulet/core/selection/group.hpp>
+
 #include <amulet/utils/mutex.hpp>
+
+#include <amulet/level/dll.hpp>
+#include <amulet/level/abc/dimension.hpp>
 
 #include "anvil/dimension.hpp"
 #include "chunk.hpp"

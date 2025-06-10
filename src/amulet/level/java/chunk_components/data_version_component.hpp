@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <string>
 
-#include <amulet/dll.hpp>
+#include <amulet/level/dll.hpp>
 
 namespace Amulet {
 class DataVersionComponent {

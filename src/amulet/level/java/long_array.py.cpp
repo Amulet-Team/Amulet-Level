@@ -9,7 +9,7 @@
 #include <string>
 #include <variant>
 
-#include <pybind11_extensions/numpy.hpp>
+#include <amulet/pybind11_extensions/numpy.hpp>
 
 #include "long_array.hpp"
 
@@ -38,7 +38,7 @@ py::array_t<decodedT> _decode_long_array(
 }
 
 template <typename decodedT>
-pybind11_extensions::numpy::array_t<std::uint64_t> _encode_long_array(
+Amulet::pybind11_extensions::numpy::array_t<std::uint64_t> _encode_long_array(
     const py::buffer_info& decoded_buffer_info,
     std::variant<std::monostate, std::uint8_t> bits_per_entry_union,
     bool dense,
@@ -65,7 +65,7 @@ pybind11_extensions::numpy::array_t<std::uint64_t> _encode_long_array(
         bits_per_entry_union);
 
     // create the encoded array
-    pybind11_extensions::numpy::array_t<std::uint64_t> encoded_arr(Amulet::encoded_long_array_size(decoded_span.size(), bits_per_entry, dense));
+    Amulet::pybind11_extensions::numpy::array_t<std::uint64_t> encoded_arr(Amulet::encoded_long_array_size(decoded_span.size(), bits_per_entry, dense));
     py::buffer_info encoded_buffer_info = encoded_arr.request();
     // Get the encoded array as a span
     std::span<std::uint64_t> encoded_span(
@@ -198,7 +198,7 @@ void init_long_array(py::module m_parent)
             py::buffer decoded_buffer,
             std::variant<std::monostate, std::uint8_t> bits_per_entry,
             bool dense,
-            std::uint8_t min_bits_per_entry_union) -> pybind11_extensions::numpy::array_t<std::uint64_t> {
+            std::uint8_t min_bits_per_entry_union) -> Amulet::pybind11_extensions::numpy::array_t<std::uint64_t> {
             py::buffer_info decoded_buffer_info = decoded_buffer.request();
             // validate the input
             if (decoded_buffer_info.ndim != 1) {

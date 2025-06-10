@@ -13,12 +13,14 @@
 #include <type_traits>
 #include <utility>
 
-#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
 
-#include "region.hpp"
-#include <amulet/dll.hpp>
 #include <amulet/utils/mutex.hpp>
 #include <amulet/utils/logging.hpp>
+
+#include <amulet/level/dll.hpp>
+
+#include "region.hpp"
 
 namespace Amulet {
 
@@ -165,11 +167,11 @@ public:
     // Get the chunk data for this layer.
     // Will throw ChunkDoesNotExist if the chunk does not exist.
     // External Read::SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT AmuletNBT::NamedTag get_chunk_data(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT Amulet::NBT::NamedTag get_chunk_data(std::int64_t cx, std::int64_t cz);
 
     // Set the chunk data for this layer.
     // External ReadWrite::SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT void set_chunk_data(std::int64_t cx, std::int64_t cz, const AmuletNBT::NamedTag&);
+    AMULET_LEVEL_EXPORT void set_chunk_data(std::int64_t cx, std::int64_t cz, const Amulet::NBT::NamedTag&);
 
     // Delete the chunk data from this layer.
     // External ReadWrite::SharedReadWrite lock required.
@@ -194,7 +196,7 @@ public:
 template <typename Range, typename T>
 concept TypedInputRange = std::ranges::input_range<Range> && std::convertible_to<std::ranges::range_value_t<Range>, T>;
 
-using JavaRawChunk = std::map<std::string, AmuletNBT::NamedTag>;
+using JavaRawChunk = std::map<std::string, Amulet::NBT::NamedTag>;
 
 class AnvilDimension {
 private:
@@ -267,7 +269,7 @@ public:
     AMULET_LEVEL_EXPORT JavaRawChunk get_chunk_data(std::int64_t cx, std::int64_t cz);
 
     // Set the data for a chunk.
-    // data_layers can be any object supporting std::ranges::input_range of [std::string, AmuletNBT::NamedTag || std::optional<AmuletNBT::NamedTag>]
+    // data_layers can be any object supporting std::ranges::input_range of [std::string, Amulet::NBT::NamedTag || std::optional<Amulet::NBT::NamedTag>]
     // If the second value is a nullopt optional, the value will be deleted.
     // External ReadWrite::SharedReadWrite lock required.
     template <typename dataT>
@@ -279,14 +281,14 @@ public:
                 std::is_same_v<decltype(layer_name), const std::string>,
                 decltype(layer_name),
                 const std::string>::value);
-            static_assert(Ensure < std::is_same_v<decltype(data), const AmuletNBT::NamedTag> || std::is_same_v<decltype(data), const std::optional<AmuletNBT::NamedTag>>,
+            static_assert(Ensure < std::is_same_v<decltype(data), const Amulet::NBT::NamedTag> || std::is_same_v<decltype(data), const std::optional<Amulet::NBT::NamedTag>>,
                 decltype(layer_name),
-                const AmuletNBT::NamedTag,
-                const std::optional < AmuletNBT::NamedTag >> ::value);
+                const Amulet::NBT::NamedTag,
+                const std::optional < Amulet::NBT::NamedTag >> ::value);
             std::map<std::string, std::shared_ptr<AnvilDimensionLayer>>::iterator it = _layers.find(layer_name);
             if (it == _layers.end()) {
                 // Layer does not currently exist.
-                if constexpr (std::is_same_v<decltype(data), const std::optional<AmuletNBT::NamedTag>>) {
+                if constexpr (std::is_same_v<decltype(data), const std::optional<Amulet::NBT::NamedTag>>) {
                     if (!data) {
                         // If it was going to be deleted then do nothing.
                         continue;
@@ -312,7 +314,7 @@ public:
             auto& layer_mutex = layer->get_mutex();
             layer_mutex.lock<ThreadAccessMode::ReadWrite, ThreadShareMode::SharedReadWrite>();
             std::lock_guard lock(layer_mutex, std::adopt_lock);
-            if constexpr (std::is_same_v<decltype(data), const std::optional<AmuletNBT::NamedTag>>) {
+            if constexpr (std::is_same_v<decltype(data), const std::optional<Amulet::NBT::NamedTag>>) {
                 if (data) {
                     layer->set_chunk_data(cx, cz, *data);
                 } else {

@@ -4,9 +4,9 @@
 #include <amulet/io/binary_reader.hpp>
 #include <amulet/io/binary_writer.hpp>
 
-#include <amulet_nbt/nbt_encoding/binary.hpp>
+#include <amulet/nbt/nbt_encoding/binary.hpp>
 
-#include <amulet/dll.hpp>
+#include <amulet/level/dll.hpp>
 #include <amulet/level/java/chunk_components/java_raw_chunk_component.hpp>
 
 namespace Amulet {
@@ -16,14 +16,14 @@ std::optional<std::string> JavaRawChunkComponent::serialise() const
 {
     if (_raw_data) {
         BinaryWriter writer;
-        writer.writeNumeric<std::uint8_t>(1);
+        writer.write_numeric<std::uint8_t>(1);
         const auto& raw_data = _raw_data.value();
-        writer.writeNumeric<std::uint64_t>(raw_data->size());
+        writer.write_numeric<std::uint64_t>(raw_data->size());
         for (const auto& [k, v] : *raw_data) {
-            writer.writeSizeAndBytes(k);
-            AmuletNBT::encode_nbt(writer, *v);
+            writer.write_size_and_bytes(k);
+            Amulet::NBT::encode_nbt(writer, *v);
         }
-        return writer.getBuffer();
+        return writer.get_buffer();
     } else {
         return std::nullopt;
     }
@@ -33,14 +33,14 @@ void JavaRawChunkComponent::deserialise(std::optional<std::string> data)
     if (data) {
         size_t position = 0;
         BinaryReader reader(data.value(), position);
-        auto version = reader.readNumeric<std::uint8_t>();
+        auto version = reader.read_numeric<std::uint8_t>();
         switch (version) {
         case 1: {
             auto raw_data = std::make_shared<Amulet::JavaRawChunkType>();
-            auto count = reader.readNumeric<std::uint64_t>();
+            auto count = reader.read_numeric<std::uint64_t>();
             for (auto i = 0; i < count; i++) {
-                auto key = reader.readSizeAndBytes();
-                auto tag = std::make_shared<AmuletNBT::NamedTag>(AmuletNBT::decode_nbt(reader));
+                auto key = reader.read_size_and_bytes();
+                auto tag = std::make_shared<Amulet::NBT::NamedTag>(Amulet::NBT::decode_nbt(reader));
                 raw_data->emplace(key, tag);
             }
             _raw_data = raw_data;

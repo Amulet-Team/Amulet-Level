@@ -6,6 +6,8 @@
 #include <leveldb/write_batch.h>
 #include <leveldb/zlib_compressor.h>
 
+#include <amulet/utils/weak.hpp>
+
 #include "history.hpp"
 
 class NullLogger : public leveldb::Logger {
@@ -77,7 +79,7 @@ namespace detail {
             // Destroy future bins
             history_bins.resize(history_index + 1);
             // Call invalidate_future for each layer
-            for_each<AbstractHistoryManagerLayer>(
+            for_each(
                 layers,
                 [](AbstractHistoryManagerLayer& layer) { layer.invalidate_future(); });
         }
@@ -105,7 +107,7 @@ std::shared_mutex& HistoryManager::get_mutex()
 void HistoryManager::reset()
 {
     // Reset each layer
-    for_each<AbstractHistoryManagerLayer>(
+    for_each(
         _h->layers,
         [](AbstractHistoryManagerLayer& layer) { layer.reset(); });
     // Clear all history bins
@@ -118,7 +120,7 @@ void HistoryManager::reset()
 
 void HistoryManager::mark_saved()
 {
-    for_each<AbstractHistoryManagerLayer>(
+    for_each(
         _h->layers,
         [](AbstractHistoryManagerLayer& layer) { layer.mark_saved(); });
 }
@@ -147,7 +149,7 @@ void HistoryManager::undo()
     auto old_index = _h->history_index;
     auto new_index = --_h->history_index;
     // For all resources in the bin.
-    for_each<HistoryResource>(
+    for_each(
         _h->history_bins.at(old_index),
         [&new_index](HistoryResource& resource) {
             // Decrement the indexes.
@@ -172,7 +174,7 @@ void HistoryManager::redo()
     // Increment the history index.
     auto new_index = ++_h->history_index;
     // For all resources in the bin.
-    for_each<HistoryResource>(
+    for_each(
         _h->history_bins.at(new_index),
         [&new_index](HistoryResource& resource) {
             // Increment the index

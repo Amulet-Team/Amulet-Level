@@ -3,8 +3,6 @@
 
 #include <memory>
 
-#include <pybind11_extensions/py_module.hpp>
-
 #include "dimension.hpp"
 
 namespace py = pybind11;

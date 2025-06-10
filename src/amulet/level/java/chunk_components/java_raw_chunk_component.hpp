@@ -7,12 +7,12 @@
 #include <stdexcept>
 #include <string>
 
-#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
 
-#include <amulet/dll.hpp>
+#include <amulet/level/dll.hpp>
 
 namespace Amulet {
-typedef std::map<std::string, std::shared_ptr<AmuletNBT::NamedTag>> JavaRawChunkType;
+typedef std::map<std::string, std::shared_ptr<Amulet::NBT::NamedTag>> JavaRawChunkType;
 
 class JavaRawChunkComponent {
 private:

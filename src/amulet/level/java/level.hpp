@@ -5,7 +5,8 @@
 #include <map>
 #include <memory>
 
-#include <amulet/image/image.hpp>
+#include <amulet/utils/image.hpp>
+
 #include <amulet/level/abc/dimension.hpp>
 #include <amulet/level/abc/history.hpp>
 #include <amulet/level/abc/level.hpp>

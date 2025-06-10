@@ -11,13 +11,14 @@
 #include <shared_mutex>
 #include <vector>
 
-#include <leveldb.hpp>
+#include <amulet/leveldb.hpp>
 #include <leveldb/write_batch.h>
 
-#include <amulet/dll.hpp>
 #include <amulet/utils/signal.hpp>
 #include <amulet/utils/temp.hpp>
 #include <amulet/utils/weak.hpp>
+
+#include <amulet/level/dll.hpp>
 
 namespace Amulet {
 

@@ -6,19 +6,20 @@
 #include <string>
 #include <vector>
 
-#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
 
-#include <amulet/biome/biome.hpp>
-#include <amulet/block/block.hpp>
-#include <amulet/chunk/chunk.hpp>
-#include <amulet/chunk_components/block_component.hpp>
-#include <amulet/dll.hpp>
+#include <amulet/core/biome/biome.hpp>
+#include <amulet/core/block/block.hpp>
+#include <amulet/core/chunk/chunk.hpp>
+#include <amulet/core/chunk/component/block_component.hpp>
+
+#include <amulet/level/dll.hpp>
 
 #include "chunk_components/data_version_component.hpp"
 #include "chunk_components/java_raw_chunk_component.hpp"
 
 namespace Amulet {
-using JavaRawChunk = std::map<std::string, AmuletNBT::NamedTag>;
+using JavaRawChunk = std::map<std::string, Amulet::NBT::NamedTag>;
 
 class JavaChunk : public Chunk { };
 

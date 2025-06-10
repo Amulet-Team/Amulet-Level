@@ -4,10 +4,10 @@
 #include <string>
 #include <variant>
 
-#include <amulet/biome/biome.hpp>
-#include <amulet/block/block.hpp>
-#include <amulet/selection/box.hpp>
-#include <amulet/selection/group.hpp>
+#include <amulet/core/biome/biome.hpp>
+#include <amulet/core/block/block.hpp>
+#include <amulet/core/selection/box.hpp>
+#include <amulet/core/selection/group.hpp>
 
 #include "chunk_handle.hpp"
 

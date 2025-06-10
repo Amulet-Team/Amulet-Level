@@ -10,19 +10,22 @@
 #include <type_traits>
 #include <variant>
 
-#include <amulet_nbt/tag/compound.hpp>
-#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/compound.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
 
-#include <amulet/_game/game.hpp>
-#include <amulet/block/block.hpp>
-#include <amulet/chunk/chunk.hpp>
-#include <amulet/version/version.hpp>
+#include <amulet/core/block/block.hpp>
+#include <amulet/core/chunk/chunk.hpp>
+#include <amulet/core/version/version.hpp>
+
+#include <amulet/game/game.hpp>
+#include <amulet/game/java/version.hpp>
 
 #include "chunk.hpp"
 #include "long_array.hpp"
 #include "raw_dimension.hpp"
 
-using namespace AmuletNBT;
+using namespace Amulet::NBT;
+using namespace Amulet::game;
 
 namespace Amulet {
 template <typename tagT>
@@ -154,7 +157,12 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
     CompoundTagPtr level_ptr;
     CompoundTag& level = [&]() -> CompoundTag& {
         if constexpr (DataVersion >= 2203) {
-            return data_version >= 2844 ? region : *(level_ptr = get_level(region));
+            if (data_version >= 2844) {
+                return region;
+            } else {
+                level_ptr = get_level(region);
+                return *level_ptr;
+            }
         } else {
             level_ptr = get_level(region);
             return *level_ptr;
@@ -232,9 +240,9 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
     }
 
     // blocks
-    auto block_component = chunk.get_block();
-    auto block_palette = block_component->get_palette();
-    auto block_sections = block_component->get_sections();
+    std::shared_ptr<BlockComponentData> block_component = chunk.get_block();
+    auto& block_palette = block_component->get_palette();
+    auto& block_sections = block_component->get_sections();
     if constexpr (DataVersion >= 1444) {
         // Palette format
         // if data_version >= 2844:
@@ -280,12 +288,12 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
                     }
                 }();
                 auto properties_tag = get_tag<CompoundTagPtr>(*block_tag, "Properties", []() { return std::make_shared<CompoundTag>(); });
-                std::map<std::string, PropertyValueType> block_properties;
+                std::map<std::string, Block::PropertyValue> block_properties;
                 for (const auto& [k, v] : *properties_tag) {
                     std::visit([&block_properties, &k](auto&& arg) {
                         using T = std::decay_t<decltype(arg)>;
                         if constexpr (
-                            std::is_same_v<T, AmuletNBT::ByteTag> || std::is_same_v<T, AmuletNBT::ShortTag> || std::is_same_v<T, AmuletNBT::IntTag> || std::is_same_v<T, AmuletNBT::LongTag> || std::is_same_v<T, AmuletNBT::StringTag>) {
+                            std::is_same_v<T, Amulet::NBT::ByteTag> || std::is_same_v<T, Amulet::NBT::ShortTag> || std::is_same_v<T, Amulet::NBT::IntTag> || std::is_same_v<T, Amulet::NBT::LongTag> || std::is_same_v<T, Amulet::NBT::StringTag>) {
                             block_properties.emplace(k, arg);
                         }
                     },
@@ -315,10 +323,10 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
                         block_base_name,
                         block_properties));
 
-                lut.push_back(static_cast<std::uint32_t>(block_palette->block_stack_to_index(blocks)));
+                lut.push_back(static_cast<std::uint32_t>(block_palette.block_stack_to_index(blocks)));
             }
 
-            block_sections->set_section(
+            block_sections.set_section(
                 cy,
                 [&] {
                     if (data_tag->empty()) {
@@ -430,7 +438,7 @@ std::unique_ptr<JavaChunk> JavaRawDimension::decode_chunk(
     std::optional<Block> _water_block;
     auto get_water = [&version, &_water_block]() -> const Block& {
         if (!_water_block) {
-            auto converted = get_java_game_version(VersionNumber({ 3837 }))->get_block_data()->translate("java", version, Block("java", VersionNumber({ 3837 }), "minecraft", "water", std::initializer_list<BlockProperites::value_type> { { "level", StringTag("0") } }));
+            auto converted = get_java_game_version(VersionNumber({ 3837 }))->get_block_data()->translate("java", version, Block("java", VersionNumber({ 3837 }), "minecraft", "water", std::initializer_list<Block::PropertyMap::value_type> { { "level", StringTag("0") } }));
             std::visit(
                 [&version, &_water_block](auto&& arg) {
                     using T = std::decay_t<decltype(arg)>;

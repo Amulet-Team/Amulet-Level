@@ -4,9 +4,12 @@
 #include <memory>
 #include <string>
 
-#include <amulet/chunk/chunk.hpp>
+#include <amulet/core/chunk/chunk.hpp>
+
 #include <amulet/utils/mutex.hpp>
 #include <amulet/utils/signal.hpp>
+
+#include <amulet/level/dll.hpp>
 
 namespace Amulet {
 

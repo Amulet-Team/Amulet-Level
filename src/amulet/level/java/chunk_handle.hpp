@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include <amulet/dll.hpp>
+#include <amulet/level/dll.hpp>
 
 #include <amulet/level/abc/chunk_handle.hpp>
 #include <amulet/level/abc/history.hpp>

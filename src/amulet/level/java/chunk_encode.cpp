@@ -3,9 +3,9 @@
 #include <memory>
 #include <stdexcept>
 
-#include <amulet_nbt/tag/named_tag.hpp>
+#include <amulet/nbt/tag/named_tag.hpp>
 
-#include <amulet/chunk/chunk.hpp>
+#include <amulet/core/chunk/chunk.hpp>
 
 #include "chunk.hpp"
 #include "raw_dimension.hpp"

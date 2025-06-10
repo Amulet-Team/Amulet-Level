@@ -4,8 +4,6 @@
 
 #include <memory>
 
-#include <pybind11_extensions/py_module.hpp>
-
 #include <amulet/utils/signal.py.hpp>
 
 #include "level.hpp"

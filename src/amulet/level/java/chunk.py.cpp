@@ -2,10 +2,10 @@
 
 #include <memory>
 
-#include <amulet/biome/biome.hpp>
-#include <amulet/block/block.hpp>
-#include <amulet/chunk/chunk.hpp>
-#include <amulet/chunk_components/block_component.hpp>
+#include <amulet/core/biome/biome.hpp>
+#include <amulet/core/block/block.hpp>
+#include <amulet/core/chunk/chunk.hpp>
+#include <amulet/core/chunk/component/block_component.hpp>
 
 #include "chunk_components/data_version_component.hpp"
 #include "chunk_components/java_raw_chunk_component.hpp"

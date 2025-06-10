@@ -1,19 +1,19 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <pybind11_extensions/collections.hpp>
-
-#include <amulet/utils/holder.py.hpp>
+#include <amulet/pybind11_extensions/collections.hpp>
+#include <amulet/pybind11_extensions/nogil_holder.hpp>
 
 #include "dimension.hpp"
 
 namespace py = pybind11;
+namespace pyext = Amulet::pybind11_extensions;
 
 py::module init_anvil_dimension(py::module m_parent)
 {
     py::module m = m_parent.def_submodule("dimension");
 
-    py::class_<Amulet::AnvilDimensionLayer, Amulet::nogil_shared_ptr<Amulet::AnvilDimensionLayer>> AnvilDimensionLayer(m, "AnvilDimensionLayer",
+    py::class_<Amulet::AnvilDimensionLayer, pyext::nogil_shared_ptr<Amulet::AnvilDimensionLayer>> AnvilDimensionLayer(m, "AnvilDimensionLayer",
         "A class to manage a directory of region files.");
     AnvilDimensionLayer.def(
         py::init(
@@ -151,12 +151,12 @@ py::module init_anvil_dimension(py::module m_parent)
                 "If this is false, other calls will fail.\n"
                 "External Read:SharedReadWrite lock required."));
 
-    py::class_<Amulet::AnvilDimension, Amulet::nogil_shared_ptr<Amulet::AnvilDimension>> AnvilDimension(m, "AnvilDimension",
+    py::class_<Amulet::AnvilDimension, pyext::nogil_shared_ptr<Amulet::AnvilDimension>> AnvilDimension(m, "AnvilDimension",
         "A class to manage the data for a dimension.\n"
         "This can consist of multiple layers. Eg the region layer which contains chunk data and the entities layer which contains entities.");
     AnvilDimension.def(
         py::init(
-            [](std::string directory, pybind11_extensions::Iterable<std::string> layer_names, bool mcc) {
+            [](std::string directory, Amulet::pybind11_extensions::collections::Iterable<std::string> layer_names, bool mcc) {
                 return std::make_shared<Amulet::AnvilDimension>(directory, layer_names, mcc);
             }),
         py::arg("directory"),
@@ -229,7 +229,7 @@ py::module init_anvil_dimension(py::module m_parent)
                 "External Read::SharedReadWrite lock required."));
     AnvilDimension.def(
         "set_chunk_data",
-        &Amulet::AnvilDimension::set_chunk_data<pybind11_extensions::Iterable<std::pair<std::string, AmuletNBT::NamedTag>>>,
+        &Amulet::AnvilDimension::set_chunk_data<Amulet::pybind11_extensions::collections::Iterable<std::pair<std::string, Amulet::NBT::NamedTag>>>,
         py::arg("cx"),
         py::arg("cz"),
         py::arg("data_layers"),

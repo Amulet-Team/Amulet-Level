@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include <pybind11_extensions/py_module.hpp>
+#include <amulet/pybind11_extensions/py_module.hpp>
 
 namespace py = pybind11;
 
@@ -19,7 +19,7 @@ py::module init_java_level(py::module);
 
 py::module init_java(py::module m_parent)
 {
-    auto m = pybind11_extensions::def_subpackage(m_parent, "java");
+    auto m = Amulet::pybind11_extensions::def_subpackage(m_parent, "java");
 
     init_long_array(m);
     init_java_chunk_components(m);

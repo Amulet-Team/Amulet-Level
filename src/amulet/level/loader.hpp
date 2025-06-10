@@ -6,8 +6,8 @@
 #include <stdexcept>
 #include <string>
 
-#include <amulet/dll.hpp>
 #include <amulet/level/abc/level.hpp>
+#include <amulet/level/dll.hpp>
 
 namespace Amulet {
 

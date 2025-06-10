@@ -101,7 +101,7 @@ std::unique_ptr<JavaChunk> JavaChunkHandle::get_java_chunk(std::optional<std::se
         }
 
         // Load all the requested component ids.
-        SerialisedComponents component_data;
+        SerialisedChunkComponents component_data;
         for (const auto& component_id : valid_components) {
             component_data.emplace(
                 component_id,

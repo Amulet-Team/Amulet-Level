@@ -12,18 +12,20 @@
 #include <vector>
 
 #include <lz4.h>
-#include <zlib.h>
 
-#include <amulet_nbt/nbt_encoding/binary.hpp>
-#include <amulet_nbt/zlib.hpp>
+#include <amulet/nbt/nbt_encoding/binary.hpp>
 
-#include <amulet/chunk/chunk.hpp>
-#include <amulet/dll.hpp>
+#include <amulet/core/chunk/chunk.hpp>
+
 #include <amulet/utils/logging.hpp>
+
+#include <amulet/zlib/zlib.hpp>
+
+#include <amulet/level/dll.hpp>
 
 #include "region.hpp"
 
-using namespace AmuletNBT;
+using namespace Amulet::NBT;
 
 namespace Amulet {
 
@@ -342,7 +344,7 @@ static NamedTag decompress(char compression_type, const std::string_view& data)
     case 2: // Deflate
     {
         std::string dst;
-        decompress_zlib_gzip(data, dst);
+        zlib::decompress_zlib_gzip(data, dst);
         return decode_nbt(dst, std::endian::big, mutf8_to_utf8);
     }
     case 3: // None
@@ -494,14 +496,14 @@ void AnvilRegion::set_value(std::int64_t cx, std::int64_t cz, const NamedTag& ta
         std::endian::big,
         &utf8_to_mutf8);
     encode_nbt(writer, tag);
-    const std::string& bnbt = writer.getBuffer();
+    const std::string& bnbt = writer.get_buffer();
 
     // Create the output string
     std::string data;
     // zlib compression
     data.push_back(2);
     // Compress
-    compress_zlib(bnbt, data);
+    zlib::compress_zlib(bnbt, data);
 
     if (!_mcc && data.size() + 4 > MaxRegionSize) {
         // Skip saving large chunks if mcc files are not enabled.

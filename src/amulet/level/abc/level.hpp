@@ -6,10 +6,12 @@
 #include <string>
 #include <vector>
 
-#include <amulet/image/image.hpp>
+#include <amulet/utils/image.hpp>
+
+#include <amulet/core/version/version.hpp>
+
 #include <amulet/utils/mutex.hpp>
 #include <amulet/utils/signal.hpp>
-#include <amulet/version/version.hpp>
 
 #include "dimension.hpp"
 

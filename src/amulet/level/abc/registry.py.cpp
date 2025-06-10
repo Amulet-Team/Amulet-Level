@@ -2,14 +2,15 @@
 
 #include <memory>
 
-#include <pybind11_extensions/collections.hpp>
+#include <amulet/pybind11_extensions/collections.hpp>
 
-#include <amulet/collections/iterator.py.hpp>
-#include <amulet/collections/mapping.py.hpp>
+#include <amulet/pybind11_extensions/iterator.hpp>
+#include <amulet/pybind11_extensions/mapping.hpp>
 
 #include "registry.hpp"
 
 namespace py = pybind11;
+namespace pyext = Amulet::pybind11_extensions;
 
 py::module init_registry(py::module m_parent)
 {
@@ -77,10 +78,8 @@ py::module init_registry(py::module m_parent)
             "External shared lock required."));
     IdRegistry.def(
         "__iter__",
-        [](const Amulet::IdRegistry& self) -> pybind11_extensions::collections::abc::Iterator<std::uint32_t> {
-            return Amulet::collections::make_map_iterator<
-                std::map<std::uint32_t, Amulet::NamespacedName>>(
-                self.ids());
+        [](const Amulet::IdRegistry& self) -> pyext::collections::Iterator<std::uint32_t> {
+            return pyext::make_map_iterator(self.ids());
         },
         py::keep_alive<0, 1>(),
         py::doc("An iterable of the numerical ids registered.\n"
@@ -110,14 +109,14 @@ py::module init_registry(py::module m_parent)
         py::doc("Convert a namespaced id to its numerical id.\n"
                 "External shared lock required."));
 
-    Amulet::collections::PyMapping_contains<std::uint32_t>(IdRegistry);
-    Amulet::collections::PyMapping_keys<std::uint32_t>(IdRegistry);
-    Amulet::collections::PyMapping_values<Amulet::NamespacedName>(IdRegistry);
-    Amulet::collections::PyMapping_items<std::uint32_t, Amulet::NamespacedName>(IdRegistry);
-    Amulet::collections::PyMapping_get<std::uint32_t, Amulet::NamespacedName>(IdRegistry);
-    Amulet::collections::PyMapping_eq(IdRegistry);
-    Amulet::collections::PyMapping_hash(IdRegistry);
-    Amulet::collections::PyMapping_register(IdRegistry);
+    pyext::collections::def_Mapping_contains<std::uint32_t>(IdRegistry);
+    pyext::collections::def_Mapping_keys<std::uint32_t>(IdRegistry);
+    pyext::collections::def_Mapping_values<Amulet::NamespacedName>(IdRegistry);
+    pyext::collections::def_Mapping_items<std::uint32_t, Amulet::NamespacedName>(IdRegistry);
+    pyext::collections::def_Mapping_get<std::uint32_t, Amulet::NamespacedName>(IdRegistry);
+    pyext::collections::def_Mapping_eq(IdRegistry);
+    pyext::collections::def_Mapping_hash(IdRegistry);
+    pyext::collections::register_Mapping(IdRegistry);
 
     return m;
 }

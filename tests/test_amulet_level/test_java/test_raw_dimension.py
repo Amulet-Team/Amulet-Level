@@ -1,13 +1,13 @@
 from unittest import TestCase
 import os
 
-from amulet.block import BlockStack
-from amulet.biome import Biome
-from amulet.chunk import ChunkDoesNotExist
-from amulet.selection import SelectionBox
+from amulet.core.block import BlockStack
+from amulet.core.biome import Biome
+from amulet.core.chunk import ChunkDoesNotExist
+from amulet.core.selection import SelectionBox
 from amulet.utils.lock import OrderedLock
 from amulet.level.java import JavaRawLevel, JavaRawDimension
-from amulet_nbt import NamedTag
+from amulet.nbt import NamedTag
 
 from tests.data.worlds_src import java_vanilla_1_13
 from tests.data.world_utils import WorldTemp

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from test_amulet.test_level.test_abc.test_history_ import (
+from test_amulet_level.test_abc.test_history_ import (
     test_history,
     test_undo_overwrite,
     test_set_value_enum,

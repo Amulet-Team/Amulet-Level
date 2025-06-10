@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing
 
 import amulet.utils.lock
-import amulet_nbt
+import amulet.nbt
 
 __all__ = ["AnvilRegion", "RegionDoesNotExist"]
 
@@ -107,7 +107,7 @@ class AnvilRegion:
         Thread safe.
         """
 
-    def get_value(self, cx: int, cz: int) -> amulet_nbt.NamedTag:
+    def get_value(self, cx: int, cz: int) -> amulet.nbt.NamedTag:
         """
         Get the value for this coordinate.
         Coordinates are in world space.
@@ -129,7 +129,7 @@ class AnvilRegion:
         External Read:SharedReadWrite lock required.
         """
 
-    def set_value(self, cx: int, cz: int, tag: amulet_nbt.NamedTag) -> None:
+    def set_value(self, cx: int, cz: int, tag: amulet.nbt.NamedTag) -> None:
         """
         Set the value for this coordinate.
         Coordinates are in world space.

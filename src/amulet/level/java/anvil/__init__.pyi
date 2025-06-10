@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-import amulet_nbt
+import amulet.nbt
 from amulet.level.java.anvil.dimension import AnvilDimension, AnvilDimensionLayer
 from amulet.level.java.anvil.region import AnvilRegion, RegionDoesNotExist
 
@@ -17,4 +17,4 @@ __all__ = [
     "dimension",
     "region",
 ]
-RawChunkType: typing.TypeAlias = dict[str, amulet_nbt.NamedTag]
+RawChunkType: typing.TypeAlias = dict[str, amulet.nbt.NamedTag]

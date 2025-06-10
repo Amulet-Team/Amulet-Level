@@ -6,7 +6,7 @@ from typing import Generator
 
 from amulet.level import get_level
 
-from amulet.version import VersionNumber
+from amulet.core.version import VersionNumber
 from amulet.level.loader import LevelLoaderPathToken
 from amulet.level.abc import Dimension
 from amulet.level.java import (
@@ -18,7 +18,7 @@ from amulet.level.java import (
 
 from tests.data.worlds_src import java_vanilla_1_13
 from tests.data.world_utils import WorldTemp
-from test_amulet.test_level.test_abc.test_level import LevelTestCases
+from test_amulet_level.test_abc.test_level import LevelTestCases
 
 
 class JavaLevelTestCase(

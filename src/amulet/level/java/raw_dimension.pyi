@@ -2,12 +2,12 @@ from __future__ import annotations
 
 import typing
 
-import amulet.biome
-import amulet.block
+import amulet.core.biome
+import amulet.core.block
 import amulet.level.java.chunk
-import amulet.selection.box
+import amulet.core.selection.box
 import amulet.utils.lock
-import amulet_nbt
+import amulet.nbt
 
 __all__ = ["JavaRawDimension"]
 
@@ -19,7 +19,7 @@ class JavaRawDimension:
         """
 
     def decode_chunk(
-        self, raw_chunk: dict[str, amulet_nbt.NamedTag], cx: int, cz: int
+        self, raw_chunk: dict[str, amulet.nbt.NamedTag], cx: int, cz: int
     ) -> amulet.level.java.chunk.JavaChunk:
         """
         Decode a raw chunk to a chunk object.
@@ -42,13 +42,13 @@ class JavaRawDimension:
 
     def encode_chunk(
         self, chunk: amulet.level.java.chunk.JavaChunk, cx: int, cz: int
-    ) -> dict[str, amulet_nbt.NamedTag]:
+    ) -> dict[str, amulet.nbt.NamedTag]:
         """
         Encode a chunk object to its raw data.
         TODO: thread safety
         """
 
-    def get_raw_chunk(self, cx: int, cz: int) -> dict[str, amulet_nbt.NamedTag]:
+    def get_raw_chunk(self, cx: int, cz: int) -> dict[str, amulet.nbt.NamedTag]:
         """
         Get the raw chunk from this dimension.
         External Read:SharedReadWrite lock required.
@@ -69,7 +69,7 @@ class JavaRawDimension:
         """
 
     def set_raw_chunk(
-        self, cx: int, cz: int, chunk: dict[str, amulet_nbt.NamedTag]
+        self, cx: int, cz: int, chunk: dict[str, amulet.nbt.NamedTag]
     ) -> None:
         """
         Set the chunk in this dimension from raw data.
@@ -85,21 +85,21 @@ class JavaRawDimension:
         """
 
     @property
-    def bounds(self) -> amulet.selection.box.SelectionBox:
+    def bounds(self) -> amulet.core.selection.box.SelectionBox:
         """
         The selection box that fills the whole world.
         Thread safe.
         """
 
     @property
-    def default_biome(self) -> amulet.biome.Biome:
+    def default_biome(self) -> amulet.core.biome.Biome:
         """
         The default biome for this dimension.
         Thread safe.
         """
 
     @property
-    def default_block(self) -> amulet.block.BlockStack:
+    def default_block(self) -> amulet.core.block.BlockStack:
         """
         The default block for this dimension.
         Thread safe.

@@ -1,12 +1,12 @@
 from unittest import TestCase
 
 from amulet.utils.lock import OrderedLock
-from amulet.version import VersionNumber
-from amulet.block import Block, BlockStack
-from amulet.biome import Biome
-from amulet.chunk import ChunkDoesNotExist
-from amulet.chunk import Chunk
-from amulet.chunk_components import BlockComponent
+from amulet.core.version import VersionNumber
+from amulet.core.block import Block, BlockStack
+from amulet.core.biome import Biome
+from amulet.core.chunk import ChunkDoesNotExist
+from amulet.core.chunk import Chunk
+from amulet.core.chunk.component import BlockComponent
 from amulet.level.java import (
     JavaLevel,
     JavaDimension,

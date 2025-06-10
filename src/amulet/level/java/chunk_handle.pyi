@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import typing
 
-import amulet.chunk
+import amulet.core.chunk
 import amulet.level.abc.chunk_handle
 import amulet.level.java.chunk
 
@@ -25,7 +25,7 @@ class JavaChunkHandle(amulet.level.abc.chunk_handle.ChunkHandle):
         """
 
     @typing.overload
-    def set_chunk(self, chunk: amulet.chunk.Chunk) -> None:
+    def set_chunk(self, chunk: amulet.core.chunk.Chunk) -> None:
         """
         Overwrite the chunk data.
         You must acquire the chunk lock before setting.

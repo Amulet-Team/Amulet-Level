@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import amulet.chunk
+import amulet.core.chunk
 import amulet.utils.lock
 import amulet.utils.signal
 
@@ -22,7 +22,7 @@ class ChunkHandle:
         :return: True if the chunk exists. Calling get on this chunk handle may still throw ChunkLoadError
         """
 
-    def get_chunk(self) -> amulet.chunk.Chunk:
+    def get_chunk(self) -> amulet.core.chunk.Chunk:
         """
         Get a unique copy of the chunk data.
 
@@ -35,7 +35,7 @@ class ChunkHandle:
         :return: A unique copy of the chunk data.
         """
 
-    def set_chunk(self, chunk: amulet.chunk.Chunk) -> None:
+    def set_chunk(self, chunk: amulet.core.chunk.Chunk) -> None:
         """
         Overwrite the chunk data.
         You must acquire the chunk lock before setting.

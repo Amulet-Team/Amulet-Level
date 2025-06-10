@@ -5,7 +5,7 @@ import datetime
 import amulet.level.abc.dimension
 import amulet.utils.lock
 import amulet.utils.signal
-import amulet.version
+import amulet.core.version
 import PIL.Image
 
 __all__ = ["CompactibleLevel", "DiskLevel", "Level", "LevelMetadata", "ReloadableLevel"]
@@ -182,7 +182,7 @@ class LevelMetadata:
         """
 
     @property
-    def max_game_version(self) -> amulet.version.VersionNumber:
+    def max_game_version(self) -> amulet.core.version.VersionNumber:
         """
         The maximum game version the level has been opened with.
         External Read:SharedReadWrite lock required.

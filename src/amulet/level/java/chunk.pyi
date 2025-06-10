@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import amulet.biome
-import amulet.block
-import amulet.chunk
-import amulet.chunk_components
+import amulet.core.biome
+import amulet.core.block
+import amulet.core.chunk
+import amulet.core.chunk.component
 import amulet.level.java.chunk_components
 
 __all__ = [
@@ -15,67 +15,67 @@ __all__ = [
     "JavaChunkNA",
 ]
 
-class JavaChunk(amulet.chunk.Chunk):
+class JavaChunk(amulet.core.chunk.Chunk):
     pass
 
 class JavaChunk0(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.chunk_components.BlockComponent,
+    amulet.core.chunk.component.BlockComponent,
 ):
     def __init__(
         self,
         data_version: int,
-        default_block: amulet.block.BlockStack,
-        default_biome: amulet.biome.Biome,
+        default_block: amulet.core.block.BlockStack,
+        default_biome: amulet.core.biome.Biome,
     ) -> None: ...
 
 class JavaChunk1444(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.chunk_components.BlockComponent,
+    amulet.core.chunk.component.BlockComponent,
 ):
     def __init__(
         self,
         data_version: int,
-        default_block: amulet.block.BlockStack,
-        default_biome: amulet.biome.Biome,
+        default_block: amulet.core.block.BlockStack,
+        default_biome: amulet.core.biome.Biome,
     ) -> None: ...
 
 class JavaChunk1466(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.chunk_components.BlockComponent,
+    amulet.core.chunk.component.BlockComponent,
 ):
     def __init__(
         self,
         data_version: int,
-        default_block: amulet.block.BlockStack,
-        default_biome: amulet.biome.Biome,
+        default_block: amulet.core.block.BlockStack,
+        default_biome: amulet.core.biome.Biome,
     ) -> None: ...
 
 class JavaChunk2203(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.chunk_components.BlockComponent,
+    amulet.core.chunk.component.BlockComponent,
 ):
     def __init__(
         self,
         data_version: int,
-        default_block: amulet.block.BlockStack,
-        default_biome: amulet.biome.Biome,
+        default_block: amulet.core.block.BlockStack,
+        default_biome: amulet.core.biome.Biome,
     ) -> None: ...
 
 class JavaChunkNA(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.chunk_components.BlockComponent,
+    amulet.core.chunk.component.BlockComponent,
 ):
     def __init__(
-        self, default_block: amulet.block.BlockStack, default_biome: amulet.biome.Biome
+        self, default_block: amulet.core.block.BlockStack, default_biome: amulet.core.biome.Biome
     ) -> None: ...

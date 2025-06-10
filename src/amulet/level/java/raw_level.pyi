@@ -6,8 +6,8 @@ import amulet.level.abc.registry
 import amulet.level.java.raw_dimension
 import amulet.utils.lock
 import amulet.utils.signal
-import amulet.version
-import amulet_nbt
+import amulet.core.version
+import amulet.nbt
 import PIL.Image
 
 __all__ = ["JavaCreateArgsV1", "JavaRawLevel"]
@@ -17,7 +17,7 @@ class JavaCreateArgsV1:
         self,
         overwrite: bool,
         path: str,
-        version: amulet.version.VersionNumber,
+        version: amulet.core.version.VersionNumber,
         level_name: str,
     ) -> None: ...
     @property
@@ -27,7 +27,7 @@ class JavaCreateArgsV1:
     @property
     def path(self) -> str: ...
     @property
-    def version(self) -> amulet.version.VersionNumber: ...
+    def version(self) -> amulet.core.version.VersionNumber: ...
 
 class JavaRawLevel:
     @staticmethod
@@ -115,7 +115,7 @@ class JavaRawLevel:
     @property
     def closed(self) -> amulet.utils.signal.Signal[()]: ...
     @property
-    def data_version(self) -> amulet.version.VersionNumber:
+    def data_version(self) -> amulet.core.version.VersionNumber:
         """
         Getter:
         The game data version that the level was last opened in.
@@ -128,7 +128,7 @@ class JavaRawLevel:
         """
 
     @data_version.setter
-    def data_version(self, arg1: amulet.version.VersionNumber) -> None: ...
+    def data_version(self, arg1: amulet.core.version.VersionNumber) -> None: ...
     @property
     def dimension_ids(self) -> list[str]:
         """
@@ -138,7 +138,7 @@ class JavaRawLevel:
         """
 
     @property
-    def level_dat(self) -> amulet_nbt.NamedTag:
+    def level_dat(self) -> amulet.nbt.NamedTag:
         """
         Getter:
         The NamedTag stored in the level.dat file. Returns a unique copy.
@@ -151,7 +151,7 @@ class JavaRawLevel:
         """
 
     @level_dat.setter
-    def level_dat(self, arg1: amulet_nbt.NamedTag) -> None: ...
+    def level_dat(self, arg1: amulet.nbt.NamedTag) -> None: ...
     @property
     def level_name(self) -> str:
         """

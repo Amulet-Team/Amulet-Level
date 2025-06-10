@@ -5,14 +5,13 @@ from datetime import datetime
 
 from PIL import Image
 
+from amulet.core.version import VersionNumber
+from amulet.utils.lock import OrderedLock
 from amulet.level.abc.level import (
     LevelMetadata,
     Level,
     ReloadableLevel,
 )
-from amulet.version import VersionNumber
-from amulet.utils.lock import OrderedLock
-
 
 class LevelTestCases:
     class LevelMetadataTestCase(ABC, TestCase):

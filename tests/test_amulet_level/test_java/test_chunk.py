@@ -1,12 +1,12 @@
 from unittest import TestCase
 from collections.abc import MutableMapping
 
-from amulet_nbt import NamedTag, CompoundTag, ByteTag
+from amulet.nbt import NamedTag, CompoundTag, ByteTag
 
-from amulet.version import VersionNumber
-from amulet.block import Block, BlockStack
-from amulet.biome import Biome
-from amulet.chunk import Chunk
+from amulet.core.version import VersionNumber
+from amulet.core.block import Block, BlockStack
+from amulet.core.biome import Biome
+from amulet.core.chunk import Chunk
 
 from amulet.level.java.chunk import (
     JavaChunkNA,

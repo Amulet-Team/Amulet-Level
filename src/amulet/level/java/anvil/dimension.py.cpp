@@ -264,7 +264,7 @@ py::module init_anvil_dimension(py::module m_parent)
 
     auto dict = py::module::import("builtins").attr("dict");
     auto str = py::module::import("builtins").attr("str");
-    auto NamedTag = py::module::import("amulet_nbt").attr("NamedTag");
+    auto NamedTag = py::module::import("amulet.nbt").attr("NamedTag");
     m.attr("RawChunkType") = dict.attr("__class_getitem__")(py::make_tuple(str, NamedTag));
 
     return m;

@@ -1,9 +1,9 @@
 import os
 import unittest
 
-from amulet_nbt import NamedTag, CompoundTag, StringTag
+from amulet.nbt import NamedTag, CompoundTag, StringTag
 
-from amulet.errors import ChunkDoesNotExist
+from amulet.core.chunk import ChunkDoesNotExist
 from amulet.level.java.anvil import (
     AnvilRegion,
     RegionDoesNotExist,

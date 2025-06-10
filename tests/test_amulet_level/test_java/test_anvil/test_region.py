@@ -8,13 +8,13 @@ from weakref import ref
 from threading import Thread, Condition, Lock
 import time
 
-from amulet_nbt import NamedTag, CompoundTag, StringTag, ListTag
+from amulet.nbt import NamedTag, CompoundTag, StringTag, ListTag
 
-from amulet.chunk import ChunkDoesNotExist
+from amulet.core.chunk import ChunkDoesNotExist
 from amulet.level.java.anvil import AnvilRegion, RegionDoesNotExist
 import tests.data.worlds_src
 import tests.data.region
-from test_amulet.test_level.test_java.test_anvil.test_region_ import (
+from test_amulet_level.test_java.test_anvil.test_region_ import (
     throw_region_does_not_exist,
 )
 

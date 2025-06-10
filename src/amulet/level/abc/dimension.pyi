@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import amulet.biome
-import amulet.block
+import amulet.core.biome
+import amulet.core.block
+import amulet.core.selection.box
+import amulet.core.selection.group
 import amulet.level.abc.chunk_handle
-import amulet.selection.box
-import amulet.selection.group
 
 __all__ = ["Dimension"]
 
@@ -23,21 +23,21 @@ class Dimension:
     @property
     def bounds(
         self,
-    ) -> amulet.selection.box.SelectionBox | amulet.selection.group.SelectionGroup:
+    ) -> amulet.core.selection.box.SelectionBox | amulet.core.selection.group.SelectionGroup:
         """
         The editable region of the dimension.
         Thread safe.
         """
 
     @property
-    def default_biome(self) -> amulet.biome.Biome:
+    def default_biome(self) -> amulet.core.biome.Biome:
         """
         The default biome for this dimension
         Thread safe.
         """
 
     @property
-    def default_block(self) -> amulet.block.BlockStack:
+    def default_block(self) -> amulet.core.block.BlockStack:
         """
         The default block for this dimension.
         Thread safe.

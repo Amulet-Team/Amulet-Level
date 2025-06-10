@@ -5,9 +5,9 @@ import datetime
 
 from PIL import Image
 
-from amulet_nbt import NamedTag, StringTag
+from amulet.nbt import NamedTag, StringTag
 
-from amulet.version import VersionNumber
+from amulet.core.version import VersionNumber
 from amulet.utils.lock import OrderedLock
 from amulet.utils.signal import Signal
 from amulet.level.abc import IdRegistry

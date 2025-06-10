@@ -5,7 +5,7 @@ import typing
 
 import amulet.level.java.anvil.region
 import amulet.utils.lock
-import amulet_nbt
+import amulet.nbt
 
 __all__ = ["AnvilDimension", "AnvilDimensionLayer", "RawChunkType"]
 
@@ -48,7 +48,7 @@ class AnvilDimension:
         External ReadWrite:Unique lock required.
         """
 
-    def get_chunk_data(self, cx: int, cz: int) -> dict[str, amulet_nbt.NamedTag]:
+    def get_chunk_data(self, cx: int, cz: int) -> dict[str, amulet.nbt.NamedTag]:
         """
         Get the data for a chunk
         External Read::SharedReadWrite lock required.
@@ -87,7 +87,7 @@ class AnvilDimension:
         self,
         cx: int,
         cz: int,
-        data_layers: collections.abc.Iterable[tuple[str, amulet_nbt.NamedTag]],
+        data_layers: collections.abc.Iterable[tuple[str, amulet.nbt.NamedTag]],
     ) -> None:
         """
         Set the data for a chunk.
@@ -163,7 +163,7 @@ class AnvilDimensionLayer:
         External ReadWrite:Unique lock required.
         """
 
-    def get_chunk_data(self, cx: int, cz: int) -> amulet_nbt.NamedTag:
+    def get_chunk_data(self, cx: int, cz: int) -> amulet.nbt.NamedTag:
         """
         Get a NamedTag of a chunk from the database.
         Will raise ChunkDoesNotExist if the region or chunk does not exist
@@ -218,7 +218,7 @@ class AnvilDimensionLayer:
         External Read:SharedReadWrite lock required.
         """
 
-    def set_chunk_data(self, cx: int, cz: int, tag: amulet_nbt.NamedTag) -> None:
+    def set_chunk_data(self, cx: int, cz: int, tag: amulet.nbt.NamedTag) -> None:
         """
         Set the chunk data for this layer.
         External ReadWrite::SharedReadWrite lock required.
@@ -245,4 +245,4 @@ class AnvilDimensionLayer:
         Thread safe.
         """
 
-RawChunkType: typing.TypeAlias = dict[str, amulet_nbt.NamedTag]
+RawChunkType: typing.TypeAlias = dict[str, amulet.nbt.NamedTag]

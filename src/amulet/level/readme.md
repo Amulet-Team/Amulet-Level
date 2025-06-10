@@ -70,7 +70,7 @@ The chunk format varies between levels and between game versions within the same
 To support this variation each level defines its own chunk classes to fit the needs of the level.
 To simplify the API the chunk classes are built from components which can be reused.
 This means that editing code can be reused for all chunk formats that implement the required components.
-Common components are stored in `amulet.chunk.components` and levels may add their own components.
+Common components are stored in `amulet.core.chunk.component` and levels may add their own components.
 
 The data in the chunk is the raw data unpacked into a more editable format.
 Arrays are unpacked and stored in numpy arrays.

@@ -1,8 +1,8 @@
 from unittest import TestCase
 
-from amulet.block import BlockStack
-from amulet.biome import Biome
-from amulet.selection import SelectionBox
+from amulet.core.block import BlockStack
+from amulet.core.biome import Biome
+from amulet.core.selection import SelectionBox
 from amulet.level.java import (
     JavaLevel,
     JavaDimension,

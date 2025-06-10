@@ -4,7 +4,7 @@
 
 namespace py = pybind11;
 
-py::module init_level_loader(py::module m_parent)
+py::module init_loader(py::module m_parent)
 {
     auto m = m_parent.def_submodule("loader");
 

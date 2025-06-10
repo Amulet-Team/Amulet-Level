@@ -9,9 +9,9 @@ namespace py = pybind11;
 py::module init_registry(py::module);
 py::module init_chunk_handle(py::module);
 py::module init_dimension(py::module);
-py::module init_level_abc_level(py::module);
+py::module init_level(py::module);
 
-py::module init_level_abc(py::module m_parent)
+py::module init_abc(py::module m_parent)
 {
     auto m = Amulet::pybind11_extensions::def_subpackage(m_parent, "abc");
 
@@ -24,7 +24,7 @@ py::module init_level_abc(py::module m_parent)
     auto m_dimension = init_dimension(m);
     m.attr("Dimension") = m_dimension.attr("Dimension");
 
-    auto m_level = init_level_abc_level(m);
+    auto m_level = init_level(m);
     m.attr("Level") = m_level.attr("Level");
 
     return m;

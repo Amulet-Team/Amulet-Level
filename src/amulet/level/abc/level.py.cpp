@@ -10,7 +10,7 @@
 
 namespace py = pybind11;
 
-py::module init_level_abc_level(py::module m_parent)
+py::module init_level(py::module m_parent)
 {
     auto m = m_parent.def_submodule("level");
 

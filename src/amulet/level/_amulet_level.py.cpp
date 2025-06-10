@@ -6,8 +6,8 @@
 namespace py = pybind11;
 namespace pyext = Amulet::pybind11_extensions;
 
-py::module init_level_loader(py::module);
-py::module init_level_abc(py::module);
+py::module init_loader(py::module);
+py::module init_abc(py::module);
 py::module init_java(py::module);
 
 void init_module(py::module m)
@@ -15,10 +15,10 @@ void init_module(py::module m)
     pyext::init_compiler_config(m);
     pyext::check_compatibility(py::module::import("amulet.game"), m);
 
-    auto abc = init_level_abc(m);
+    auto abc = init_abc(m);
     m.attr("Level") = abc.attr("Level");
 
-    auto loader = init_level_loader(m);
+    auto loader = init_loader(m);
     m.attr("get_level") = loader.attr("get_level");
     m.attr("NoValidLevelLoader") = loader.attr("NoValidLevelLoader");
 

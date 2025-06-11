@@ -8,7 +8,7 @@ from tests.data.utils import get_data_path
 
 
 class LongArrayTestCase(unittest.TestCase):
-    def assertArrayEqual(self, a: numpy.ndarray, b: numpy.ndarray):
+    def assertArrayEqual(self, a: numpy.ndarray, b: numpy.ndarray) -> None:
         self.assertEqual(a.dtype.kind, b.dtype.kind)
         self.assertEqual(a.dtype.itemsize, b.dtype.itemsize)
         numpy.testing.assert_array_equal(a, b)
@@ -16,6 +16,7 @@ class LongArrayTestCase(unittest.TestCase):
     def test_decode_dtype(self) -> None:
         """Check that the decoded data type fits the required number of bits."""
         for bits_per_entry in range(1, 65):
+            dtype: type[numpy.uint8] | type[numpy.uint16] | type[numpy.uint32] | type[numpy.uint64]
             if 1 <= bits_per_entry <= 8:
                 dtype = numpy.uint8
             elif 9 <= bits_per_entry <= 16:
@@ -232,6 +233,8 @@ class LongArrayTestCase(unittest.TestCase):
         """Test encoding data in different dtypes."""
         for dense in [True, False]:
             for bits_per_entry in range(1, 65):
+                dtype: type[numpy.uint8] | type[numpy.uint16] | type[numpy.uint32] | type[numpy.uint64]
+                signed_dtype: type[numpy.int8] | type[numpy.int16] | type[numpy.int32] | type[numpy.int64]
                 if 1 <= bits_per_entry <= 8:
                     dtype = numpy.uint8
                     signed_dtype = numpy.int8

@@ -3,11 +3,12 @@ from __future__ import annotations
 import numpy
 import numpy.typing
 import typing_extensions
+import typing
 
 __all__ = ["decode_long_array", "encode_long_array"]
 
 def decode_long_array(
-    long_array: typing_extensions.Buffer,
+    long_array: typing.Buffer,
     size: int,
     bits_per_entry: int,
     dense: bool = True,
@@ -23,7 +24,7 @@ def decode_long_array(
     """
 
 def encode_long_array(
-    array: typing_extensions.Buffer,
+    array: typing.Buffer,
     bits_per_entry: None | int = None,
     dense: bool = True,
     min_bits_per_entry: int = 1,

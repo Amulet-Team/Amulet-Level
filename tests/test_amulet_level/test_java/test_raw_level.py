@@ -164,9 +164,7 @@ class JavaRawLevelTestCase(TestCase):
             def get_region_size() -> int:
                 return sum(
                     entry.stat().st_size
-                    for entry in os.scandir(
-                        os.path.join(world_data.path, "region")
-                    )
+                    for entry in os.scandir(os.path.join(world_data.path, "region"))
                     if entry.is_file()
                 )
 

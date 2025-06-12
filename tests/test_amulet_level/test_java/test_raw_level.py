@@ -19,7 +19,7 @@ from amulet.minecraft_worlds import WorldTemp, java_vanilla_1_13
 class JavaRawLevelTestCase(TestCase):
     def test_load(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             self.assertIsInstance(raw_level, JavaRawLevel)
             self.assertEqual("1.13 World", raw_level.level_name)
 
@@ -39,13 +39,13 @@ class JavaRawLevelTestCase(TestCase):
 
     def test_metadata(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             self.assertIsInstance(raw_level.lock, OrderedLock)
             self.assertTrue(raw_level.is_supported())
             self.assertEqual(1527647775.463, raw_level.modified_time.timestamp())
             self.assertEqual("java", raw_level.platform)
             self.assertEqual(VersionNumber(1497), raw_level.data_version)
-            self.assertEqual(world_data.temp_path, raw_level.path)
+            self.assertEqual(world_data.path, raw_level.path)
             self.assertEqual("1.13 World", raw_level.level_name)
             thumbnail = raw_level.thumbnail
             self.assertIsInstance(thumbnail, Image.Image)
@@ -58,8 +58,8 @@ class JavaRawLevelTestCase(TestCase):
 
     def test_reload_metadata(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level_1 = JavaRawLevel.load(world_data.temp_path)
-            raw_level_2 = JavaRawLevel.load(world_data.temp_path)
+            raw_level_1 = JavaRawLevel.load(world_data.path)
+            raw_level_2 = JavaRawLevel.load(world_data.path)
             raw_level_1.open()
             try:
                 raw_level_1.level_name = "HelloWorld"
@@ -72,7 +72,7 @@ class JavaRawLevelTestCase(TestCase):
 
     def test_open_close(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
 
             opened_count = 0
             closed_count = 0
@@ -121,7 +121,7 @@ class JavaRawLevelTestCase(TestCase):
 
     def test_level_dat(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             raw_level.open()
             try:
                 level_dat = raw_level.level_dat
@@ -132,14 +132,14 @@ class JavaRawLevelTestCase(TestCase):
                 raw_level.close()
             del raw_level
 
-            raw_level_2 = JavaRawLevel.load(world_data.temp_path)
+            raw_level_2 = JavaRawLevel.load(world_data.path)
             self.assertEqual(
                 StringTag("HelloWorld"), raw_level_2.level_dat.compound["HelloWorld"]
             )
 
     def test_dimensions(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             raw_level.open()
             try:
                 dimension_ids = raw_level.dimension_ids
@@ -165,13 +165,13 @@ class JavaRawLevelTestCase(TestCase):
                 return sum(
                     entry.stat().st_size
                     for entry in os.scandir(
-                        os.path.join(world_data.temp_path, "region")
+                        os.path.join(world_data.path, "region")
                     )
                     if entry.is_file()
                 )
 
             start_size = get_region_size()
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             with self.assertRaises(RuntimeError):
                 raw_level.compact()
             raw_level.open()
@@ -184,7 +184,7 @@ class JavaRawLevelTestCase(TestCase):
 
     def test_id_override(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             with self.assertRaises(RuntimeError):
                 _ = raw_level.block_id_override
             with self.assertRaises(RuntimeError):

@@ -15,7 +15,7 @@ from amulet.minecraft_worlds import WorldTemp, java_vanilla_1_13
 class JavaRawDimensionTestCase(TestCase):
     def test_dimension(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             raw_level.open()
             try:
                 overworld = raw_level.get_dimension("minecraft:overworld")
@@ -45,7 +45,7 @@ class JavaRawDimensionTestCase(TestCase):
 
     def test_edit(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             raw_level.open()
             try:
                 overworld = raw_level.get_dimension("minecraft:overworld")
@@ -84,12 +84,12 @@ class JavaRawDimensionTestCase(TestCase):
                 return sum(
                     entry.stat().st_size
                     for entry in os.scandir(
-                        os.path.join(world_data.temp_path, "region")
+                        os.path.join(world_data.path, "region")
                     )
                     if entry.is_file()
                 )
 
-            raw_level = JavaRawLevel.load(world_data.temp_path)
+            raw_level = JavaRawLevel.load(world_data.path)
             raw_level.open()
             try:
                 overworld = raw_level.get_dimension("minecraft:overworld")

@@ -29,7 +29,7 @@ class JavaLevelTestCase(
     @contextmanager
     def level(self) -> Generator[JavaLevel, None, None]:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             yield level
 
     @staticmethod
@@ -58,7 +58,7 @@ class JavaLevelTestCase(
 
     def test_history(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.open()
             try:
                 self.assertTrue(level.history_enabled)
@@ -68,7 +68,7 @@ class JavaLevelTestCase(
 
     def test_dimension(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             with self.assertRaises(RuntimeError):
                 _ = level.dimension_ids()
             level.open()
@@ -93,7 +93,7 @@ class JavaLevelTestCase(
 
     def test_compact(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             with self.assertRaises(RuntimeError):
                 level.compact()
             level.open()
@@ -104,14 +104,14 @@ class JavaLevelTestCase(
 
     def test_path(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             path = level.path
             self.assertIsInstance(path, str)
-            self.assertEqual(world_data.temp_path, path)
+            self.assertEqual(world_data.path, path)
 
     def test_reload_metadata(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.reload_metadata()
             level.open()
             try:
@@ -122,7 +122,7 @@ class JavaLevelTestCase(
 
     def test_reload(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             with self.assertRaises(RuntimeError):
                 level.reload()
             level.open()
@@ -133,7 +133,7 @@ class JavaLevelTestCase(
 
     def test_load_level(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             self.assertIsInstance(level, JavaLevel)
             self.assertFalse(level.is_open())
 
@@ -148,12 +148,12 @@ class JavaLevelTestCase(
 
     def test_get_level(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level_1 = get_level(LevelLoaderPathToken(world_data.temp_path))
+            level_1 = get_level(LevelLoaderPathToken(world_data.path))
             self.assertIsInstance(level_1, JavaLevel)
-            level_2 = get_level(LevelLoaderPathToken(world_data.temp_path))
+            level_2 = get_level(LevelLoaderPathToken(world_data.path))
             self.assertIs(level_1, level_2)
 
     def test_raw_level(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             self.assertIsInstance(level.raw_level, JavaRawLevel)

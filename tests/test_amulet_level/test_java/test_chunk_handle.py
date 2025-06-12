@@ -28,7 +28,7 @@ class JavaChunkHandleTestCase(TestCase):
 
     def test_exists_chunk(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.open()
             try:
                 overworld = level.get_dimension("minecraft:overworld")
@@ -111,7 +111,7 @@ class JavaChunkHandleTestCase(TestCase):
 
     def test_not_exists_chunk(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.open()
             try:
                 overworld = level.get_dimension("minecraft:overworld")
@@ -169,7 +169,7 @@ class JavaChunkHandleTestCase(TestCase):
 
     def test_undo_redo(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.open()
             try:
                 overworld = level.get_dimension("minecraft:overworld")
@@ -346,7 +346,7 @@ class JavaChunkHandleTestCase(TestCase):
 
     def test_history_enabled(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.open()
             try:
                 # Create a restore point.
@@ -375,7 +375,7 @@ class JavaChunkHandleTestCase(TestCase):
 
     def test_history_disabled(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.open()
             try:
                 # Create a restore point.

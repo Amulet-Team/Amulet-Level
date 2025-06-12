@@ -15,7 +15,7 @@ from amulet.minecraft_worlds import WorldTemp, java_vanilla_1_13
 class JavaDimensionTestCase(TestCase):
     def test_dimension(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
-            level = JavaLevel.load(world_data.temp_path)
+            level = JavaLevel.load(world_data.path)
             level.open()
             try:
                 overworld = level.get_dimension("minecraft:overworld")

@@ -77,5 +77,7 @@ class JavaChunkNA(
     amulet.core.chunk.component.BlockComponent,
 ):
     def __init__(
-        self, default_block: amulet.core.block.BlockStack, default_biome: amulet.core.biome.Biome
+        self,
+        default_block: amulet.core.block.BlockStack,
+        default_biome: amulet.core.biome.Biome,
     ) -> None: ...

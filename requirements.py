@@ -54,9 +54,7 @@ if os.environ.get("AMULET_ANVIL_REQUIREMENT", None):
     )
 
 if os.environ.get("AMULET_PYBIND11_EXTENSIONS_REQUIREMENT", None):
-    AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = (
-        f"{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT},{os.environ['AMULET_PYBIND11_EXTENSIONS_REQUIREMENT']}"
-    )
+    AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = f"{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT},{os.environ['AMULET_PYBIND11_EXTENSIONS_REQUIREMENT']}"
 
 
 def get_specifier_set(version_str: str) -> str:
@@ -120,7 +118,9 @@ if os.environ.get("AMULET_FREEZE_COMPILER", None):
     except ImportError:
         pass
     else:
-        AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = get_specifier_set(amulet.pybind11_extensions.__version__)
+        AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = get_specifier_set(
+            amulet.pybind11_extensions.__version__
+        )
 
 
 def get_build_dependencies() -> list:

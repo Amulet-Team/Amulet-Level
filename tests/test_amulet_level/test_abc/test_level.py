@@ -13,6 +13,7 @@ from amulet.level.abc.level import (
     ReloadableLevel,
 )
 
+
 class LevelTestCases:
     class LevelMetadataTestCase(ABC, TestCase):
         @abstractmethod

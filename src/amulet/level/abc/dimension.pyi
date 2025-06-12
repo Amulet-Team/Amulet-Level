@@ -23,7 +23,10 @@ class Dimension:
     @property
     def bounds(
         self,
-    ) -> amulet.core.selection.box.SelectionBox | amulet.core.selection.group.SelectionGroup:
+    ) -> (
+        amulet.core.selection.box.SelectionBox
+        | amulet.core.selection.group.SelectionGroup
+    ):
         """
         The editable region of the dimension.
         Thread safe.

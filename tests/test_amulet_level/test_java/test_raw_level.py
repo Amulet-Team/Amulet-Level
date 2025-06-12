@@ -13,8 +13,7 @@ from amulet.utils.signal import Signal
 from amulet.level.abc import IdRegistry
 from amulet.level.java import JavaRawLevel, JavaCreateArgsV1, JavaRawDimension
 
-from tests.data.worlds_src import java_vanilla_1_13
-from tests.data.world_utils import WorldTemp
+from amulet.minecraft_worlds import WorldTemp, java_vanilla_1_13
 
 
 class JavaRawLevelTestCase(TestCase):

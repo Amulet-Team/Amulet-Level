@@ -1,3 +1,4 @@
+from typing import Any
 from unittest import TestCase
 from collections.abc import MutableMapping
 
@@ -7,6 +8,12 @@ from amulet.core.version import VersionNumber
 from amulet.core.block import Block, BlockStack
 from amulet.core.biome import Biome
 from amulet.core.chunk import Chunk
+from amulet.core.chunk.component import (
+    BlockComponent,
+    BlockComponentData,
+    SectionArrayMap,
+)
+from amulet.core.palette.block_palette import BlockPalette
 
 from amulet.level.java.chunk import (
     JavaChunkNA,
@@ -19,11 +26,6 @@ from amulet.level.java.chunk_components import (
     JavaRawChunkComponent,
     DataVersionComponent,
 )
-
-from test_amulet.test_chunk_components.test_block_component import (
-    test_block_component,
-)
-from test_amulet.test_chunk_components.test_component import test_component
 
 
 def test_data_version_component(self: TestCase, chunk: Chunk) -> None:
@@ -75,11 +77,21 @@ def test_java_raw_chunk_component(self: TestCase, chunk: Chunk) -> None:
 
 
 class JavaChunkTestCase(TestCase):
+    def test_component(self: TestCase, component: Any) -> None:
+        self.assertIsInstance(component.ComponentID, str)
+
+    def test_block_component(self: TestCase, chunk: Chunk) -> None:
+        self.assertIsInstance(chunk, BlockComponent)
+        assert isinstance(chunk, BlockComponent)
+        self.assertIsInstance(chunk.block, BlockComponentData)
+        self.assertIsInstance(chunk.block.palette, BlockPalette)
+        self.assertIsInstance(chunk.block.sections, SectionArrayMap)
+
     def test_java_raw_chunk_component(self) -> None:
-        test_component(self, JavaRawChunkComponent)
+        self.test_component(JavaRawChunkComponent)
 
     def test_data_version_component(self) -> None:
-        test_component(self, DataVersionComponent)
+        self.test_component(DataVersionComponent)
 
     def test_java_chunk_na(self) -> None:
         chunk = JavaChunkNA(
@@ -91,7 +103,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, JavaLegacyVersionComponent)
-        test_block_component(self, chunk)
+        self.test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -109,7 +121,7 @@ class JavaChunkTestCase(TestCase):
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, TerrainPopulatedComponent)
         # self.assertIsInstance(chunk, LightPopulatedComponent)
-        test_block_component(self, chunk)
+        self.test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -126,7 +138,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, StatusStringComponent)
-        test_block_component(self, chunk)
+        self.test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -143,7 +155,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, StatusStringComponent)
-        test_block_component(self, chunk)
+        self.test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -160,7 +172,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, StatusStringComponent)
-        test_block_component(self, chunk)
+        self.test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome3DComponent)

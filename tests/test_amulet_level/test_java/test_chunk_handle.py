@@ -16,15 +16,15 @@ from amulet.level.java import (
 )
 from amulet.level.java.chunk import JavaChunk, JavaChunk1444, JavaChunk1466
 
-from tests.data.worlds_src import java_vanilla_1_13
-from tests.data.world_utils import WorldTemp
+from amulet.minecraft_worlds import WorldTemp, java_vanilla_1_13
 
 T = TypeVar("T")
+
 
 class JavaChunkHandleTestCase(TestCase):
     def assertCast(self, obj: Any, cls: Type[T], msg: str | None = None) -> T:
         super().assertIsInstance(obj, cls, msg)
-        return obj # type: ignore
+        return obj  # type: ignore
 
     def test_exists_chunk(self) -> None:
         with WorldTemp(java_vanilla_1_13) as world_data:
@@ -209,7 +209,8 @@ class JavaChunkHandleTestCase(TestCase):
                     block_component = self.assertCast(edited_chunk, JavaChunk1466)
                     self.assertEqual(68, len(block_component.block.palette))
                     self.assertEqual(
-                        block_stack, block_component.block.palette.index_to_block_stack(67)
+                        block_stack,
+                        block_component.block.palette.index_to_block_stack(67),
                     )
 
                 validate_edited_1(chunk)
@@ -247,7 +248,8 @@ class JavaChunkHandleTestCase(TestCase):
                     block_component = self.assertCast(edited_chunk, JavaChunk1466)
                     self.assertEqual(69, len(block_component.block.palette))
                     self.assertEqual(
-                        block_stack, block_component.block.palette.index_to_block_stack(67)
+                        block_stack,
+                        block_component.block.palette.index_to_block_stack(67),
                     )
                     self.assertEqual(
                         block_stack_2,
@@ -292,7 +294,8 @@ class JavaChunkHandleTestCase(TestCase):
                     block_component = self.assertCast(edited_chunk, JavaChunk1466)
                     self.assertEqual(70, len(block_component.block.palette))
                     self.assertEqual(
-                        block_stack, block_component.block.palette.index_to_block_stack(67)
+                        block_stack,
+                        block_component.block.palette.index_to_block_stack(67),
                     )
                     self.assertEqual(
                         block_stack_2,

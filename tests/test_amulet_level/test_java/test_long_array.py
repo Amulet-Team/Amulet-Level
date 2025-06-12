@@ -2,9 +2,9 @@ import unittest
 import json
 import numpy
 import sys
+import os
 
 from amulet.level.java.long_array import decode_long_array, encode_long_array
-from tests.data.utils import get_data_path
 
 
 class LongArrayTestCase(unittest.TestCase):
@@ -16,7 +16,12 @@ class LongArrayTestCase(unittest.TestCase):
     def test_decode_dtype(self) -> None:
         """Check that the decoded data type fits the required number of bits."""
         for bits_per_entry in range(1, 65):
-            dtype: type[numpy.uint8] | type[numpy.uint16] | type[numpy.uint32] | type[numpy.uint64]
+            dtype: (
+                type[numpy.uint8]
+                | type[numpy.uint16]
+                | type[numpy.uint32]
+                | type[numpy.uint64]
+            )
             if 1 <= bits_per_entry <= 8:
                 dtype = numpy.uint8
             elif 9 <= bits_per_entry <= 16:
@@ -233,8 +238,18 @@ class LongArrayTestCase(unittest.TestCase):
         """Test encoding data in different dtypes."""
         for dense in [True, False]:
             for bits_per_entry in range(1, 65):
-                dtype: type[numpy.uint8] | type[numpy.uint16] | type[numpy.uint32] | type[numpy.uint64]
-                signed_dtype: type[numpy.int8] | type[numpy.int16] | type[numpy.int32] | type[numpy.int64]
+                dtype: (
+                    type[numpy.uint8]
+                    | type[numpy.uint16]
+                    | type[numpy.uint32]
+                    | type[numpy.uint64]
+                )
+                signed_dtype: (
+                    type[numpy.int8]
+                    | type[numpy.int16]
+                    | type[numpy.int32]
+                    | type[numpy.int64]
+                )
                 if 1 <= bits_per_entry <= 8:
                     dtype = numpy.uint8
                     signed_dtype = numpy.int8
@@ -388,7 +403,9 @@ class LongArrayTestCase(unittest.TestCase):
         )
 
     def test_longarray(self) -> None:
-        with open(get_data_path("longarraytest.json")) as json_data:
+        with open(
+            os.path.join(os.path.dirname(__file__), "longarraytest.json")
+        ) as json_data:
             test_data = json.load(json_data)
         tests = test_data["tests"]
         self.assertTrue(tests)

@@ -16,8 +16,7 @@ from amulet.level.java import (
     JavaDimension,
 )
 
-from tests.data.worlds_src import java_vanilla_1_13
-from tests.data.world_utils import WorldTemp
+from amulet.minecraft_worlds import WorldTemp, java_vanilla_1_13
 from test_amulet_level.test_abc.test_level import LevelTestCases
 
 

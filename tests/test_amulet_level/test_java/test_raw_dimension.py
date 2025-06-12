@@ -9,8 +9,7 @@ from amulet.utils.lock import OrderedLock
 from amulet.level.java import JavaRawLevel, JavaRawDimension
 from amulet.nbt import NamedTag
 
-from tests.data.worlds_src import java_vanilla_1_13
-from tests.data.world_utils import WorldTemp
+from amulet.minecraft_worlds import WorldTemp, java_vanilla_1_13
 
 
 class JavaRawDimensionTestCase(TestCase):

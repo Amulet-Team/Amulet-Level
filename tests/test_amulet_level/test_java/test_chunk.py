@@ -77,10 +77,10 @@ def test_java_raw_chunk_component(self: TestCase, chunk: Chunk) -> None:
 
 
 class JavaChunkTestCase(TestCase):
-    def test_component(self: TestCase, component: Any) -> None:
+    def _test_component(self, component: Any) -> None:
         self.assertIsInstance(component.ComponentID, str)
 
-    def test_block_component(self: TestCase, chunk: Chunk) -> None:
+    def _test_block_component(self, chunk: Chunk) -> None:
         self.assertIsInstance(chunk, BlockComponent)
         assert isinstance(chunk, BlockComponent)
         self.assertIsInstance(chunk.block, BlockComponentData)
@@ -88,10 +88,10 @@ class JavaChunkTestCase(TestCase):
         self.assertIsInstance(chunk.block.sections, SectionArrayMap)
 
     def test_java_raw_chunk_component(self) -> None:
-        self.test_component(JavaRawChunkComponent)
+        self._test_component(JavaRawChunkComponent)
 
     def test_data_version_component(self) -> None:
-        self.test_component(DataVersionComponent)
+        self._test_component(DataVersionComponent)
 
     def test_java_chunk_na(self) -> None:
         chunk = JavaChunkNA(
@@ -103,7 +103,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, JavaLegacyVersionComponent)
-        self.test_block_component(chunk)
+        self._test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -121,7 +121,7 @@ class JavaChunkTestCase(TestCase):
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, TerrainPopulatedComponent)
         # self.assertIsInstance(chunk, LightPopulatedComponent)
-        self.test_block_component(chunk)
+        self._test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -138,7 +138,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, StatusStringComponent)
-        self.test_block_component(chunk)
+        self._test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -155,7 +155,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, StatusStringComponent)
-        self.test_block_component(chunk)
+        self._test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome2DComponent)
@@ -172,7 +172,7 @@ class JavaChunkTestCase(TestCase):
         test_data_version_component(self, chunk)
         # self.assertIsInstance(chunk, LastUpdateComponent)
         # self.assertIsInstance(chunk, StatusStringComponent)
-        self.test_block_component(chunk)
+        self._test_block_component(chunk)
         # self.assertIsInstance(chunk, BlockEntityComponent)
         # self.assertIsInstance(chunk, EntityComponent)
         # self.assertIsInstance(chunk, Biome3DComponent)

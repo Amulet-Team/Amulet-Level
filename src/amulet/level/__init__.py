@@ -26,6 +26,7 @@ def _init() -> None:
     import amulet.game
     import amulet.utils
     import amulet.leveldb
+    import amulet.anvil
 
     # Load the shared library
     ctypes.cdll.LoadLibrary(lib_path)

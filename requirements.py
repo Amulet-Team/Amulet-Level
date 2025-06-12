@@ -19,6 +19,8 @@ AMULET_GAME_REQUIREMENT = "~=1.0.0.0a1"
 AMULET_UTILS_REQUIREMENT = "~=1.1.0.0a0"
 # AMULET_LEVELDB_REQUIREMENT = "~=2.0"
 AMULET_LEVELDB_REQUIREMENT = "~=2.0.1.0a0"
+# AMULET_ANVIL_REQUIREMENT = "~=1.0"
+AMULET_ANVIL_REQUIREMENT = "~=1.0.0.0a0"
 
 
 if os.environ.get("AMULET_IO_REQUIREMENT", None):
@@ -44,6 +46,11 @@ if os.environ.get("AMULET_GAME_REQUIREMENT", None):
 if os.environ.get("AMULET_UTILS_REQUIREMENT", None):
     AMULET_UTILS_REQUIREMENT = (
         f"{AMULET_UTILS_REQUIREMENT},{os.environ['AMULET_UTILS_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_ANVIL_REQUIREMENT", None):
+    AMULET_ANVIL_REQUIREMENT = (
+        f"{AMULET_ANVIL_REQUIREMENT},{os.environ['AMULET_ANVIL_REQUIREMENT']}"
     )
 
 if os.environ.get("AMULET_PYBIND11_EXTENSIONS_REQUIREMENT", None):
@@ -102,6 +109,13 @@ if os.environ.get("AMULET_FREEZE_COMPILER", None):
         AMULET_UTILS_REQUIREMENT = get_specifier_set(amulet.utils.__version__)
 
     try:
+        import amulet.anvil
+    except ImportError:
+        pass
+    else:
+        AMULET_ANVIL_REQUIREMENT = get_specifier_set(amulet.anvil.__version__)
+
+    try:
         import amulet.pybind11_extensions
     except ImportError:
         pass
@@ -118,6 +132,8 @@ def get_build_dependencies() -> list:
         f"amulet_nbt{AMULET_NBT_REQUIREMENT}",
         f"amulet-core{AMULET_CORE_REQUIREMENT}",
         f"amulet-game{AMULET_GAME_REQUIREMENT}",
+        f"amulet-utils{AMULET_UTILS_REQUIREMENT}",
+        f"amulet-anvil{AMULET_ANVIL_REQUIREMENT}",
     ]
 
 
@@ -131,4 +147,6 @@ def get_runtime_dependencies() -> list[str]:
         f"amulet-nbt{AMULET_NBT_REQUIREMENT}",
         f"amulet-core{AMULET_CORE_REQUIREMENT}",
         f"amulet-game{AMULET_GAME_REQUIREMENT}",
+        f"amulet-utils{AMULET_UTILS_REQUIREMENT}",
+        f"amulet-anvil{AMULET_ANVIL_REQUIREMENT}",
     ]

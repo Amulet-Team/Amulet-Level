@@ -13,10 +13,11 @@
 
 #include <amulet/utils/mutex.hpp>
 
+#include <amulet/anvil/dimension.hpp>
+
 #include <amulet/level/dll.hpp>
 #include <amulet/level/abc/dimension.hpp>
 
-#include "anvil/dimension.hpp"
 #include "chunk.hpp"
 
 namespace Amulet {

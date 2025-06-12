@@ -21,18 +21,6 @@ if (MSVC)
     add_definitions("/MP")
 endif()
 
-include(FetchContent)
-
-# Add lz4
-FetchContent_Declare(
-  lz4
-  GIT_REPOSITORY https://github.com/lz4/lz4.git
-  GIT_TAG        ebb370ca83af193212df4dcbadcc5d87bc0de2f0
-)
-FetchContent_MakeAvailable(lz4)
-set(LZ4_BUILD_CLI OFF)
-add_subdirectory(${lz4_SOURCE_DIR}/build/cmake)
-
 # Add pybind11
 find_package(pybind11 CONFIG REQUIRED)
 
@@ -43,6 +31,7 @@ find_package(amulet_core CONFIG REQUIRED)
 find_package(amulet_game CONFIG REQUIRED)
 find_package(amulet_utils CONFIG REQUIRED)
 find_package(leveldb_mcpe CONFIG REQUIRED)
+find_package(amulet_anvil CONFIG REQUIRED)
 find_package(amulet_zlib CONFIG REQUIRED)
 
 # Find C++ files
@@ -57,12 +46,12 @@ list(REMOVE_ITEM HEADERS ${EXTENSION_HEADERS})
 # Add implementation
 add_library(amulet_level SHARED)
 target_compile_definitions(amulet_level PRIVATE ExportAmuletLevel)
-target_link_libraries( amulet_level PRIVATE lz4_static )
 target_link_libraries( amulet_level PUBLIC amulet_nbt )
 target_link_libraries( amulet_level PUBLIC amulet_core )
 target_link_libraries( amulet_level PUBLIC amulet_game )
 target_link_libraries( amulet_level PUBLIC amulet_utils )
 target_link_libraries( amulet_level PUBLIC leveldb_mcpe )
+target_link_libraries( amulet_level PUBLIC amulet_anvil )
 target_link_libraries( amulet_level PRIVATE amulet_zlib )
 target_include_directories(amulet_level PUBLIC ${SOURCE_PATH})
 target_sources(amulet_level PRIVATE ${SOURCES} ${HEADERS})

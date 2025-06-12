@@ -10,7 +10,6 @@ namespace py = pybind11;
 void init_long_array(py::module);
 void init_java_chunk_components(py::module);
 void init_java_chunk(py::module);
-void init_java_anvil(py::module);
 py::module init_java_raw_dimension(py::module);
 py::module init_java_raw_level(py::module);
 py::module init_java_chunk_handle(py::module);
@@ -24,7 +23,6 @@ py::module init_java(py::module m_parent)
     init_long_array(m);
     init_java_chunk_components(m);
     init_java_chunk(m);
-    init_java_anvil(m);
 
     auto raw_dimension = init_java_raw_dimension(m);
     m.attr("JavaRawDimension") = raw_dimension.attr("JavaRawDimension");

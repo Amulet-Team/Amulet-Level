@@ -4,10 +4,10 @@ import typing
 
 import amulet.core.biome
 import amulet.core.block
-import amulet.level.java.chunk
 import amulet.core.selection.box
-import amulet.utils.lock
+import amulet.level.java.chunk
 import amulet.nbt
+import amulet.utils.lock
 
 __all__ = ["JavaRawDimension"]
 

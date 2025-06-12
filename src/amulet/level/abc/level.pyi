@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import datetime
 
+import amulet.core.version
 import amulet.level.abc.dimension
 import amulet.utils.lock
 import amulet.utils.signal
-import amulet.core.version
 import PIL.Image
 
 __all__ = ["CompactibleLevel", "DiskLevel", "Level", "LevelMetadata", "ReloadableLevel"]

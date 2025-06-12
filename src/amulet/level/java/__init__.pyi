@@ -9,7 +9,6 @@ from amulet.level.java.raw_dimension import JavaRawDimension
 from amulet.level.java.raw_level import JavaCreateArgsV1, JavaRawLevel
 
 from . import (
-    anvil,
     chunk,
     chunk_components,
     chunk_handle,
@@ -28,7 +27,6 @@ __all__ = [
     "JavaLevel",
     "JavaRawDimension",
     "JavaRawLevel",
-    "anvil",
     "chunk",
     "chunk_components",
     "chunk_handle",

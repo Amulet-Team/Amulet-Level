@@ -3,7 +3,7 @@ from __future__ import annotations
 import amulet.core.biome
 import amulet.core.block
 import amulet.core.chunk
-import amulet.core.chunk.component
+import amulet.core.chunk.component.block_component
 import amulet.level.java.chunk_components
 
 __all__ = [
@@ -22,7 +22,7 @@ class JavaChunk0(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.core.chunk.component.BlockComponent,
+    amulet.core.chunk.component.block_component.BlockComponent,
 ):
     def __init__(
         self,
@@ -35,7 +35,7 @@ class JavaChunk1444(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.core.chunk.component.BlockComponent,
+    amulet.core.chunk.component.block_component.BlockComponent,
 ):
     def __init__(
         self,
@@ -48,7 +48,7 @@ class JavaChunk1466(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.core.chunk.component.BlockComponent,
+    amulet.core.chunk.component.block_component.BlockComponent,
 ):
     def __init__(
         self,
@@ -61,7 +61,7 @@ class JavaChunk2203(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.core.chunk.component.BlockComponent,
+    amulet.core.chunk.component.block_component.BlockComponent,
 ):
     def __init__(
         self,
@@ -74,7 +74,7 @@ class JavaChunkNA(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.core.chunk.component.BlockComponent,
+    amulet.core.chunk.component.block_component.BlockComponent,
 ):
     def __init__(
         self,

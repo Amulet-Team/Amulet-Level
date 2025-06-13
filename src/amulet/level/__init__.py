@@ -23,8 +23,10 @@ def _init() -> None:
         raise RuntimeError(f"Unsupported platform {sys.platform}")
 
     # Import dependencies
-    import amulet.core
     import amulet.game
+    import amulet.utils
+    import amulet.leveldb
+    import amulet.anvil
 
     # Load the shared library
     ctypes.cdll.LoadLibrary(lib_path)

@@ -13,13 +13,13 @@ on:
   pull_request:
 
 jobs:
-  unittests-first:
+  unittests-first-pre:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.11', '3.12', '3.13' ]
+        python-version: [ '3.11', '3.12' ]
         os: [ windows-latest, macos-latest ]
 
     runs-on: ${{ matrix.os }}
@@ -40,10 +40,13 @@ jobs:
         python-version: ${{ matrix.python-version }}
         username: ${{ secrets.PYPI_USERNAME }}
         compiler-version-password: ${{ secrets.AMULET_COMPILER_VERSION_PYPI_PASSWORD }}
+        leveldb-password: ${{ secrets.AMULET_LEVELDB_PYPI_PASSWORD }}
+        utils-password: ${{ secrets.AMULET_UTILS_PYPI_PASSWORD }}
         zlib-password: ${{ secrets.AMULET_ZLIB_PYPI_PASSWORD }}
         nbt-password: ${{ secrets.AMULET_NBT_PYPI_PASSWORD }}
         core-password: ${{ secrets.AMULET_CORE_PYPI_PASSWORD }}
         game-password: ${{ secrets.AMULET_GAME_PYPI_PASSWORD }}
+        anvil-password: ${{ secrets.AMULET_ANVIL_PYPI_PASSWORD }}
         rest-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build
@@ -53,16 +56,20 @@ jobs:
         pip install -v .[dev]
         python tools/compile_tests.py
 
+    - name: Install Minecraft Worlds
+      run: |
+        pip install git+https://github.com/Amulet-Team/Amulet-Minecraft-Worlds.git
+
     - name: Test with unittest
       run: python -m unittest discover -v -s tests
 
-  unittests-first-ubuntu:
+  unittests-first-src:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
 
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.11', '3.12', '3.13' ]
+        python-version: [ '3.11', '3.12' ]
         os: [ ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}
@@ -88,7 +95,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [ '3.11', '3.12', '3.13' ]
+        python-version: [ '3.11', '3.12' ]
         os: [ windows-latest, macos-latest, ubuntu-latest ]
 
     runs-on: ${{ matrix.os }}

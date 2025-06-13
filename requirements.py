@@ -6,20 +6,47 @@ AMULET_COMPILER_TARGET_REQUIREMENT = "==1.0"
 AMULET_COMPILER_VERSION_REQUIREMENT = "==3.0.0"
 
 PYBIND11_REQUIREMENT = "==2.13.6"
-AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = "~=1.0"
+# AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = "~=1.1"
+AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = "~=1.1.0.0a0"
 
 AMULET_IO_REQUIREMENT = "~=1.0"
+# AMULET_LEVELDB_REQUIREMENT = "~=2.0"
+AMULET_LEVELDB_REQUIREMENT = "~=2.0.1.0a0"
+# AMULET_UTILS_REQUIREMENT = "~=1.1"
+AMULET_UTILS_REQUIREMENT = "~=1.1.0.0a0"
+# AMULET_ZLIB_REQUIREMENT = "~=1.0"
+AMULET_ZLIB_REQUIREMENT = "~=1.0.0.0a3"
 # AMULET_NBT_REQUIREMENT = "~=5.0"
-AMULET_NBT_REQUIREMENT = "~=5.0.0.0a0"
+AMULET_NBT_REQUIREMENT = "~=5.0.0.0a1"
 # AMULET_CORE_REQUIREMENT = "~=2.0"
-AMULET_CORE_REQUIREMENT = "~=2.0.2.0a0"
+AMULET_CORE_REQUIREMENT = "~=2.0.2.0a1"
 # AMULET_GAME_REQUIREMENT = "~=1.0"
-AMULET_GAME_REQUIREMENT = "~=1.0.0.0a0"
+AMULET_GAME_REQUIREMENT = "~=1.0.0.0a1"
+# AMULET_ANVIL_REQUIREMENT = "~=1.0"
+AMULET_ANVIL_REQUIREMENT = "~=1.0.0.0a0"
 
+
+if os.environ.get("AMULET_PYBIND11_EXTENSIONS_REQUIREMENT", None):
+    AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = f"{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT},{os.environ['AMULET_PYBIND11_EXTENSIONS_REQUIREMENT']}"
 
 if os.environ.get("AMULET_IO_REQUIREMENT", None):
     AMULET_IO_REQUIREMENT = (
         f"{AMULET_IO_REQUIREMENT},{os.environ['AMULET_IO_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_LEVELDB_REQUIREMENT", None):
+    AMULET_LEVELDB_REQUIREMENT = (
+        f"{AMULET_LEVELDB_REQUIREMENT},{os.environ['AMULET_LEVELDB_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_UTILS_REQUIREMENT", None):
+    AMULET_UTILS_REQUIREMENT = (
+        f"{AMULET_UTILS_REQUIREMENT},{os.environ['AMULET_UTILS_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_ZLIB_REQUIREMENT", None):
+    AMULET_ZLIB_REQUIREMENT = (
+        f"{AMULET_ZLIB_REQUIREMENT},{os.environ['AMULET_ZLIB_REQUIREMENT']}"
     )
 
 if os.environ.get("AMULET_NBT_REQUIREMENT", None):
@@ -35,6 +62,11 @@ if os.environ.get("AMULET_CORE_REQUIREMENT", None):
 if os.environ.get("AMULET_GAME_REQUIREMENT", None):
     AMULET_GAME_REQUIREMENT = (
         f"{AMULET_GAME_REQUIREMENT},{os.environ['AMULET_GAME_REQUIREMENT']}"
+    )
+
+if os.environ.get("AMULET_ANVIL_REQUIREMENT", None):
+    AMULET_ANVIL_REQUIREMENT = (
+        f"{AMULET_ANVIL_REQUIREMENT},{os.environ['AMULET_ANVIL_REQUIREMENT']}"
     )
 
 
@@ -53,11 +85,41 @@ if os.environ.get("AMULET_FREEZE_COMPILER", None):
     AMULET_COMPILER_VERSION_REQUIREMENT = f"=={amulet_compiler_version.__version__}"
 
     try:
+        import amulet.pybind11_extensions
+    except ImportError:
+        pass
+    else:
+        AMULET_PYBIND11_EXTENSIONS_REQUIREMENT = get_specifier_set(
+            amulet.pybind11_extensions.__version__
+        )
+
+    try:
         import amulet.io
     except ImportError:
         pass
     else:
         AMULET_IO_REQUIREMENT = get_specifier_set(amulet.io.__version__)
+
+    try:
+        import amulet.leveldb
+    except ImportError:
+        pass
+    else:
+        AMULET_LEVELDB_REQUIREMENT = get_specifier_set(amulet.leveldb.__version__)
+
+    try:
+        import amulet.utils
+    except ImportError:
+        pass
+    else:
+        AMULET_UTILS_REQUIREMENT = get_specifier_set(amulet.utils.__version__)
+
+    try:
+        import amulet.zlib
+    except ImportError:
+        pass
+    else:
+        AMULET_ZLIB_REQUIREMENT = get_specifier_set(amulet.zlib.__version__)
 
     try:
         import amulet.nbt
@@ -80,25 +142,44 @@ if os.environ.get("AMULET_FREEZE_COMPILER", None):
     else:
         AMULET_GAME_REQUIREMENT = get_specifier_set(amulet.game.__version__)
 
+    try:
+        import amulet.anvil
+    except ImportError:
+        pass
+    else:
+        AMULET_ANVIL_REQUIREMENT = get_specifier_set(amulet.anvil.__version__)
+
 
 def get_build_dependencies() -> list:
     return [
+        f"amulet-compiler-version{AMULET_COMPILER_VERSION_REQUIREMENT}",
         f"pybind11{PYBIND11_REQUIREMENT}",
         f"amulet_pybind11_extensions{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT}",
         f"amulet_io{AMULET_IO_REQUIREMENT}",
-        f"amulet-compiler-version{AMULET_COMPILER_VERSION_REQUIREMENT}",
+        f"amulet-leveldb{AMULET_LEVELDB_REQUIREMENT}",
+        f"amulet-utils{AMULET_UTILS_REQUIREMENT}",
+        f"amulet-zlib{AMULET_ZLIB_REQUIREMENT}",
         f"amulet_nbt{AMULET_NBT_REQUIREMENT}",
         f"amulet-core{AMULET_CORE_REQUIREMENT}",
         f"amulet-game{AMULET_GAME_REQUIREMENT}",
+        f"amulet-anvil{AMULET_ANVIL_REQUIREMENT}",
     ]
 
 
 def get_runtime_dependencies() -> list[str]:
     return [
         f"amulet-compiler-target{AMULET_COMPILER_TARGET_REQUIREMENT}",
-        f"amulet-io{AMULET_IO_REQUIREMENT}",
         f"amulet-compiler-version{AMULET_COMPILER_VERSION_REQUIREMENT}",
+        f"pybind11{PYBIND11_REQUIREMENT}",
+        f"amulet_pybind11_extensions{AMULET_PYBIND11_EXTENSIONS_REQUIREMENT}",
+        f"amulet-io{AMULET_IO_REQUIREMENT}",
+        f"amulet-leveldb{AMULET_LEVELDB_REQUIREMENT}",
+        f"amulet-utils{AMULET_UTILS_REQUIREMENT}",
+        f"amulet-zlib{AMULET_ZLIB_REQUIREMENT}",
         f"amulet-nbt{AMULET_NBT_REQUIREMENT}",
         f"amulet-core{AMULET_CORE_REQUIREMENT}",
         f"amulet-game{AMULET_GAME_REQUIREMENT}",
+        f"amulet-anvil{AMULET_ANVIL_REQUIREMENT}",
+        "numpy~=2.0",
+        "pillow~=11.0",
     ]

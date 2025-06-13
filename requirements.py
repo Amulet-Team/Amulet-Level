@@ -180,4 +180,6 @@ def get_runtime_dependencies() -> list[str]:
         f"amulet-core{AMULET_CORE_REQUIREMENT}",
         f"amulet-game{AMULET_GAME_REQUIREMENT}",
         f"amulet-anvil{AMULET_ANVIL_REQUIREMENT}",
+        "numpy~=2.0",
+        "pillow~=11.0",
     ]

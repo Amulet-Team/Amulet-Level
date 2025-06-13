@@ -125,7 +125,7 @@ runs:
       env:
         REST_TOKEN: ${{ inputs.rest-token }}
       run: |
-        python -c "import sys; sys.path.append(r'${{ github.action_path }}'); import dependency_resolver; import requirements; dependency_resolver.find_and_save_compatible_libraries([('amulet-anvil', 'Amulet-Team/Amulet-Anvil'), ('amulet-game', 'Amulet-Team/Amulet-Game'), ('amulet-core', 'Amulet-Team/Amulet-Core'), ('amulet-nbt', 'Amulet-Team/Amulet-NBT'), ('amulet-zlib', 'Amulet-Team/Amulet-zlib'), ('amulet-utils', 'Amulet-Team/Amulet-Utils', ('amulet-leveldb', 'Amulet-Team/Amulet-LevelDB'))], requirements.get_runtime_dependencies())"
+        python -c "import sys; sys.path.append(r'${{ github.action_path }}'); import dependency_resolver; import requirements; dependency_resolver.find_and_save_compatible_libraries([('amulet-anvil', 'Amulet-Team/Amulet-Anvil'), ('amulet-game', 'Amulet-Team/Amulet-Game'), ('amulet-core', 'Amulet-Team/Amulet-Core'), ('amulet-nbt', 'Amulet-Team/Amulet-NBT'), ('amulet-zlib', 'Amulet-Team/Amulet-zlib'), ('amulet-utils', 'Amulet-Team/Amulet-Utils'), ('amulet-leveldb', 'Amulet-Team/Amulet-LevelDB')], requirements.get_runtime_dependencies())"
         pyext=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-pybind11-extensions'])")
         echo "pyext=$pyext" >> "$GITHUB_OUTPUT"
         io=$(python -c "import os; f = open(os.path.join(r'${{ github.action_path }}', 'libraries.json'), encoding='utf-8'); import json; print(json.load(f)['amulet-io'])")

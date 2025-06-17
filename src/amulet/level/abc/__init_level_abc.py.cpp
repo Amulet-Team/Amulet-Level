@@ -25,7 +25,11 @@ py::module init_abc(py::module m_parent)
     m.attr("Dimension") = m_dimension.attr("Dimension");
 
     auto m_level = init_level(m);
+    m.attr("LevelMetadata") = m_level.attr("LevelMetadata");
     m.attr("Level") = m_level.attr("Level");
+    m.attr("CompactibleLevel") = m_level.attr("CompactibleLevel");
+    m.attr("DiskLevel") = m_level.attr("DiskLevel");
+    m.attr("ReloadableLevel") = m_level.attr("ReloadableLevel");
 
     return m;
 }

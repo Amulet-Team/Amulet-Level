@@ -11,6 +11,8 @@ py::module init_dimension(py::module m_parent)
 {
     auto m = m_parent.def_submodule("dimension");
 
+    m.attr("DimensionId") = py::module::import("builtins").attr("str");
+
     py::class_<Amulet::Dimension, std::shared_ptr<Amulet::Dimension>> Dimension(m, "Dimension");
     Dimension.def_property_readonly(
         "dimension_id",

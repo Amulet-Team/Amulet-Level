@@ -1,6 +1,9 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
 
 #include <memory>
+
+#include <amulet/pybind11_extensions/collections.hpp>
 
 #include <amulet/utils/signal.py.hpp>
 
@@ -48,9 +51,14 @@ py::module init_chunk_handle(py::module m_parent)
             ":return: True if the chunk exists. Calling get on this chunk handle may still throw ChunkLoadError"));
     ChunkHandle.def(
         "get_chunk",
-        [](Amulet::ChunkHandle& self) -> std::shared_ptr<Amulet::Chunk> {
-            return self.get_chunk();
+        [](Amulet::ChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> component_ids) -> std::shared_ptr<Amulet::Chunk> {
+            if (component_ids) {
+                return self.get_chunk(std::set<std::string>(component_ids->begin(), component_ids->end()));
+            } else {
+                return self.get_chunk();
+            }
         },
+        py::arg("component_ids") = py::none(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc(
             "Get a unique copy of the chunk data.\n"

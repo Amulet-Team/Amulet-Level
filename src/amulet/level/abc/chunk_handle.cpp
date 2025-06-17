@@ -31,7 +31,7 @@ namespace detail {
 } // namespace detail
 
 ChunkHandle::ChunkHandle(
-    const DimensionID& dimension_id,
+    const DimensionId& dimension_id,
     std::int64_t cx,
     std::int64_t cz)
     : _dimension_id(dimension_id)

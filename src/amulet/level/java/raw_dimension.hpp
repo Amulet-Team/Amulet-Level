@@ -31,7 +31,7 @@ private:
     OrderedMutex _public_mutex;
     AnvilDimension _anvil_dimension;
     JavaInternalDimensionID _relative_path;
-    DimensionID _dimension_id;
+    DimensionId _dimension_id;
     SelectionBox _bounds;
     BlockStack _default_block;
     Biome _default_biome;
@@ -43,7 +43,7 @@ private:
         bool mcc,
         const layersT& layers,
         const JavaInternalDimensionID& relative_path,
-        const DimensionID& dimension_id,
+        const DimensionId& dimension_id,
         const SelectionBox& bounds,
         const BlockStack& default_block,
         const Biome& default_biome)
@@ -77,7 +77,7 @@ public:
 
     // The identifier for this dimension. eg. "minecraft:overworld".
     // Thread safe.
-    AMULET_LEVEL_EXPORT const DimensionID& get_dimension_id() const;
+    AMULET_LEVEL_EXPORT const DimensionId& get_dimension_id() const;
 
     // The relative path to the dimension. eg. "DIM1".
     // Thread safe.

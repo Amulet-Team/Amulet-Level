@@ -13,7 +13,7 @@
 
 namespace Amulet {
 
-using DimensionID = std::string;
+using DimensionId = std::string;
 
 class Dimension {
 public:
@@ -22,7 +22,7 @@ public:
 
     // Get the dimension id for this dimension.
     // Thread safe.
-    virtual const DimensionID& get_dimension_id() const = 0;
+    virtual const DimensionId& get_dimension_id() const = 0;
 
     // The editable region of the dimension.
     // Thread safe.

@@ -39,7 +39,7 @@ public:
 
     // Get the dimension id for this dimension.
     // Thread safe.
-    AMULET_LEVEL_EXPORT const DimensionID& get_dimension_id() const override;
+    AMULET_LEVEL_EXPORT const DimensionId& get_dimension_id() const override;
 
     // The editable region of the dimension.
     // Thread safe.

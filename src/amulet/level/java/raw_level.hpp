@@ -52,7 +52,7 @@ public:
     // TODO: data_pack
     std::shared_mutex dimensions_mutex;
     std::map<JavaInternalDimensionID, std::shared_ptr<JavaRawDimension>> dimensions;
-    std::map<DimensionID, JavaInternalDimensionID> dimension_ids;
+    std::map<DimensionId, JavaInternalDimensionID> dimension_ids;
     std::shared_ptr<IdRegistry> block_id_override;
     std::shared_ptr<IdRegistry> biome_id_override;
 
@@ -99,11 +99,11 @@ private:
     std::unique_ptr<LockFile> _close();
     VersionNumber _get_data_version();
 
-    SelectionBox _get_dimension_bounds(const DimensionID&);
+    SelectionBox _get_dimension_bounds(const DimensionId&);
 
     // Register a dimension
     // Must be called with the dimension lock in unique mode.
-    void _register_dimension(JavaRawLevelOpenData&, const JavaInternalDimensionID&, const DimensionID&);
+    void _register_dimension(JavaRawLevelOpenData&, const JavaInternalDimensionID&, const DimensionId&);
 
 public:
     JavaRawLevel() = delete;
@@ -212,7 +212,7 @@ public:
 
     // Get the raw dimension object for a specific dimension.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT std::shared_ptr<JavaRawDimension> get_dimension(const DimensionID&);
+    AMULET_LEVEL_EXPORT std::shared_ptr<JavaRawDimension> get_dimension(const DimensionId&);
 
     // Compact the level.
     // External Read:SharedReadWrite lock required.

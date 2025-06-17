@@ -22,7 +22,7 @@ private:
     std::shared_ptr<bool> _history_enabled;
 
     JavaChunkHandle(
-        const DimensionID& dimension_id,
+        const DimensionId& dimension_id,
         std::int64_t cx,
         std::int64_t cz,
         std::shared_ptr<JavaRawDimension> raw_dimension,

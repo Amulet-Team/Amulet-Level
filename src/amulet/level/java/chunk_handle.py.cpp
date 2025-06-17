@@ -3,6 +3,8 @@
 
 #include <memory>
 
+#include <amulet/pybind11_extensions/collections.hpp>
+
 #include "chunk_handle.hpp"
 
 namespace py = pybind11;
@@ -17,11 +19,16 @@ py::module init_java_chunk_handle(py::module m_parent)
         std::shared_ptr<Amulet::JavaChunkHandle>>
         JavaChunkHandle(m, "JavaChunkHandle");
     JavaChunkHandle.attr("get_chunk") = py::cpp_function(
-        [](Amulet::JavaChunkHandle& self) -> std::shared_ptr<Amulet::JavaChunk> {
-            return self.get_java_chunk();
+        [](Amulet::JavaChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> component_ids) -> std::shared_ptr<Amulet::JavaChunk> {
+            if (component_ids) {
+                return self.get_java_chunk(std::set<std::string>(component_ids->begin(), component_ids->end()));
+            } else {
+                return self.get_java_chunk();
+            }
         },
         py::name("get_chunk"),
         py::is_method(JavaChunkHandle),
+        py::arg("component_ids") = py::none(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Get a unique copy of the chunk data."));
     JavaChunkHandle.def(

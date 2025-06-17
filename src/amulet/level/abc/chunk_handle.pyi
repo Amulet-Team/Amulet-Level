@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import collections.abc
+
 import amulet.core.chunk
 import amulet.utils.lock
 import amulet.utils.signal
@@ -22,7 +24,9 @@ class ChunkHandle:
         :return: True if the chunk exists. Calling get on this chunk handle may still throw ChunkLoadError
         """
 
-    def get_chunk(self) -> amulet.core.chunk.Chunk:
+    def get_chunk(
+        self, component_ids: collections.abc.Iterable[str] | None = None
+    ) -> amulet.core.chunk.Chunk:
         """
         Get a unique copy of the chunk data.
 

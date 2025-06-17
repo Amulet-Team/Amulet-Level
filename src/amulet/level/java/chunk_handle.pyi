@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections.abc
 import typing
 
 import amulet.core.chunk
@@ -9,7 +10,9 @@ import amulet.level.java.chunk
 __all__ = ["JavaChunkHandle"]
 
 class JavaChunkHandle(amulet.level.abc.chunk_handle.ChunkHandle):
-    def get_chunk(self) -> amulet.level.java.chunk.JavaChunk:
+    def get_chunk(
+        self, component_ids: collections.abc.Iterable[str] | None = None
+    ) -> amulet.level.java.chunk.JavaChunk:
         """
         Get a unique copy of the chunk data.
         """

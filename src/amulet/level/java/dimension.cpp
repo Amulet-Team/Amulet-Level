@@ -69,7 +69,7 @@ std::shared_ptr<JavaChunkHandle> JavaDimension::get_java_chunk_handle(std::int64
         } else {
             auto chunk_handle = it->second.lock();
             if (!chunk_handle) {
-                auto chunk_handle = std::shared_ptr<JavaChunkHandle>(
+                chunk_handle = std::shared_ptr<JavaChunkHandle>(
                     new JavaChunkHandle(
                         get_dimension_id(),
                         cx,

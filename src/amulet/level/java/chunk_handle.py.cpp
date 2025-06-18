@@ -19,17 +19,17 @@ py::module init_java_chunk_handle(py::module m_parent)
         std::shared_ptr<Amulet::JavaChunkHandle>>
         JavaChunkHandle(m, "JavaChunkHandle");
     JavaChunkHandle.attr("get_chunk") = py::cpp_function(
-        [](Amulet::JavaChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> component_ids) -> std::shared_ptr<Amulet::JavaChunk> {
-            if (component_ids) {
-                return self.get_java_chunk(std::set<std::string>(component_ids->begin(), component_ids->end()));
-            } else {
-                return self.get_java_chunk();
+        [](Amulet::JavaChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> py_component_ids) -> std::shared_ptr<Amulet::JavaChunk> {
+            std::optional<std::set<std::string>> component_ids;
+            if (py_component_ids) {
+                component_ids = std::set<std::string>(py_component_ids->begin(), py_component_ids->end());
             }
+            py::gil_scoped_release nogil;
+            return self.get_java_chunk(std::move(component_ids));
         },
         py::name("get_chunk"),
         py::is_method(JavaChunkHandle),
         py::arg("component_ids") = py::none(),
-        py::call_guard<py::gil_scoped_release>(),
         py::doc("Get a unique copy of the chunk data."));
     JavaChunkHandle.def(
         "set_chunk",

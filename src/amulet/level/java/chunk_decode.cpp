@@ -453,7 +453,9 @@ std::unique_ptr<JavaChunk> JavaRawDimension::decode_chunk(
         return *_water_block;
     };
 
-    if (data_version >= 2203) {
+    if (data_version >= 2844) {
+        return _decode_java_chunk<2844>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
+    } else if (data_version >= 2203) {
         return _decode_java_chunk<2203>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
     } else if (data_version >= 1466) {
         return _decode_java_chunk<1466>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);

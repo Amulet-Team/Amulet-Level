@@ -51,15 +51,15 @@ py::module init_chunk_handle(py::module m_parent)
             ":return: True if the chunk exists. Calling get on this chunk handle may still throw ChunkLoadError"));
     ChunkHandle.def(
         "get_chunk",
-        [](Amulet::ChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> component_ids) -> std::shared_ptr<Amulet::Chunk> {
-            if (component_ids) {
-                return self.get_chunk(std::set<std::string>(component_ids->begin(), component_ids->end()));
-            } else {
-                return self.get_chunk();
+        [](Amulet::ChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> py_component_ids) -> std::shared_ptr<Amulet::Chunk> {
+            std::optional<std::set<std::string>> component_ids;
+            if (py_component_ids) {
+                component_ids = std::set<std::string>(py_component_ids->begin(), py_component_ids->end());
             }
+            py::gil_scoped_release nogil;
+            return self.get_chunk(std::move(component_ids));
         },
         py::arg("component_ids") = py::none(),
-        py::call_guard<py::gil_scoped_release>(),
         py::doc(
             "Get a unique copy of the chunk data.\n"
             "\n"

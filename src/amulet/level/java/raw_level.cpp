@@ -335,7 +335,7 @@ void JavaRawLevel::set_level_name(const std::string& level_name)
 
 static const SelectionBox DefaultSelection { -30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000 };
 
-SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionID& dimension_id)
+SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionId& dimension_id)
 {
     if (_data_version < VersionNumber { 2709 }) {
         // Old versions were hard coded.
@@ -457,7 +457,7 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionID& dimension_id
 void JavaRawLevel::_register_dimension(
     JavaRawLevelOpenData& raw_open,
     const JavaInternalDimensionID& relative_dimension_path,
-    const DimensionID& dimension_id)
+    const DimensionId& dimension_id)
 {
     if (!raw_open.dimension_ids.contains(dimension_id) && !raw_open.dimensions.contains(relative_dimension_path)) {
         // Get the dimension path
@@ -580,7 +580,7 @@ std::vector<std::string> JavaRawLevel::get_dimension_ids()
 {
     auto& raw_open = _find_dimensions();
     std::shared_lock lock(raw_open.dimensions_mutex);
-    std::vector<DimensionID> dimension_ids;
+    std::vector<DimensionId> dimension_ids;
     dimension_ids.reserve(raw_open.dimension_ids.size());
     for (auto& [dimension_id, _] : raw_open.dimension_ids) {
         dimension_ids.push_back(dimension_id);
@@ -588,7 +588,7 @@ std::vector<std::string> JavaRawLevel::get_dimension_ids()
     return dimension_ids;
 }
 
-std::shared_ptr<JavaRawDimension> JavaRawLevel::get_dimension(const DimensionID& dimension_id)
+std::shared_ptr<JavaRawDimension> JavaRawLevel::get_dimension(const DimensionId& dimension_id)
 {
     auto& raw_open = _find_dimensions();
     std::shared_lock lock(raw_open.dimensions_mutex);

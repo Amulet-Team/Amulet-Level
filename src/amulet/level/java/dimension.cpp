@@ -18,7 +18,7 @@ JavaDimension::~JavaDimension()
 {
 }
 
-const DimensionID& JavaDimension::get_dimension_id() const
+const DimensionId& JavaDimension::get_dimension_id() const
 {
     return _raw_dimension->get_dimension_id();
 }

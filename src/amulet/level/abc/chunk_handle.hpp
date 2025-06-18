@@ -13,7 +13,7 @@
 
 namespace Amulet {
 
-using DimensionID = std::string;
+using DimensionId = std::string;
 
 namespace detail {
 
@@ -44,7 +44,7 @@ protected:
     std::int64_t _cz;
     detail::ChunkKey _key;
 
-    ChunkHandle(const DimensionID& dimension_id, std::int64_t cx, std::int64_t cz);
+    ChunkHandle(const DimensionId& dimension_id, std::int64_t cx, std::int64_t cz);
 
 public:
     ChunkHandle() = delete;

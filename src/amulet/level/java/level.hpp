@@ -21,7 +21,7 @@ public:
     HistoryManager history_manager;
     std::shared_ptr<bool> history_enabled;
     std::shared_mutex dimensions_mutex;
-    std::map<DimensionID, std::shared_ptr<JavaDimension>> dimensions;
+    std::map<DimensionId, std::shared_ptr<JavaDimension>> dimensions;
 
     JavaLevelOpenData();
 };
@@ -165,12 +165,12 @@ public:
     // Get a dimension.
     // External Read:SharedReadWrite lock required.
     // External ReadWrite:SharedReadWrite lock required when calling code in Dimension (and its children) that need write permission.
-    AMULET_LEVEL_EXPORT std::shared_ptr<JavaDimension> get_java_dimension(const DimensionID&);
+    AMULET_LEVEL_EXPORT std::shared_ptr<JavaDimension> get_java_dimension(const DimensionId&);
 
     // Get a dimension.
     // External Read:SharedReadWrite lock required.
     // External ReadWrite:SharedReadWrite lock required when calling code in Dimension (and its children) that need write permission.
-    AMULET_LEVEL_EXPORT std::shared_ptr<Dimension> get_dimension(const DimensionID&) override;
+    AMULET_LEVEL_EXPORT std::shared_ptr<Dimension> get_dimension(const DimensionId&) override;
 
     // CompactibleLevel
 

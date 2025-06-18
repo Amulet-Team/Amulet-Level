@@ -8,7 +8,7 @@
 namespace Amulet {
 
 JavaChunkHandle::JavaChunkHandle(
-    const DimensionID& dimension_id,
+    const DimensionId& dimension_id,
     std::int64_t cx,
     std::int64_t cz,
     std::shared_ptr<JavaRawDimension> raw_dimension,

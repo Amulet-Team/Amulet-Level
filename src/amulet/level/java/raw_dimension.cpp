@@ -15,7 +15,7 @@ OrderedMutex& JavaRawDimension::get_mutex()
     return _public_mutex;
 }
 
-const DimensionID& JavaRawDimension::get_dimension_id() const
+const DimensionId& JavaRawDimension::get_dimension_id() const
 {
     return _dimension_id;
 }

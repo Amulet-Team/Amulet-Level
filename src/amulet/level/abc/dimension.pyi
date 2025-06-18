@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+from builtins import str as DimensionId
+
 import amulet.core.biome
 import amulet.core.block
 import amulet.core.selection.box
 import amulet.core.selection.group
 import amulet.level.abc.chunk_handle
 
-__all__ = ["Dimension"]
+__all__ = ["Dimension", "DimensionId"]
 
 class Dimension:
     def get_chunk_handle(

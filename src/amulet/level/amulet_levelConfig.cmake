@@ -1,7 +1,8 @@
 if (NOT TARGET amulet_level)
     message(STATUS "Finding amulet_level")
 
-    find_package(leveldb_mcpe CONFIG REQUIRED)
+    find_package(amulet_io CONFIG REQUIRED)
+    find_package(amulet_leveldb CONFIG REQUIRED)
     find_package(amulet_utils CONFIG REQUIRED)
     find_package(amulet_nbt CONFIG REQUIRED)
     find_package(amulet_core CONFIG REQUIRED)
@@ -18,6 +19,7 @@ if (NOT TARGET amulet_level)
     )
 
     add_library(amulet_level INTERFACE)
+    target_link_libraries(amulet_level INTERFACE amulet_io)
     target_link_libraries(amulet_level INTERFACE leveldb_mcpe)
     target_link_libraries(amulet_level INTERFACE amulet_utils)
     target_link_libraries(amulet_level INTERFACE amulet_nbt)

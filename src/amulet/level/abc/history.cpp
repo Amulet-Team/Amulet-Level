@@ -3,8 +3,8 @@
 #include <leveldb/decompress_allocator.h>
 #include <leveldb/env.h>
 #include <leveldb/filter_policy.h>
+#include <leveldb/options.h>
 #include <leveldb/write_batch.h>
-#include <leveldb/zlib_compressor.h>
 
 #include <amulet/utils/weak.hpp>
 
@@ -18,8 +18,6 @@ public:
 class LevelDBOptions : public Amulet::LevelDBOptions {
 public:
     NullLogger logger;
-    leveldb::ZlibCompressorRaw zlib_compressor_raw;
-    leveldb::ZlibCompressor zlib_compressor;
     leveldb::DecompressAllocator decompress_allocator;
 };
 
@@ -42,15 +40,14 @@ static std::unique_ptr<Amulet::LevelDB> create_leveldb(const std::string& path_s
     options->options.block_cache = leveldb::NewLRUCache(40 * 1024 * 1024);
     options->options.write_buffer_size = 4 * 1024 * 1024;
     options->options.info_log = &options->logger;
-    options->options.compressors[0] = &options->zlib_compressor_raw;
-    options->options.compressors[1] = &options->zlib_compressor;
+    options->options.compression = leveldb::CompressionType::kZlibRawCompression;
     options->options.block_size = 163840;
 
     options->read_options.decompress_allocator = &options->decompress_allocator;
 
     leveldb::DB* _db = NULL;
     auto status = leveldb::DB::Open(options->options, path.string(), &_db);
-    if (status.code() == leveldb::Status::kOk) {
+    if (status.ok()) {
         return std::make_unique<Amulet::LevelDB>(
             std::unique_ptr<leveldb::DB>(_db),
             std::move(options));

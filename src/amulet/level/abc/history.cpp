@@ -153,7 +153,7 @@ void HistoryManager::undo()
             resource.index--;
             resource.global_index = new_index;
             // Notify listeners that it has changed.
-            resource.changed->emit();
+            resource.changed->dispatch();
         });
 }
 
@@ -178,7 +178,7 @@ void HistoryManager::redo()
             resource.index++;
             resource.global_index = new_index;
             // Notify listeners that it has changed.
-            resource.changed->emit();
+            resource.changed->dispatch();
         });
 }
 

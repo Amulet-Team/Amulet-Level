@@ -5,7 +5,7 @@
 
 #include <amulet/pybind11_extensions/collections.hpp>
 
-#include <amulet/utils/signal.py.hpp>
+#include <amulet/utils/event.py.hpp>
 
 #include "chunk_handle.hpp"
 
@@ -16,11 +16,11 @@ py::module init_chunk_handle(py::module m_parent)
     auto m = m_parent.def_submodule("chunk_handle");
 
     py::class_<Amulet::ChunkHandle, std::shared_ptr<Amulet::ChunkHandle>> ChunkHandle(m, "ChunkHandle");
-    Amulet::def_signal(
+    Amulet::def_event(
         ChunkHandle,
         "changed",
         &Amulet::ChunkHandle::changed,
-        py::doc("Signal emitted when the chunk data changes."));
+        py::doc("Event emitted when the chunk data changes."));
     ChunkHandle.def_property_readonly(
         "lock",
         &Amulet::ChunkHandle::get_mutex,

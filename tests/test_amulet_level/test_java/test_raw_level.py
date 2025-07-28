@@ -9,7 +9,7 @@ from amulet.nbt import NamedTag, StringTag
 
 from amulet.core.version import VersionNumber
 from amulet.utils.lock import OrderedLock
-from amulet.utils.signal import Signal
+from amulet.utils.event import Event
 from amulet.level.abc import IdRegistry
 from amulet.level.java import JavaRawLevel, JavaCreateArgsV1, JavaRawDimension
 
@@ -50,9 +50,9 @@ class JavaRawLevelTestCase(TestCase):
             thumbnail = raw_level.thumbnail
             self.assertIsInstance(thumbnail, Image.Image)
             thumbnail.close()
-            self.assertIsInstance(raw_level.opened, Signal)
-            self.assertIsInstance(raw_level.closed, Signal)
-            self.assertIsInstance(raw_level.reloaded, Signal)
+            self.assertIsInstance(raw_level.opened, Event)
+            self.assertIsInstance(raw_level.closed, Event)
+            self.assertIsInstance(raw_level.reloaded, Event)
             with self.assertRaises(RuntimeError):
                 raw_level.reload()
 

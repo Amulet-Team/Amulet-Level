@@ -14,7 +14,7 @@
 #include <amulet/leveldb.hpp>
 #include <leveldb/write_batch.h>
 
-#include <amulet/utils/signal.hpp>
+#include <amulet/utils/event.hpp>
 #include <amulet/utils/temp.hpp>
 #include <amulet/utils/weak.hpp>
 
@@ -35,7 +35,7 @@ public:
     size_t global_index = 0;
 
     // Emitted when index changes during undo and redo.
-    std::unique_ptr<Signal<>> changed;
+    std::unique_ptr<Event<>> changed;
 
     // Has the resource been changed since last save.
     bool has_changed() const
@@ -44,7 +44,7 @@ public:
     }
 
     HistoryResource()
-        : changed(std::make_unique<Signal<>>())
+        : changed(std::make_unique<Event<>>())
     {
     }
 };

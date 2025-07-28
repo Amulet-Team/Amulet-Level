@@ -4,7 +4,7 @@ import collections.abc
 
 import amulet.core.chunk
 import amulet.utils.lock
-import amulet.utils.signal
+import amulet.utils.event
 
 __all__ = ["ChunkHandle"]
 
@@ -49,9 +49,9 @@ class ChunkHandle:
         """
 
     @property
-    def changed(self) -> amulet.utils.signal.Signal[()]:
+    def changed(self) -> amulet.utils.event.Event[()]:
         """
-        Signal emitted when the chunk data changes.
+        Event emitted when the chunk data changes.
         """
 
     @property

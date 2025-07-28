@@ -23,9 +23,9 @@ See Amulet::LevelLoaderRegister for more information.
 Long-running and potentially blocking functions must optionally take a CancelManager instance to support canceling the
 call and a ProgressManager instance to relay the progress to the caller.
 
-### Signals
+### Events
 
-Signals should exist and be emitted for every case where there could be need to know that an action happened.
+Events should exist and be emitted for every case where there could be need to know that an action happened.
 
 ### Level implementation
 

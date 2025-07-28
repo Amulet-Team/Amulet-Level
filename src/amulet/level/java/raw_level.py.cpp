@@ -6,7 +6,7 @@
 
 #include <amulet/pybind11_extensions/nogil_holder.hpp>
 
-#include <amulet/utils/signal.py.hpp>
+#include <amulet/utils/event.py.hpp>
 
 #include <amulet/core/version/version.hpp>
 
@@ -83,7 +83,7 @@ py::module init_java_raw_level(py::module m_parent)
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Reload the metadata. This can only be called when the level is closed.\n"
                 "External ReadWrite:Unique lock required."));
-    Amulet::def_signal(
+    Amulet::def_event(
         JavaRawLevel,
         "opened",
         &Amulet::JavaRawLevel::opened);
@@ -92,9 +92,9 @@ py::module init_java_raw_level(py::module m_parent)
         &Amulet::JavaRawLevel::open,
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Open the level.\n"
-                "opened signal will be emitted when complete.\n"
+                "opened event will be emitted when complete.\n"
                 "External ReadWrite:Unique lock required."));
-    Amulet::def_signal(
+    Amulet::def_event(
         JavaRawLevel,
         "closed",
         &Amulet::JavaRawLevel::closed);
@@ -103,9 +103,9 @@ py::module init_java_raw_level(py::module m_parent)
         &Amulet::JavaRawLevel::close,
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Close the level.\n"
-                "closed signal will be emitted when complete.\n"
+                "closed event will be emitted when complete.\n"
                 "External ReadWrite:Unique lock required."));
-    Amulet::def_signal(
+    Amulet::def_event(
         JavaRawLevel,
         "reloaded",
         &Amulet::JavaRawLevel::reloaded);

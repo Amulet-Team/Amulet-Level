@@ -7,7 +7,7 @@
 #include <amulet/core/chunk/chunk.hpp>
 
 #include <amulet/utils/mutex.hpp>
-#include <amulet/utils/signal.hpp>
+#include <amulet/utils/event.hpp>
 
 #include <amulet/level/dll.hpp>
 
@@ -50,7 +50,7 @@ public:
     ChunkHandle() = delete;
     virtual ~ChunkHandle() = default;
 
-    Signal<> changed;
+    Event<> changed;
 
     // The public mutex.
     // Thread safe.

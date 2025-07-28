@@ -7,7 +7,7 @@ import amulet.level.abc.registry
 import amulet.level.java.raw_dimension
 import amulet.nbt
 import amulet.utils.lock
-import amulet.utils.signal
+import amulet.utils.event
 import PIL.Image
 
 __all__ = ["JavaCreateArgsV1", "JavaRawLevel"]
@@ -47,7 +47,7 @@ class JavaRawLevel:
     def close(self) -> None:
         """
         Close the level.
-        closed signal will be emitted when complete.
+        closed event will be emitted when complete.
         External ReadWrite:Unique lock required.
         """
 
@@ -81,7 +81,7 @@ class JavaRawLevel:
     def open(self) -> None:
         """
         Open the level.
-        opened signal will be emitted when complete.
+        opened event will be emitted when complete.
         External ReadWrite:Unique lock required.
         """
 
@@ -113,7 +113,7 @@ class JavaRawLevel:
         """
 
     @property
-    def closed(self) -> amulet.utils.signal.Signal[()]: ...
+    def closed(self) -> amulet.utils.event.Event[()]: ...
     @property
     def data_version(self) -> amulet.core.version.VersionNumber:
         """
@@ -181,7 +181,7 @@ class JavaRawLevel:
         """
 
     @property
-    def opened(self) -> amulet.utils.signal.Signal[()]: ...
+    def opened(self) -> amulet.utils.event.Event[()]: ...
     @property
     def path(self) -> str:
         """
@@ -197,7 +197,7 @@ class JavaRawLevel:
         """
 
     @property
-    def reloaded(self) -> amulet.utils.signal.Signal[()]: ...
+    def reloaded(self) -> amulet.utils.event.Event[()]: ...
     @property
     def thumbnail(self) -> PIL.Image.Image:
         """

@@ -15,7 +15,7 @@
 
 #include <amulet/utils/lock_file.hpp>
 #include <amulet/utils/mutex.hpp>
-#include <amulet/utils/signal.hpp>
+#include <amulet/utils/event.hpp>
 
 #include <amulet/level/dll.hpp>
 #include <amulet/level/abc/registry.hpp>
@@ -133,24 +133,24 @@ public:
     // External ReadWrite:Unique lock required.
     AMULET_LEVEL_EXPORT void reload_metadata();
 
-    // A signal emitted when the level is opened.
-    Signal<> opened;
+    // An event emitted when the level is opened.
+    Event<> opened;
 
     // Open the level.
-    // opened signal will be emitted when complete.
+    // opened event will be emitted when complete.
     // External ReadWrite:Unique lock required.
     AMULET_LEVEL_EXPORT void open();
 
-    // A signal emitted when the level is closed.
-    Signal<> closed;
+    // An event emitted when the level is closed.
+    Event<> closed;
 
     // Close the level.
-    // closed signal will be emitted when complete.
+    // closed event will be emitted when complete.
     // External ReadWrite:Unique lock required.
     AMULET_LEVEL_EXPORT void close();
 
-    // A signal emitted when the level is reloaded.
-    Signal<> reloaded;
+    // An event emitted when the level is reloaded.
+    Event<> reloaded;
 
     // Reload the level.
     // This is like closing and re-opening without releasing the session.lock file.

@@ -1,10 +1,8 @@
 from __future__ import annotations
 
-import collections.abc
-
 import amulet.core.chunk
-import amulet.utils.lock
 import amulet.utils.event
+import amulet.utils.lock
 
 __all__ = ["ChunkHandle"]
 

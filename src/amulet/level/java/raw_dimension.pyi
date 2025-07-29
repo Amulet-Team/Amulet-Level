@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import collections.abc
 import typing
 
 import amulet.core.biome
@@ -19,14 +20,17 @@ class JavaRawDimension:
         """
 
     def decode_chunk(
-        self, raw_chunk: dict[str, amulet.nbt.NamedTag], cx: int, cz: int
+        self,
+        raw_chunk: collections.abc.Mapping[str, amulet.nbt.NamedTag],
+        cx: typing.SupportsInt,
+        cz: typing.SupportsInt,
     ) -> amulet.level.java.chunk.JavaChunk:
         """
         Decode a raw chunk to a chunk object.
         TODO: thread safety
         """
 
-    def delete_chunk(self, cx: int, cz: int) -> None:
+    def delete_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> None:
         """
         Delete the chunk from this dimension.
         External ReadWrite:SharedReadWrite lock required.
@@ -41,20 +45,25 @@ class JavaRawDimension:
         """
 
     def encode_chunk(
-        self, chunk: amulet.level.java.chunk.JavaChunk, cx: int, cz: int
+        self,
+        chunk: amulet.level.java.chunk.JavaChunk,
+        cx: typing.SupportsInt,
+        cz: typing.SupportsInt,
     ) -> dict[str, amulet.nbt.NamedTag]:
         """
         Encode a chunk object to its raw data.
         TODO: thread safety
         """
 
-    def get_raw_chunk(self, cx: int, cz: int) -> dict[str, amulet.nbt.NamedTag]:
+    def get_raw_chunk(
+        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+    ) -> dict[str, amulet.nbt.NamedTag]:
         """
         Get the raw chunk from this dimension.
         External Read:SharedReadWrite lock required.
         """
 
-    def has_chunk(self, cx: int, cz: int) -> bool:
+    def has_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> bool:
         """
         Does the chunk exist in this dimension.
         External Read:SharedReadWrite lock required.
@@ -69,7 +78,10 @@ class JavaRawDimension:
         """
 
     def set_raw_chunk(
-        self, cx: int, cz: int, chunk: dict[str, amulet.nbt.NamedTag]
+        self,
+        cx: typing.SupportsInt,
+        cz: typing.SupportsInt,
+        chunk: collections.abc.Mapping[str, amulet.nbt.NamedTag],
     ) -> None:
         """
         Set the chunk in this dimension from raw data.
@@ -77,7 +89,7 @@ class JavaRawDimension:
         """
 
     @property
-    def all_chunk_coords(self) -> typing.Iterator[tuple[int, int]]:
+    def all_chunk_coords(self) -> collections.abc.Iterator[tuple[int, int]]:
         """
         An iterator of all chunk coordinates in the dimension.
         External Read:SharedReadWrite lock required.

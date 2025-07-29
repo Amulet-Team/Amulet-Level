@@ -6,8 +6,8 @@ import amulet.core.version
 import amulet.level.abc.registry
 import amulet.level.java.raw_dimension
 import amulet.nbt
-import amulet.utils.lock
 import amulet.utils.event
+import amulet.utils.lock
 import PIL.Image
 
 __all__ = ["JavaCreateArgsV1", "JavaRawLevel"]

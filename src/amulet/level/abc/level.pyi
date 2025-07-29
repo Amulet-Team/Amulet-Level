@@ -4,8 +4,8 @@ import datetime
 
 import amulet.core.version
 import amulet.level.abc.dimension
-import amulet.utils.lock
 import amulet.utils.event
+import amulet.utils.lock
 import PIL.Image
 
 __all__ = ["CompactibleLevel", "DiskLevel", "Level", "LevelMetadata", "ReloadableLevel"]

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import logging as logging
-
 from amulet.level.abc.level import Level
 from amulet.level.loader import NoValidLevelLoader, get_level
 
@@ -15,7 +13,6 @@ __all__ = [
     "get_level",
     "java",
     "loader",
-    "logging",
 ]
 
 def _init() -> None: ...

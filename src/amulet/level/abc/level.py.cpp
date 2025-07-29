@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include <amulet/utils/signal.py.hpp>
+#include <amulet/utils/event.py.hpp>
 
 #include "level.hpp"
 
@@ -74,11 +74,11 @@ py::module init_level(py::module m_parent)
         std::shared_ptr<Amulet::Level>,
         Amulet::LevelMetadata>
         Level(m, "Level");
-    Amulet::def_signal(
+    Amulet::def_event(
         Level,
         "opened",
         &Amulet::Level::opened,
-        py::doc("Signal emitted when the level is opened.\n"
+        py::doc("Event emitted when the level is opened.\n"
                 "Thread safe."));
     Level.def(
         "open",
@@ -88,11 +88,11 @@ py::module init_level(py::module m_parent)
                 "\n"
                 "If the level is already open, this does nothing.\n"
                 "External ReadWrite:Unique lock required."));
-    Amulet::def_signal(
+    Amulet::def_event(
         Level,
         "purged",
         &Amulet::Level::purged,
-        py::doc("Signal emitted when the level is purged\n"
+        py::doc("Event emitted when the level is purged\n"
                 "Thread safe."));
     Level.def(
         "purge",
@@ -106,11 +106,11 @@ py::module init_level(py::module m_parent)
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Save all changes to the level.\n"
                 "External ReadWrite:Unique lock required."));
-    Amulet::def_signal(
+    Amulet::def_event(
         Level,
         "closed",
         &Amulet::Level::closed,
-        py::doc("Signal emitted when the level is closed.\n"
+        py::doc("Event emitted when the level is closed.\n"
                 "Thread safe."));
     Level.def(
         "close",
@@ -120,11 +120,11 @@ py::module init_level(py::module m_parent)
                 "External ReadWrite:Unique lock required.\n"
                 "\n"
                 "If the level is not open, this does nothing."));
-    Amulet::def_signal(
+    Amulet::def_event(
         Level,
         "history_changed",
         &Amulet::Level::history_changed,
-        py::doc("A signal emitted when the undo or redo count changes.\n"
+        py::doc("An event emitted when the undo or redo count changes.\n"
                 "Thread safe."));
     Level.def(
         "create_restore_point",
@@ -166,11 +166,11 @@ py::module init_level(py::module m_parent)
             "Redo changes that were previously reverted.\n"
             "External ReadWrite:SharedReadWrite lock required.\n"
             "External ReadWrite:Unique lock optional."));
-    Amulet::def_signal(
+    Amulet::def_event(
         Level,
         "history_enabled_changed",
         &Amulet::Level::history_enabled_changed,
-        py::doc("A signal emitted when set_history_enabled is called.\n"
+        py::doc("An event emitted when set_history_enabled is called.\n"
                 "Thread safe."));
     Level.def_property(
         "history_enabled",
@@ -221,11 +221,11 @@ py::module init_level(py::module m_parent)
         py::doc("Reload the level metadata.\n"
                 "This can only be done when the level is not open.\n"
                 "External ReadWrite:Unique lock required."));
-    Amulet::def_signal(
+    Amulet::def_event(
         ReloadableLevel,
         "reloaded",
         &Amulet::ReloadableLevel::reloaded,
-        py::doc("Signal emitted when the level is reloaded.\n"
+        py::doc("Event emitted when the level is reloaded.\n"
                 "Thread safe."));
     ReloadableLevel.def(
         "reload",

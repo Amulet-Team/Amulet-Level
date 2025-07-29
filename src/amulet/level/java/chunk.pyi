@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing
+
 import amulet.core.biome
 import amulet.core.block
 import amulet.core.chunk
@@ -26,7 +28,7 @@ class JavaChunk0(
 ):
     def __init__(
         self,
-        data_version: int,
+        data_version: typing.SupportsInt,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...
@@ -39,7 +41,7 @@ class JavaChunk1444(
 ):
     def __init__(
         self,
-        data_version: int,
+        data_version: typing.SupportsInt,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...
@@ -52,7 +54,7 @@ class JavaChunk1466(
 ):
     def __init__(
         self,
-        data_version: int,
+        data_version: typing.SupportsInt,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...
@@ -65,7 +67,7 @@ class JavaChunk2203(
 ):
     def __init__(
         self,
-        data_version: int,
+        data_version: typing.SupportsInt,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...

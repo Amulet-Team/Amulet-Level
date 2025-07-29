@@ -14,10 +14,10 @@ class IdRegistry:
     External synchronisation is required with this class.
     """
 
-    def __contains__(self, arg0: int) -> bool: ...
+    def __contains__(self, arg0: typing.SupportsInt) -> bool: ...
     def __eq__(self, arg0: typing.Any) -> bool | types.NotImplementedType: ...
     @typing.overload
-    def __getitem__(self, index: int) -> tuple[str, str]:
+    def __getitem__(self, index: typing.SupportsInt) -> tuple[str, str]:
         """
         Convert a numerical id to its namespaced id.
         External shared lock required.
@@ -45,7 +45,7 @@ class IdRegistry:
         """
 
     def get(
-        self, key: int, default: tuple[str, str] | None = None
+        self, key: typing.SupportsInt, default: tuple[str, str] | None = None
     ) -> tuple[str, str] | None: ...
     def items(self) -> collections.abc.ItemsView[int, tuple[str, str]]: ...
     def keys(self) -> collections.abc.KeysView[int]: ...
@@ -63,13 +63,15 @@ class IdRegistry:
         External shared lock required.
         """
 
-    def numerical_id_to_namespace_id(self, index: int) -> tuple[str, str]:
+    def numerical_id_to_namespace_id(
+        self, index: typing.SupportsInt
+    ) -> tuple[str, str]:
         """
         Convert a numerical id to its namespaced id.
         External shared lock required.
         """
 
-    def register_id(self, index: int, name: tuple[str, str]) -> None:
+    def register_id(self, index: typing.SupportsInt, name: tuple[str, str]) -> None:
         """
         Convert a namespaced id to its numerical id.
         External unique lock required.

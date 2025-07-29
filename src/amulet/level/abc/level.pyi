@@ -4,8 +4,8 @@ import datetime
 
 import amulet.core.version
 import amulet.level.abc.dimension
+import amulet.utils.event
 import amulet.utils.lock
-import amulet.utils.signal
 import PIL.Image
 
 __all__ = ["CompactibleLevel", "DiskLevel", "Level", "LevelMetadata", "ReloadableLevel"]
@@ -104,16 +104,16 @@ class Level(LevelMetadata):
         """
 
     @property
-    def closed(self) -> amulet.utils.signal.Signal[()]:
+    def closed(self) -> amulet.utils.event.Event[()]:
         """
-        Signal emitted when the level is closed.
+        Event emitted when the level is closed.
         Thread safe.
         """
 
     @property
-    def history_changed(self) -> amulet.utils.signal.Signal[()]:
+    def history_changed(self) -> amulet.utils.event.Event[()]:
         """
-        A signal emitted when the undo or redo count changes.
+        An event emitted when the undo or redo count changes.
         Thread safe.
         """
 
@@ -131,23 +131,23 @@ class Level(LevelMetadata):
     @history_enabled.setter
     def history_enabled(self, arg1: bool) -> None: ...
     @property
-    def history_enabled_changed(self) -> amulet.utils.signal.Signal[()]:
+    def history_enabled_changed(self) -> amulet.utils.event.Event[()]:
         """
-        A signal emitted when set_history_enabled is called.
+        An event emitted when set_history_enabled is called.
         Thread safe.
         """
 
     @property
-    def opened(self) -> amulet.utils.signal.Signal[()]:
+    def opened(self) -> amulet.utils.event.Event[()]:
         """
-        Signal emitted when the level is opened.
+        Event emitted when the level is opened.
         Thread safe.
         """
 
     @property
-    def purged(self) -> amulet.utils.signal.Signal[()]:
+    def purged(self) -> amulet.utils.event.Event[()]:
         """
-        Signal emitted when the level is purged
+        Event emitted when the level is purged
         Thread safe.
         """
 
@@ -232,8 +232,8 @@ class ReloadableLevel:
         """
 
     @property
-    def reloaded(self) -> amulet.utils.signal.Signal[()]:
+    def reloaded(self) -> amulet.utils.event.Event[()]:
         """
-        Signal emitted when the level is reloaded.
+        Event emitted when the level is reloaded.
         Thread safe.
         """

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import faulthandler as faulthandler
+import faulthandler as _faulthandler
 
 from . import _test_amulet_level, test_abc
 
-__all__ = ["compiler_config", "faulthandler", "test_abc"]
+__all__ = ["compiler_config", "test_abc"]
 
 def _init() -> None: ...
 

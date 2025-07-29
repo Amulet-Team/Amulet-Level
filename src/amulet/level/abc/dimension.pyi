@@ -1,18 +1,17 @@
 from __future__ import annotations
 
+import typing
 from builtins import str as DimensionId
 
 import amulet.core.biome
 import amulet.core.block
-import amulet.core.selection.box
-import amulet.core.selection.group
 import amulet.level.abc.chunk_handle
 
 __all__ = ["Dimension", "DimensionId"]
 
 class Dimension:
     def get_chunk_handle(
-        self, cx: int, cz: int
+        self, cx: typing.SupportsInt, cz: typing.SupportsInt
     ) -> amulet.level.abc.chunk_handle.ChunkHandle:
         """
         Get the chunk handle for the given chunk in this dimension.

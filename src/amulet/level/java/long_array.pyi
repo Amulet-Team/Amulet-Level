@@ -1,16 +1,17 @@
 from __future__ import annotations
 
+import collections.abc
+import typing
+
 import numpy
 import numpy.typing
-import typing_extensions
-import typing
 
 __all__ = ["decode_long_array", "encode_long_array"]
 
 def decode_long_array(
-    long_array: typing.Buffer,
-    size: int,
-    bits_per_entry: int,
+    long_array: collections.abc.Buffer,
+    size: typing.SupportsInt,
+    bits_per_entry: typing.SupportsInt,
     dense: bool = True,
 ) -> numpy.ndarray:
     """
@@ -24,10 +25,10 @@ def decode_long_array(
     """
 
 def encode_long_array(
-    array: typing.Buffer,
-    bits_per_entry: None | int = None,
+    array: collections.abc.Buffer,
+    bits_per_entry: None | typing.SupportsInt = None,
     dense: bool = True,
-    min_bits_per_entry: int = 1,
+    min_bits_per_entry: typing.SupportsInt = 1,
 ) -> numpy.typing.NDArray[numpy.uint64]:
     """
     Encode a long array (from BlockStates or Heightmaps)

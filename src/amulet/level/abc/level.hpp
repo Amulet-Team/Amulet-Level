@@ -11,7 +11,7 @@
 #include <amulet/core/version/version.hpp>
 
 #include <amulet/utils/mutex.hpp>
-#include <amulet/utils/signal.hpp>
+#include <amulet/utils/event.hpp>
 
 #include "dimension.hpp"
 
@@ -65,18 +65,18 @@ public:
 
 class Level : public LevelMetadata {
 public:
-    // Signal emitted when the level is opened.
+    // Event emitted when the level is opened.
     // Thread safe.
-    Signal<> opened;
+    Event<> opened;
 
     // Open the level.
     // If the level is already open, this does nothing.
     // External ReadWrite:Unique lock required.
     virtual void open() = 0;
 
-    // Signal emitted when the level is purged
+    // Event emitted when the level is purged
     // Thread safe.
-    Signal<> purged;
+    Event<> purged;
 
     // Clear all unsaved changes and restore points.
     // External ReadWrite:Unique lock required.
@@ -86,18 +86,18 @@ public:
     // External ReadWrite:Unique lock required.
     virtual void save() = 0;
 
-    // Signal emitted when the level is closed
+    // Event emitted when the level is closed
     // Thread safe.
-    Signal<> closed;
+    Event<> closed;
 
     // Close the level.
     // If the level is not open, this does nothing.
     // External ReadWrite:Unique lock required.
     virtual void close() = 0;
 
-    // A signal emitted when the undo or redo count changes.
+    // Event emitted when the undo or redo count changes.
     // Thread safe.
-    Signal<> history_changed;
+    Event<> history_changed;
 
     // Create a new history restore point.
     // Any changes made after this point can be reverted by calling undo.
@@ -124,9 +124,9 @@ public:
     // External ReadWrite:Unique lock optional.
     virtual void redo() = 0;
 
-    // A signal emitted when set_history_enabled is called.
+    // Event emitted when set_history_enabled is called.
     // Thread safe.
-    Signal<> history_enabled_changed;
+    Event<> history_enabled_changed;
 
     // Get if the history system is enabled.
     // If this is true, the caller must call create_restore_point before making changes.
@@ -175,9 +175,9 @@ public:
     // External ReadWrite:Unique lock required.
     virtual void reload_metadata() = 0;
 
-    // Signal emitted when the level is reloaded.
+    // Event emitted when the level is reloaded.
     // Thread safe.
-    Signal<> reloaded;
+    Event<> reloaded;
 
     // Reload the level.
     // This is like closing and opening the level but does not release locks.

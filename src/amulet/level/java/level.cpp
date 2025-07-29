@@ -97,7 +97,7 @@ void JavaLevel::open()
         _raw_level->open();
     }
     _open_data = std::make_unique<JavaLevelOpenData>();
-    opened.emit();
+    opened.dispatch();
 }
 
 void JavaLevel::purge()
@@ -107,8 +107,8 @@ void JavaLevel::purge()
         std::lock_guard lock(open_data.history_manager.get_mutex());
         open_data.history_manager.reset();
     }
-    purged.emit();
-    history_changed.emit();
+    purged.dispatch();
+    history_changed.dispatch();
 }
 
 void JavaLevel::save()
@@ -128,7 +128,7 @@ void JavaLevel::close()
         std::lock_guard lock(mutex, std::adopt_lock);
         _raw_level->close();
     }
-    closed.emit();
+    closed.dispatch();
 }
 
 void JavaLevel::create_restore_point()
@@ -138,7 +138,7 @@ void JavaLevel::create_restore_point()
         std::lock_guard lock(open_data.history_manager.get_mutex());
         open_data.history_manager.create_undo_bin();
     }
-    history_changed.emit();
+    history_changed.dispatch();
 }
 
 size_t JavaLevel::get_undo_count()
@@ -155,7 +155,7 @@ void JavaLevel::undo()
         std::lock_guard lock(open_data.history_manager.get_mutex());
         open_data.history_manager.undo();
     }
-    history_changed.emit();
+    history_changed.dispatch();
 }
 
 size_t JavaLevel::get_redo_count()
@@ -172,7 +172,7 @@ void JavaLevel::redo()
         std::lock_guard lock(open_data.history_manager.get_mutex());
         open_data.history_manager.redo();
     }
-    history_changed.emit();
+    history_changed.dispatch();
 }
 
 bool JavaLevel::get_history_enabled()
@@ -183,7 +183,7 @@ bool JavaLevel::get_history_enabled()
 void JavaLevel::set_history_enabled(bool history_enabled)
 {
     *_get_open_data().history_enabled = history_enabled;
-    history_enabled_changed.emit();
+    history_enabled_changed.dispatch();
 }
 
 std::vector<std::string> JavaLevel::get_dimension_ids()
@@ -259,8 +259,8 @@ void JavaLevel::reload()
         std::lock_guard lock(_raw_level->get_mutex());
         _raw_level->reload();
     }
-    reloaded.emit();
-    history_changed.emit();
+    reloaded.dispatch();
+    history_changed.dispatch();
 }
 
 JavaRawLevel& JavaLevel::get_raw_level()

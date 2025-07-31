@@ -196,6 +196,9 @@ void JavaChunkHandle::set_java_chunk(const JavaChunk& chunk)
             _chunk_data_history->set_values<HistoryInitialisationMode::Value>(defined_component_data);
         }
     }
+
+    // Notify listeners that it has changed.
+    changed.dispatch();
 }
 
 void JavaChunkHandle::set_chunk(const Chunk& chunk)
@@ -222,6 +225,9 @@ void JavaChunkHandle::delete_chunk()
 
     // Delete
     _chunk_history->set_value(_key, "");
+
+    // Notify listeners that it has changed.
+    changed.dispatch();
 }
 
 } // namespace Amulet

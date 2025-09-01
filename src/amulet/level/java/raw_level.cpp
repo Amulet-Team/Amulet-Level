@@ -398,7 +398,7 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionId& dimension_id
                 //                 else:
                 //                     height = 256
                 //
-                //                 return SelectionGroup(
+                //                 return SelectionBoxGroup(
                 //                     SelectionBox(
                 //                         (-30_000_000, min_y, -30_000_000),
                 //                         (30_000_000, min_y + height, 30_000_000),

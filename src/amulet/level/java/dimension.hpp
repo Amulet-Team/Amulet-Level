@@ -43,7 +43,7 @@ public:
 
     // The editable region of the dimension.
     // Thread safe.
-    AMULET_LEVEL_EXPORT std::variant<SelectionBox, SelectionGroup> get_bounds() const override;
+    AMULET_LEVEL_EXPORT std::variant<SelectionBox, SelectionBoxGroup> get_bounds() const override;
 
     // Get the default block for this dimension.
     // Thread safe.

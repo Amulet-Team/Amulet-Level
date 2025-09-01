@@ -7,7 +7,7 @@
 #include <amulet/core/biome/biome.hpp>
 #include <amulet/core/block/block.hpp>
 #include <amulet/core/selection/box.hpp>
-#include <amulet/core/selection/group.hpp>
+#include <amulet/core/selection/box_group.hpp>
 
 #include "chunk_handle.hpp"
 
@@ -26,7 +26,7 @@ public:
 
     // The editable region of the dimension.
     // Thread safe.
-    virtual std::variant<SelectionBox, SelectionGroup> get_bounds() const = 0;
+    virtual std::variant<SelectionBox, SelectionBoxGroup> get_bounds() const = 0;
 
     // Get the default block for this dimension.
     // Thread safe.

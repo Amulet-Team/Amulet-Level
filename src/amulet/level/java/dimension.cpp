@@ -23,7 +23,7 @@ const DimensionId& JavaDimension::get_dimension_id() const
     return _raw_dimension->get_dimension_id();
 }
 
-std::variant<SelectionBox, SelectionGroup> JavaDimension::get_bounds() const
+std::variant<SelectionBox, SelectionBoxGroup> JavaDimension::get_bounds() const
 {
     return _raw_dimension->get_bounds();
 }

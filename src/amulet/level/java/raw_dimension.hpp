@@ -9,7 +9,7 @@
 
 #include <amulet/core/biome/biome.hpp>
 #include <amulet/core/block/block.hpp>
-#include <amulet/core/selection/group.hpp>
+#include <amulet/core/selection/box_group.hpp>
 
 #include <amulet/utils/mutex.hpp>
 

@@ -6,7 +6,7 @@ import typing
 
 import amulet.utils.lock
 
-__all__ = ["IdRegistry"]
+__all__: list[str] = ["IdRegistry"]
 
 class IdRegistry:
     """
@@ -14,8 +14,8 @@ class IdRegistry:
     External synchronisation is required with this class.
     """
 
-    def __contains__(self, arg0: typing.SupportsInt) -> bool: ...
-    def __eq__(self, arg0: typing.Any) -> bool | types.NotImplementedType: ...
+    def __contains__(self, item: typing.SupportsInt) -> bool: ...
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
     @typing.overload
     def __getitem__(self, index: typing.SupportsInt) -> tuple[str, str]:
         """
@@ -44,9 +44,14 @@ class IdRegistry:
         External shared lock required.
         """
 
+    @typing.overload
+    def get(self, key: typing.SupportsInt) -> tuple[str, str] | None: ...
+    @typing.overload
     def get(
-        self, key: typing.SupportsInt, default: tuple[str, str] | None = None
-    ) -> tuple[str, str] | None: ...
+        self, key: typing.SupportsInt, default: tuple[str, str]
+    ) -> tuple[str, str]: ...
+    @typing.overload
+    def get[T](self, key: typing.SupportsInt, default: T) -> tuple[str, str] | T: ...
     def items(self) -> collections.abc.ItemsView[int, tuple[str, str]]: ...
     def keys(self) -> collections.abc.KeysView[int]: ...
     @typing.overload

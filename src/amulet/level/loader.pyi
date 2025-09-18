@@ -5,7 +5,7 @@ import typing
 
 import amulet.level.abc.level
 
-__all__ = [
+__all__: list[str] = [
     "LevelLoaderPathToken",
     "LevelLoaderToken",
     "NoValidLevelLoader",
@@ -17,9 +17,9 @@ class LevelLoaderPathToken(LevelLoaderToken):
 
 class LevelLoaderToken:
     @typing.overload
-    def __eq__(self, arg0: LevelLoaderToken) -> bool: ...
+    def __eq__(self, other: LevelLoaderToken) -> bool: ...
     @typing.overload
-    def __eq__(self, arg0: typing.Any) -> bool | types.NotImplementedType: ...
+    def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
     def __hash__(self) -> int: ...
     def repr(self) -> str: ...
 

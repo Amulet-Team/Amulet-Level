@@ -4,7 +4,7 @@ import amulet.level.abc.level
 import amulet.level.java.dimension
 import amulet.level.java.raw_level
 
-__all__ = ["JavaLevel"]
+__all__: list[str] = ["JavaLevel"]
 
 class JavaLevel(
     amulet.level.abc.level.Level,

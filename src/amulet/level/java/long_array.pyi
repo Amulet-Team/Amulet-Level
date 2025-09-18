@@ -6,7 +6,7 @@ import typing
 import numpy
 import numpy.typing
 
-__all__ = ["decode_long_array", "encode_long_array"]
+__all__: list[str] = ["decode_long_array", "encode_long_array"]
 
 def decode_long_array(
     long_array: collections.abc.Buffer,

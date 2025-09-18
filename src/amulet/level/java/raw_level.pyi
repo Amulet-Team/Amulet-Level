@@ -10,7 +10,7 @@ import amulet.utils.event
 import amulet.utils.lock
 import PIL.Image
 
-__all__ = ["JavaCreateArgsV1", "JavaRawLevel"]
+__all__: list[str] = ["JavaCreateArgsV1", "JavaRawLevel"]
 
 class JavaCreateArgsV1:
     def __init__(

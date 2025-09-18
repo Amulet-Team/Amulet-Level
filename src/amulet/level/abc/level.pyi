@@ -8,7 +8,13 @@ import amulet.utils.event
 import amulet.utils.lock
 import PIL.Image
 
-__all__ = ["CompactibleLevel", "DiskLevel", "Level", "LevelMetadata", "ReloadableLevel"]
+__all__: list[str] = [
+    "CompactibleLevel",
+    "DiskLevel",
+    "Level",
+    "LevelMetadata",
+    "ReloadableLevel",
+]
 
 class CompactibleLevel:
     def compact(self) -> None:

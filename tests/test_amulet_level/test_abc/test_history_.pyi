@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-__all__ = [
+__all__: list[str] = [
     "test_history",
     "test_set_value_enum",
     "test_set_values_enum",

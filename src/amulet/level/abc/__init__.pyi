@@ -13,7 +13,7 @@ from amulet.level.abc.registry import IdRegistry
 
 from . import chunk_handle, dimension, level, registry
 
-__all__ = [
+__all__: list[str] = [
     "ChunkHandle",
     "CompactibleLevel",
     "Dimension",

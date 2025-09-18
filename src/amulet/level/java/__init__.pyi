@@ -19,7 +19,7 @@ from . import (
     raw_level,
 )
 
-__all__ = [
+__all__: list[str] = [
     "JavaChunkHandle",
     "JavaCreateArgsV1",
     "JavaDimension",

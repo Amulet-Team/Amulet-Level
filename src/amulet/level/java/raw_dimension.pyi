@@ -10,7 +10,7 @@ import amulet.level.java.chunk
 import amulet.nbt
 import amulet.utils.lock
 
-__all__ = ["JavaRawDimension"]
+__all__: list[str] = ["JavaRawDimension"]
 
 class JavaRawDimension:
     def compact(self) -> None:

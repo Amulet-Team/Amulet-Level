@@ -5,7 +5,7 @@ from amulet.level.loader import NoValidLevelLoader, get_level
 
 from . import _amulet_level, _version, abc, java, loader
 
-__all__ = [
+__all__: list[str] = [
     "Level",
     "NoValidLevelLoader",
     "abc",

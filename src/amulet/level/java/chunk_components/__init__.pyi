@@ -5,7 +5,7 @@ import typing
 
 import amulet.nbt
 
-__all__ = ["DataVersionComponent", "JavaRawChunkComponent"]
+__all__: list[str] = ["DataVersionComponent", "JavaRawChunkComponent"]
 
 class DataVersionComponent:
     ComponentID: typing.ClassVar[str] = "Amulet::DataVersionComponent"

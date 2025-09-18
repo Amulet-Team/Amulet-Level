@@ -4,7 +4,7 @@ import amulet.core.chunk
 import amulet.utils.event
 import amulet.utils.lock
 
-__all__ = ["ChunkHandle"]
+__all__: list[str] = ["ChunkHandle"]
 
 class ChunkHandle:
     def delete_chunk(self) -> None:

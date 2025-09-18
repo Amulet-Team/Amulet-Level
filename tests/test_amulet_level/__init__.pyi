@@ -4,7 +4,7 @@ import faulthandler as _faulthandler
 
 from . import _test_amulet_level, test_abc
 
-__all__ = ["compiler_config", "test_abc"]
+__all__: list[str] = ["compiler_config", "test_abc"]
 
 def _init() -> None: ...
 

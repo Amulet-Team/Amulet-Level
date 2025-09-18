@@ -7,7 +7,7 @@ import amulet.core.biome
 import amulet.core.block
 import amulet.level.abc.chunk_handle
 
-__all__ = ["Dimension", "DimensionId"]
+__all__: list[str] = ["Dimension", "DimensionId"]
 
 class Dimension:
     def get_chunk_handle(
@@ -26,7 +26,7 @@ class Dimension:
         self,
     ) -> (
         amulet.core.selection.box.SelectionBox
-        | amulet.core.selection.group.SelectionGroup
+        | amulet.core.selection.box_group.SelectionBoxGroup
     ):
         """
         The editable region of the dimension.

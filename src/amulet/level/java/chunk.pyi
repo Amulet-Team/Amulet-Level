@@ -8,7 +8,7 @@ import amulet.core.chunk
 import amulet.core.chunk.component.block_component
 import amulet.level.java.chunk_components
 
-__all__ = [
+__all__: list[str] = [
     "JavaChunk",
     "JavaChunk0",
     "JavaChunk1444",

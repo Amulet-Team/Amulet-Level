@@ -109,14 +109,15 @@ py::module init_registry(py::module m_parent)
         py::doc("Convert a namespaced id to its numerical id.\n"
                 "External shared lock required."));
 
-    pyext::collections::def_Mapping_contains<std::uint32_t>(IdRegistry);
-    pyext::collections::def_Mapping_keys<std::uint32_t>(IdRegistry);
-    pyext::collections::def_Mapping_values<Amulet::NamespacedName>(IdRegistry);
-    pyext::collections::def_Mapping_items<std::uint32_t, Amulet::NamespacedName>(IdRegistry);
-    pyext::collections::def_Mapping_get<std::uint32_t, Amulet::NamespacedName>(IdRegistry);
-    pyext::collections::def_Mapping_eq(IdRegistry);
-    pyext::collections::def_Mapping_hash(IdRegistry);
-    pyext::collections::register_Mapping(IdRegistry);
+    using IdMapping = pyext::collections::Mapping<std::uint32_t, Amulet::NamespacedName>;
+    IdMapping::def_contains(IdRegistry);
+    IdMapping::def_keys(IdRegistry);
+    IdMapping::def_values(IdRegistry);
+    IdMapping::def_items(IdRegistry);
+    IdMapping::def_get(IdRegistry);
+    IdMapping::def_eq(IdRegistry);
+    IdMapping::def_hash(IdRegistry);
+    IdMapping::register_cls(IdRegistry);
 
     return m;
 }

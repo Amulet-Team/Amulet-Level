@@ -6,7 +6,7 @@ import amulet.core.chunk
 import amulet.level.abc.chunk_handle
 import amulet.level.java.chunk
 
-__all__ = ["JavaChunkHandle"]
+__all__: list[str] = ["JavaChunkHandle"]
 
 class JavaChunkHandle(amulet.level.abc.chunk_handle.ChunkHandle):
     def get_chunk(

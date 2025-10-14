@@ -50,35 +50,17 @@ tagT pop_tag(CompoundTag& compound, std::string name, std::function<tagT()> get_
     return get_default();
 }
 
-CompoundTagPtr get_region(const JavaRawChunk& raw_chunk)
-{
-    const auto& it = raw_chunk.find("region");
-    if (
-        it != raw_chunk.end() && std::holds_alternative<CompoundTagPtr>(it->second.tag_node)) {
-        return std::get<CompoundTagPtr>(it->second.tag_node);
-    }
-    return std::make_shared<CompoundTag>();
-}
-
-CompoundTagPtr get_level(const CompoundTag& region)
-{
-    return get_tag<CompoundTagPtr>(
-        region,
-        "Level",
-        []() { return std::make_shared<CompoundTag>(); });
-}
-
-std::int64_t validate_coords(
+static std::int64_t remove_and_validate_coords(
     CompoundTag& level,
     std::int64_t cx,
     std::int64_t cz)
 {
     if (
-        pop_tag<IntTag>(level, "xPos", []() { return IntTag(); }).value != cx || pop_tag<IntTag>(level, "zPos", []() { return IntTag(); }).value != cz) {
+        pop_tag<IntTag>(level, "xPos", []() { return IntTag(); }).value != cx
+        || pop_tag<IntTag>(level, "zPos", []() { return IntTag(); }).value != cz) {
         throw std::runtime_error("Chunk coord data is incorrect.");
     }
-    std::int64_t cy = pop_tag<IntTag>(level, "yPos", []() { return IntTag(); }).value;
-    return cy << 4;
+    return pop_tag<IntTag>(level, "yPos", []() { return IntTag(); }).value;
 }
 
 template <typename chunkT>
@@ -109,18 +91,18 @@ void decode_light_populated(chunkT& chunk, CompoundTag& level)
     // pop_tag<ByteTag>(level, "LightPopulated", []() { return ByteTag(1); }).value;
 }
 
-template <typename chunkT>
-void decode_status(chunkT& chunk, CompoundTag& level, std::int64_t data_version)
+template <int DataVersion, typename chunkT>
+void decode_status(chunkT& chunk, CompoundTag& level)
 {
     // TODO
     /*std::string status = pop_tag<StringTag>(level, "Status", []() { return StringTag(); });
     if (!status.empty()) {
             chunk.set_status(status);
     }
-    else if (data_version >= 3454) {
+    else if constexpr (DataVersion >= 3454) {
             chunk.set_status("minecraft:full");
     }
-    else if (data_version >= 1912) {
+    else if constexpr (DataVersion >= 1912) {
             chunk.set_status("full");
     }
     else {
@@ -140,67 +122,58 @@ void decode_heightmaps_compound(chunkT& chunk, CompoundTag& level)
     // TODO
 }
 
-template <int DataVersion>
-std::unique_ptr<JavaChunk> _decode_java_chunk(
-    JavaGameVersion& game_version,
-    const JavaRawChunk& raw_chunk,
+template <int DataVersion, typename ChunkT>
+void decode_java_chunk(
+    ChunkT& chunk,
+    JavaRawChunk raw_chunk,
     CompoundTag& region,
     std::int64_t cx,
     std::int64_t cz,
     const VersionNumber& version,
     std::int64_t data_version,
     const BlockStack& default_block,
-    const Biome& default_biome,
-    std::function<const Block&()> get_water)
+    const Biome& default_biome)
 {
-    // Validate coordinates
-    CompoundTagPtr level_ptr;
-    CompoundTag& level = [&]() -> CompoundTag& {
-        if constexpr (DataVersion >= 2203) {
-            if (data_version >= 2844) {
-                return region;
-            } else {
-                level_ptr = get_level(region);
-                return *level_ptr;
-            }
+    std::shared_ptr<JavaGameVersion> game_version = get_java_game_version(version);
+
+    std::optional<Block> _water_block;
+    auto get_water = [&version, &_water_block]() -> const Block& {
+        if (!_water_block) {
+            auto converted = get_java_game_version(VersionNumber({ 3837 }))->get_block_data()->translate("java", version, Block("java", VersionNumber({ 3837 }), "minecraft", "water", std::initializer_list<Block::PropertyMap::value_type> { { "level", StringTag("0") } }));
+            std::visit(
+                [&version, &_water_block](auto&& arg) {
+                    using T = std::decay_t<decltype(arg)>;
+                    if constexpr (std::is_same_v<T, std::tuple<Block, std::optional<BlockEntity>, bool>>) {
+                        _water_block = std::get<0>(arg);
+                    } else {
+                        throw std::runtime_error("Water block did not convert to a block in version Java " + version.toString());
+                    }
+                },
+                converted);
+        }
+        return *_water_block;
+    };
+
+    // Get the data root
+    CompoundTagPtr level_keep_alive_ptr;
+    CompoundTag& level = [&level_keep_alive_ptr, &region]() -> CompoundTag& {
+        // In 2844 the Level tag was removed and its contents moved into the root.
+        if constexpr (DataVersion >= 2844) {
+            return region;
         } else {
-            level_ptr = get_level(region);
-            return *level_ptr;
+            level_keep_alive_ptr = get_tag<CompoundTagPtr>(
+                region,
+                "Level",
+                []() { return std::make_shared<CompoundTag>(); });
+            return *level_keep_alive_ptr;
         }
     }();
-    auto floor_y = validate_coords(level, cx, cz);
 
-    // Make the chunk
-    auto chunk_ptr = [&]() {
-        if constexpr (DataVersion >= 2203) {
-            return std::make_unique<JavaChunk2203>(
-                data_version,
-                default_block,
-                default_biome);
-        } else if constexpr (DataVersion >= 1466) {
-            return std::make_unique<JavaChunk1466>(
-                data_version,
-                default_block,
-                default_biome);
-        } else if constexpr (DataVersion >= 1444) {
-            return std::make_unique<JavaChunk1444>(
-                data_version,
-                default_block,
-                default_biome);
-        } else if constexpr (DataVersion >= 0) {
-            return std::make_unique<JavaChunk0>(
-                data_version,
-                default_block,
-                default_biome);
-        } else {
-            return std::make_unique<JavaChunkNA>(
-                default_block,
-                default_biome);
-        }
-    }();
-    auto& chunk = *chunk_ptr;
+    // Validate coordinates and get chunk floor
+    auto floor_cy = remove_and_validate_coords(level, cx, cz);
 
-    if constexpr (DataVersion == -1) {
+    // Remove old version tag
+    if constexpr (DataVersion < 0) {
         // LegacyVersionComponent TODO
         // pop_tag<ByteTag>(*level, "V", []() { return ByteTag(1); });
     }
@@ -210,7 +183,7 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
 
     // Status
     if constexpr (DataVersion >= 1444) {
-        decode_status(chunk, level, data_version);
+        decode_status<DataVersion>(chunk, level);
     } else {
         decode_terrain_populated(chunk, level);
         decode_light_populated(chunk, level);
@@ -257,7 +230,7 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
 
         for (auto& [cy, section] : sections_map) {
             auto [palette_tag, data_tag] = [&]() {
-                if (data_version >= 2836) {
+                if constexpr (DataVersion >= 2836) {
                     auto block_states_tag = pop_tag<CompoundTagPtr>(*section, "block_states", []() { return std::make_shared<CompoundTag>(); });
                     return std::make_pair(
                         pop_tag<ListTagPtr>(*block_states_tag, "palette", []() { return std::make_shared<ListTag>(); }),
@@ -290,19 +263,25 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
                 auto properties_tag = get_tag<CompoundTagPtr>(*block_tag, "Properties", []() { return std::make_shared<CompoundTag>(); });
                 std::map<std::string, Block::PropertyValue> block_properties;
                 for (const auto& [k, v] : *properties_tag) {
-                    std::visit([&block_properties, &k](auto&& arg) {
-                        using T = std::decay_t<decltype(arg)>;
-                        if constexpr (
-                            std::is_same_v<T, Amulet::NBT::ByteTag> || std::is_same_v<T, Amulet::NBT::ShortTag> || std::is_same_v<T, Amulet::NBT::IntTag> || std::is_same_v<T, Amulet::NBT::LongTag> || std::is_same_v<T, Amulet::NBT::StringTag>) {
-                            block_properties.emplace(k, arg);
-                        }
-                    },
+                    std::visit(
+                        [&block_properties, &k](auto&& arg) {
+                            using T = std::decay_t<decltype(arg)>;
+                            if constexpr (
+                                std::is_same_v<T, Amulet::NBT::ByteTag>
+                                || std::is_same_v<T, Amulet::NBT::ShortTag>
+                                || std::is_same_v<T, Amulet::NBT::IntTag>
+                                || std::is_same_v<T, Amulet::NBT::LongTag>
+                                || std::is_same_v<T, Amulet::NBT::StringTag>) {
+                                block_properties.emplace(k, arg);
+                            }
+                        },
                         v);
                 }
                 std::vector<Block> blocks;
 
-                auto waterloggable = game_version.get_block_data()->is_waterloggable(block_namespace, block_base_name);
-                if (waterloggable == Waterloggable::Yes) {
+                auto waterloggable = game_version->get_block_data()->is_waterloggable(block_namespace, block_base_name);
+                switch (waterloggable) {
+                case Waterloggable::Yes: {
                     auto waterlogged_it = block_properties.find("waterlogged");
                     if (
                         waterlogged_it != block_properties.end() and std::holds_alternative<StringTag>(waterlogged_it->second)) {
@@ -311,8 +290,11 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
                         }
                         block_properties.erase(waterlogged_it);
                     }
-                } else if (waterloggable == Waterloggable::Always) {
+                }
+                case Waterloggable::Always:
                     blocks.push_back(get_water());
+                default:
+                    break;
                 }
                 blocks.insert(
                     blocks.begin(),
@@ -340,7 +322,7 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
                             std::span<std::uint64_t>(reinterpret_cast<std::uint64_t*>(data_tag->data()), data_tag->size()),
                             decoded_span,
                             std::max<std::uint8_t>(4, std::bit_width(palette_size - 1)),
-                            data_version <= 2529);
+                            DataVersion <= 2529);
                         auto index_array = std::make_shared<IndexArray3D>(
                             std::make_tuple<std::uint16_t>(16, 16, 16));
                         std::span<std::uint32_t> index_array_span(index_array->get_buffer(), index_array->get_size());
@@ -351,7 +333,7 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
                                     auto& block_index = decoded_span[y * 256 + z * 16 + x];
                                     if (palette_size <= block_index) {
                                         throw std::runtime_error(
-                                            "Block index at cx=" + std::to_string(cx) + ",cy=" + std::to_string(cy) + ",cz=" + std::to_string(cx) + ",dx=" + std::to_string(x) + ",dy=" + std::to_string(y) + ",dz=" + std::to_string(z) + " is larger than the block palette size.");
+                                            "Block index at cx=" + std::to_string(cx) + ",cy=" + std::to_string(cy) + ",cz=" + std::to_string(cz) + ",dx=" + std::to_string(x) + ",dy=" + std::to_string(y) + ",dz=" + std::to_string(z) + " is larger than the block palette size.");
                                     }
                                     index_array_span[x * 256 + y * 16 + z] = lut[block_index];
                                 }
@@ -368,8 +350,12 @@ std::unique_ptr<JavaChunk> _decode_java_chunk(
 
     // TODO: biomes
 
-    // Return the chunk
-    return chunk_ptr;
+    // Move all remaining chunk data into the chunk object.
+    auto shared_raw_chunk = std::make_shared<JavaRawChunkType>();
+    for (const auto& [k, v] : raw_chunk) {
+        shared_raw_chunk->emplace(k, std::make_shared<NamedTag>(v));
+    }
+    chunk.set_raw_data(std::move(shared_raw_chunk));
 }
 
 // Get the default block for this dimension and version.
@@ -417,15 +403,26 @@ static Biome _get_default_biome(
 }
 
 std::unique_ptr<JavaChunk> JavaRawDimension::decode_chunk(
-    const JavaRawChunk& raw_chunk,
+    JavaRawChunk raw_chunk,
     std::int64_t cx,
     std::int64_t cz)
 {
     // Get the region compound tag
-    CompoundTagPtr region = get_region(raw_chunk);
+    CompoundTagPtr region_ptr = [&raw_chunk] {
+        const auto& it = raw_chunk.find("region");
+        if (it == raw_chunk.end()) {
+            throw std::invalid_argument("This chunk does not have a 'region' entry.");
+        }
+        if (!std::holds_alternative<CompoundTagPtr>(it->second.tag_node)) {
+            throw std::invalid_argument("'region' entry is not a CompoundTag.");
+        }
+        return std::get<CompoundTagPtr>(it->second.tag_node);
+    }();
+    CompoundTag& region = *region_ptr;
 
+    // Extract the DataVersion
     std::int64_t data_version = pop_tag<IntTag>(
-        *region,
+        region,
         "DataVersion",
         []() { return IntTag(-1); }).value;
 
@@ -433,38 +430,52 @@ std::unique_ptr<JavaChunk> JavaRawDimension::decode_chunk(
     auto version_range = std::make_shared<VersionRange>("java", version, version);
     auto default_block = _get_default_block(*this, *version_range);
     auto default_biome = _get_default_biome(*this, *version_range);
-    std::shared_ptr<JavaGameVersion> game_version = get_java_game_version(version);
 
-    std::optional<Block> _water_block;
-    auto get_water = [&version, &_water_block]() -> const Block& {
-        if (!_water_block) {
-            auto converted = get_java_game_version(VersionNumber({ 3837 }))->get_block_data()->translate("java", version, Block("java", VersionNumber({ 3837 }), "minecraft", "water", std::initializer_list<Block::PropertyMap::value_type> { { "level", StringTag("0") } }));
-            std::visit(
-                [&version, &_water_block](auto&& arg) {
-                    using T = std::decay_t<decltype(arg)>;
-                    if constexpr (std::is_same_v<T, std::tuple<Block, std::optional<BlockEntity>, bool>>) {
-                        _water_block = std::get<0>(arg);
-                    } else {
-                        throw std::runtime_error("Water block did not convert to a block in version Java " + version.toString());
-                    }
-                },
-                converted);
+    // Make and decode the chunk
+    if (2203 <= data_version) {
+        auto chunk = std::make_unique<JavaChunk2203>(
+            data_version,
+            default_block,
+            default_biome);
+        if (2844 <= data_version) {
+            decode_java_chunk<2844>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
+        } else if (2836 <= data_version) {
+            decode_java_chunk<2836>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
+        } else {
+            decode_java_chunk<2203>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
         }
-        return *_water_block;
-    };
+        return chunk;
 
-    if (data_version >= 2844) {
-        return _decode_java_chunk<2844>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
-    } else if (data_version >= 2203) {
-        return _decode_java_chunk<2203>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
-    } else if (data_version >= 1466) {
-        return _decode_java_chunk<1466>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
-    } else if (data_version >= 1444) {
-        return _decode_java_chunk<1444>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
-    } else if (data_version >= 0) {
-        return _decode_java_chunk<0>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
+    } else if (1466 <= data_version) {
+        auto chunk = std::make_unique<JavaChunk1466>(
+            data_version,
+            default_block,
+            default_biome);
+        decode_java_chunk<1466>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
+        return chunk;
+
+    } else if (1444 <= data_version) {
+        auto chunk = std::make_unique<JavaChunk1444>(
+            data_version,
+            default_block,
+            default_biome);
+        decode_java_chunk<1444>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
+        return chunk;
+
+    } else if (0 <= data_version) {
+        auto chunk = std::make_unique<JavaChunk0>(
+            data_version,
+            default_block,
+            default_biome);
+        decode_java_chunk<0>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
+        return chunk;
+
     } else {
-        return _decode_java_chunk<-1>(*game_version, raw_chunk, *region, cx, cz, version, data_version, default_block, default_biome, get_water);
+        auto chunk = std::make_unique<JavaChunkNA>(
+            default_block,
+            default_biome);
+        decode_java_chunk<-1>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
+        return chunk;
     }
 }
 

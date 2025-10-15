@@ -50,65 +50,6 @@ tagT pop_tag(CompoundTag& compound, std::string name, std::function<tagT()> get_
     return get_default();
 }
 
-template <typename chunkT>
-void decode_last_update(chunkT& chunk, CompoundTag& level_tag)
-{
-    // TODO
-    // pop_tag<LongTag>(level_tag, "LastUpdate", []() { return LongTag(); }).value;
-}
-
-template <typename chunkT>
-void decode_inhabited_time(chunkT& chunk, CompoundTag& level_tag)
-{
-    // TODO
-    // pop_tag<LongTag>(level_tag, "InhabitedTime", []() { return LongTag(); }).value;
-}
-
-template <typename chunkT>
-void decode_terrain_populated(chunkT& chunk, CompoundTag& level_tag)
-{
-    // TODO
-    // pop_tag<ByteTag>(level_tag, "TerrainPopulated", []() { return ByteTag(1); }).value;
-}
-
-template <typename chunkT>
-void decode_light_populated(chunkT& chunk, CompoundTag& level_tag)
-{
-    // TODO
-    // pop_tag<ByteTag>(level_tag, "LightPopulated", []() { return ByteTag(1); }).value;
-}
-
-template <int DataVersion, typename chunkT>
-void decode_status(chunkT& chunk, CompoundTag& level_tag)
-{
-    // TODO
-    /*std::string status = pop_tag<StringTag>(level_tag, "Status", []() { return StringTag(); });
-    if (!status.empty()) {
-            chunk.set_status(status);
-    }
-    else if constexpr (DataVersion >= 3454) {
-            chunk.set_status("minecraft:full");
-    }
-    else if constexpr (DataVersion >= 1912) {
-            chunk.set_status("full");
-    }
-    else {
-            chunk.set_status("postprocessed");
-    }*/
-}
-
-template <typename chunkT>
-void decode_heightmap(chunkT& chunk, CompoundTag& level_tag)
-{
-    // TODO
-}
-
-template <typename chunkT>
-void decode_heightmaps_compound(chunkT& chunk, CompoundTag& level_tag)
-{
-    // TODO
-}
-
 template <int DataVersion, typename ChunkT>
 void decode_java_chunk(
     ChunkT& chunk,
@@ -351,19 +292,307 @@ void decode_java_chunk(
         } else {
             // Numerical format
             throw std::runtime_error("NotImplemented");
+            // blocks: dict[int, SubChunkNDArray] = {}
+            // palette = []
+            // palette_len = 0
+            // for cy, section in _iter_sections():
+            //     block_tag = section.pop("Blocks", None)
+            //     data_tag = section.pop("Data", None)
+            //     if not isinstance(block_tag, AbstractBaseArrayTag) or not isinstance(
+            //             data_tag, AbstractBaseArrayTag
+            //     ):
+            //         continue
+            //     section_blocks = numpy.asarray(block_tag, dtype=numpy.uint8)
+            //     section_data = numpy.asarray(data_tag, dtype=numpy.uint8)
+            //     section_blocks = section_blocks.reshape((16, 16, 16))
+            //     section_blocks = section_blocks.astype(numpy.uint16)
+
+            //    section_data = world_utils.from_nibble_array(section_data)
+            //    section_data = section_data.reshape((16, 16, 16))
+
+            //    add_tag = section.pop("Add", None)
+            //    if isinstance(add_tag, AbstractBaseArrayTag):
+            //        add_blocks = numpy.asarray(add_tag, dtype=numpy.uint8)
+            //        add_blocks = world_utils.from_nibble_array(add_blocks)
+            //        add_blocks = add_blocks.reshape((16, 16, 16))
+
+            //        section_blocks |= add_blocks.astype(numpy.uint16) << 8
+            //        # TODO: fix this
+
+            //    (section_palette, blocks[cy]) = world_utils.fast_unique(
+            //        numpy.transpose(
+            //            (section_blocks << 4) + section_data, (2, 0, 1)
+            //        )  # YZX -> XYZ
+            //    )
+            //    blocks[cy] += palette_len
+            //    palette_len += len(section_palette)
+            //    palette.append(section_palette)
+
+            // if palette:
+            //     final_palette, lut = numpy.unique(
+            //         numpy.concatenate(palette), return_inverse=True
+            //     )
+            //     final_palette: numpy.ndarray = numpy.array(
+            //         [final_palette >> 4, final_palette & 15]
+            //     ).T
+            //     for cy in blocks:
+            //         blocks[cy] = lut[blocks[cy]]
+            // else:
+            //     final_palette = numpy.array([], dtype=object)
+            // chunk.blocks = blocks
+            // chunk.misc["block_palette"] = final_palette
         }
     }
 
-    decode_last_update(chunk, level_tag);
-    decode_inhabited_time(chunk, level_tag);
+    // Block entities TODO
+    // if 2844 <= DataVersion:
+    //     BlockEntities = ("region", [("block_entities", ListTag)], ListTag)
+    // else:
+    //     BlockEntities = (
+    //         "region",
+    //         [("Level", CompoundTag), ("TileEntities", ListTag)],
+    //         ListTag,
+    //     )
+    // def _decode_block_entity_list(block_entities: ListTag) -> List["BlockEntity"]:
+    //     entities_out = []
+    //     if block_entities.list_data_type == CompoundTag.tag_id:
+    //         for nbt in block_entities:
+    //             if not isinstance(nbt, CompoundTag):
+    //                 continue
+    //             entity = self._decode_block_entity(
+    //                 NamedTag(nbt),
+    //                 EntityIDType.namespace_str_id,
+    //                 EntityCoordType.xyz_int,
+    //             )
+    //             if entity is not None:
+    //                 entities_out.append(entity)
+    //     return entities_out
+    // chunk.block_entities = _decode_block_entity_list(
+    //     get_layer_obj(data, BlockEntities, pop_last=True)
+    //)
 
-    // Status
-    if constexpr (DataVersion >= 1444) {
-        decode_status<DataVersion>(chunk, level_tag);
-    } else {
-        decode_terrain_populated(chunk, level_tag);
-        decode_light_populated(chunk, level_tag);
-    }
+    // Entities TODO
+    // def _decode_entity_list(entities: ListTag) -> list["Entity"]:
+    //     entities_out = []
+    //     if entities.list_data_type == CompoundTag.tag_id:
+    //         for nbt in entities:
+    //             entity = _decode_entity(
+    //                 NamedTag(nbt),
+    //                 EntityIDType.namespace_str_id,
+    //                 EntityCoordType.Pos_list_double,
+    //             )
+    //             if entity is not None:
+    //                 entities_out.append(entity)
+    //    return entities_out
+    //
+    // if 2844 <= DataVersion:
+    //     Entities = ("region", [("entities", ListTag)], ListTag)
+    // else:
+    //     Entities = (
+    //         "region",
+    //         [("Level", CompoundTag), ("Entities", ListTag)],
+    //         ListTag,
+    //     )
+    // ents = _decode_entity_list(
+    //     get_layer_obj(data, Entities, pop_last=True)
+    //)
+    // if 2681 <= DataVersion:
+    //     # TODO: it is possible the entity layer data version does not match the chunk data version
+    //     EntityLayer = (
+    //         "entities",
+    //         [("Entities", ListTag)],
+    //         ListTag,
+    //     )
+    //
+    //    if data_version != get_layer_obj(data, (
+    //        "entities",
+    //        [("DataVersion", IntTag)],
+    //        IntTag,
+    //    )):
+    //        raise RuntimeError("region data version does not equal entities data version.")
+    //
+    //    ents += _decode_entity_list(
+    //        get_layer_obj(data, EntityLayer, pop_last=True)
+    //    )
+    //
+    // if amulet.entity_support:
+    //     chunk.entities = ents
+    // else:
+    //     chunk._native_entities.extend(ents)
+    //     chunk._native_version = ("java", data_version)
+
+    // Block and fluid ticks
+    // if 2844 <= DataVersion:
+    //     BlockTicks = ("region", [("block_ticks", ListTag)], ListTag)
+    // else:
+    //     BlockTicks = (
+    //         "region",
+    //         [("Level", CompoundTag), ("TileTicks", ListTag)],
+    //         ListTag,
+    //     )
+    // chunk.misc.setdefault("block_ticks", {}).update(
+    //     decode_ticks(get_layer_obj(data, BlockTicks, pop_last=True))
+    //)
+    //
+    // if 1444 <= DataVersion < 2844:
+    //     ToBeTicked = (
+    //         "region",
+    //         [("Level", CompoundTag), ("ToBeTicked", ListTag)],
+    //         ListTag,
+    //     )
+    //     chunk.misc["to_be_ticked"] = decode_to_be_ticked(
+    //         get_layer_obj(data, ToBeTicked, pop_last=True), floor_cy
+    //     )
+    //
+    // if 1444 <= DataVersion:
+    //     if 2844 <= DataVersion:
+    //         LiquidTicks = ("region", [("fluid_ticks", ListTag)], ListTag)
+    //     else:
+    //         LiquidTicks = (
+    //             "region",
+    //             [("Level", CompoundTag), ("LiquidTicks", ListTag)],
+    //             ListTag,
+    //         )
+    //     chunk.misc.setdefault("fluid_ticks", {}).update(
+    //         decode_ticks(
+    //             get_layer_obj(data, LiquidTicks, pop_last=True)
+    //         )
+    //     )
+    //
+    // if 1444 <= DataVersion < 2844:
+    //     LiquidsToBeTicked = (
+    //         "region",
+    //         [("Level", CompoundTag), ("LiquidsToBeTicked", ListTag)],
+    //         ListTag,
+    //     )
+    //     chunk.misc["liquids_to_be_ticked"] = decode_to_be_ticked(
+    //         get_layer_obj(data, LiquidsToBeTicked, pop_last=True), floor_cy
+    //     )
+
+    // PostProcessing TODO
+    // if 1444 <= DataVersion:
+    //     if 2844 <= DataVersion:
+    //         PostProcessing = ("region", [("PostProcessing", ListTag)], ListTag)
+    //     else:
+    //         PostProcessing = (
+    //             "region",
+    //             [("Level", CompoundTag), ("PostProcessing", ListTag)],
+    //             ListTag,
+    //         )
+    //     chunk.misc["post_processing"] = decode_to_be_ticked(
+    //         get_layer_obj(data, PostProcessing, pop_last=True), floor_cy
+    //     )
+
+    // Biomes TODO
+    // if 2836 <= DataVersion:
+    //     biomes: dict[int, numpy.ndarray] = {}
+    //     palette = BiomeManager()
+    //
+    //    for cy, section in _iter_sections():
+    //        biomes = get_obj(section, "biomes", CompoundTag)
+    //        if not (isinstance(biomes, CompoundTag) and "palette" in biomes):
+    //            continue
+    //        section_palette = [entry.py_data for entry in biomes.pop("palette")]
+    //        assert section_palette, "Biome palette cannot be empty"
+    //        data = biomes.pop("data", None)
+    //        if data is None:
+    //            # case 1: palette contains one value and data does not exist (undefined zero array)
+    //            # TODO: in the new biome system just leave this as the number
+    //            arr = numpy.zeros((4, 4, 4), numpy.uint32)
+    //        else:
+    //            # case 2: palette contains values and data is an index array
+    //            arr = numpy.transpose(
+    //                decode_long_array(
+    //                    data.np_array,
+    //                    4 ** 3,
+    //                    max(1, (len(section_palette) - 1).bit_length()),
+    //                    dense=LongArrayDense,
+    //                )
+    //                .astype(numpy.uint32)
+    //                .reshape((4, 4, 4)),
+    //                (2, 0, 1),
+    //            )
+    //        lut = numpy.array(
+    //            [palette.get_add_biome(biome) for biome in section_palette]
+    //        )
+    //        biomes[cy] = lut[arr].astype(numpy.uint32)
+    //
+    //    chunk.biomes = biomes
+    //    chunk.biome_palette = palette
+    //
+    // elif 2203 <= DataVersion:
+    //     Biomes = (
+    //         "region",
+    //         [("Level", CompoundTag), ("Biomes", IntArrayTag)],
+    //         None,
+    //     )
+    //     biomes = get_layer_obj(data, Biomes, pop_last=True)
+    //     if isinstance(biomes, IntArrayTag):
+    //         if (len(biomes) / 16) % 4:
+    //             log.error(
+    //                 f"The biome array size must be 4x4x4xN but got an array of size {biomes.np_array.size}"
+    //             )
+    //         else:
+    //             arr = numpy.transpose(
+    //                 biomes.np_array.astype(numpy.uint32).reshape((-1, 4, 4)),
+    //                 (2, 0, 1),
+    //             )  # YZX -> XYZ
+    //             chunk.biomes = {
+    //                 sy + floor_cy: arr
+    //                 for sy, arr in enumerate(
+    //                     numpy.split(
+    //                         arr,
+    //                         arr.shape[1] // 4,
+    //                         1,
+    //                     )
+    //                 )
+    //             }
+    // else:
+    //     if 1467 <= DataVersion:
+    //         Biomes = (
+    //             "region",
+    //             [("Level", CompoundTag), ("Biomes", IntArrayTag)],
+    //             None,
+    //         )
+    //     else:
+    //         Biomes = (
+    //             "region",
+    //             [("Level", CompoundTag), ("Biomes", ByteArrayTag)],
+    //             None,
+    //         )
+    //     biomes = get_layer_obj(data, Biomes, pop_last=True)
+    //     if isinstance(biomes, AbstractBaseArrayTag) and biomes.np_array.size == 256:
+    //         chunk.biomes = biomes.np_array.astype(numpy.uint32).reshape((16, 16))
+
+    // isLightOn TODO
+    // if 1934 <= DataVersion:
+    //     if 2844 <= DataVersion:
+    //         isLightOn = ("region", [("isLightOn", ByteTag)], ByteTag)
+    //     else:
+    //         isLightOn = ("region", [("Level", CompoundTag), ("isLightOn", ByteTag)], ByteTag)
+    //     chunk.misc["isLightOn"] = get_layer_obj(data, isLightOn, pop_last=True)
+
+    // lighting data TODO
+    // def _unpack_light(
+    //     section_key: str
+    //) -> dict[int, numpy.ndarray]:
+    //     light_container = {}
+    //     for cy, section in _iter_sections():
+    //         if self.check_type(section, section_key, ByteArrayTag):
+    //             light: numpy.ndarray = section.pop(section_key).np_array
+    //             if light.size == 2048:
+    //                 # TODO: check if this needs transposing or if the values are the other way around
+    //                 light_container[cy] = (
+    //                     (
+    //                         light.reshape(-1, 1)
+    //                         & numpy.array([0xF, 0xF0], dtype=numpy.uint8)
+    //                     )
+    //                     >> numpy.array([0, 4], dtype=numpy.uint8)
+    //                 ).reshape((16, 16, 16))
+    //     return light_container
+    //
+    // chunk.misc["block_light"] = _unpack_light("BlockLight")
+    // chunk.misc["sky_light"] = _unpack_light("SkyLight")
 
     // Heightmaps
     if constexpr (DataVersion >= 1466) {
@@ -372,7 +601,95 @@ void decode_java_chunk(
         decode_heightmap(chunk, level_tag);
     }
 
-    // TODO: biomes
+    // Heightmaps TODO
+    // if 1466 <= DataVersion:
+    //     if 2844 <= DataVersion:
+    //         Heightmaps = ("region", [("Heightmaps", CompoundTag)], CompoundTag)
+    //     else:
+    //         Heightmaps = (
+    //             "region",
+    //             [("Level", CompoundTag), ("Heightmaps", CompoundTag)],
+    //             CompoundTag,
+    //         )
+    //
+    //    heights = get_layer_obj(data, Heightmaps, pop_last=True)
+    //    chunk.misc["height_mapC"] = h = {}
+    //    for key, value in heights.items():
+    //        if isinstance(value, LongArrayTag):
+    //            try:
+    //                h[key] = decode_long_array(
+    //                    value.np_array,
+    //                    256,
+    //                    (height_cy << 4).bit_length(),
+    //                    dense=LongArrayDense,
+    //                ).reshape((16, 16)) + (floor_cy << 4)
+    //            except Exception as e:
+    //                log.warning(e)
+    // else:
+    //    HeightMap = (
+    //        "region",
+    //        [("Level", CompoundTag), ("HeightMap", IntArrayTag)],
+    //        IntArrayTag,
+    //    )
+    //    height = get_layer_obj(data, HeightMap, pop_last=True).np_array
+    //    if isinstance(height, numpy.ndarray) and height.size == 256:
+    //        chunk.misc["height_map256IA"] = height.reshape((16, 16))
+
+    // Last Update TODO
+    // pop_tag<LongTag>(level_tag, "LastUpdate", []() { return LongTag(); }).value;
+
+    // Status TODO
+    // if constexpr (1444 <= DataVersion) {
+    //      std::string status = pop_tag<StringTag>(level_tag, "Status", []() { return StringTag(); });
+    //      if (!status.empty()) {
+    //              chunk.set_status(status);
+    //      }
+    //      else if constexpr (DataVersion >= 3454) {
+    //              chunk.set_status("minecraft:full");
+    //      }
+    //      else if constexpr (DataVersion >= 1912) {
+    //              chunk.set_status("full");
+    //      }
+    //      else {
+    //              chunk.set_status("postprocessed");
+    //      }
+    // } else {
+    //     status = "empty"
+    //     pop_tag<ByteTag>(level_tag, "TerrainPopulated", []() { return ByteTag(1); }).value;
+    //     if get_layer_obj(data, (
+    //         "region",
+    //         [("Level", CompoundTag), ("TerrainPopulated", ByteTag)],
+    //         ByteTag,
+    //     ), pop_last=True):
+    //         status = "decorated"
+    //     pop_tag<ByteTag>(level_tag, "LightPopulated", []() { return ByteTag(1); }).value;
+    //     if get_layer_obj(data, (
+    //         "region",
+    //         [("Level", CompoundTag), ("LightPopulated", ByteTag)],
+    //         ByteTag,
+    //     ), pop_last=True):
+    //         status = "postprocessed"
+    //     chunk.status = status
+    // }
+
+    // Inhabited Time TODO
+    // pop_tag<LongTag>(level_tag, "InhabitedTime", []() { return LongTag(); }).value;
+
+    // Structures TODO
+    // if constexpr (1444 <= DataVersion) {
+    //    if constexpr (2844 <= DataVersion) {
+    //        // Structures = ("region", [("structures", CompoundTag)], CompoundTag)
+    //    } else {
+    //        // Structures = (
+    //        //     "region",
+    //        //     [("Level", CompoundTag), ("Structures", CompoundTag)],
+    //        //     CompoundTag,
+    //        // )
+    //    }
+    //    // chunk.misc["structures"] = get_layer_obj(
+    //    //     data, Structures, pop_last=True
+    //    // )
+    //}
 
     // Move all remaining chunk data into the chunk object.
     auto shared_raw_chunk = std::make_shared<JavaRawChunkType>();

@@ -404,6 +404,7 @@ void decode_java_chunk(
     //         ListTag,
     //     )
     //
+    //    // TODO: Remove the entity data version
     //    if data_version != get_layer_obj(data, (
     //        "entities",
     //        [("DataVersion", IntTag)],

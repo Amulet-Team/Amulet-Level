@@ -595,13 +595,6 @@ void decode_java_chunk(
     // chunk.misc["block_light"] = _unpack_light("BlockLight")
     // chunk.misc["sky_light"] = _unpack_light("SkyLight")
 
-    // Heightmaps
-    if constexpr (DataVersion >= 1466) {
-        decode_heightmaps_compound(chunk, level_tag);
-    } else {
-        decode_heightmap(chunk, level_tag);
-    }
-
     // Heightmaps TODO
     // if 1466 <= DataVersion:
     //     if 2844 <= DataVersion:

@@ -27,6 +27,7 @@ class JavaRawDimension:
     ) -> amulet.level.java.chunk.JavaChunk:
         """
         Decode a raw chunk to a chunk object.
+        This will mutate the chunk data.
         TODO: thread safety
         """
 
@@ -52,6 +53,7 @@ class JavaRawDimension:
     ) -> dict[str, amulet.nbt.NamedTag]:
         """
         Encode a chunk object to its raw data.
+        This will mutate the chunk data.
         TODO: thread safety
         """
 

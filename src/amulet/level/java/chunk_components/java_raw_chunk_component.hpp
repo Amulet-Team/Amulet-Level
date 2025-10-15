@@ -39,6 +39,9 @@ protected:
 
 public:
     AMULET_LEVEL_EXPORT static const std::string ComponentID;
+
+    // This is subject to change as data gets moved into the chunk class.
+    // Do not rely on data in here existing.
     std::shared_ptr<JavaRawChunkType> get_raw_data()
     {
         if (!_raw_data) {

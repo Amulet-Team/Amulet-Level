@@ -12,12 +12,12 @@
 
 namespace Amulet {
 
-JavaRawChunk JavaRawDimension::encode_chunk(
-    JavaChunk& chunk,
-    std::int64_t cx,
-    std::int64_t cz)
+template <int DataVersion, typename ChunkT>
+JavaRawChunk encode_java_chunk(
+    ChunkT& chunk
+)
 {
-    throw std::runtime_error("");
+    throw std::runtime_error("NotImpelementedError");
     // floor_cy = bounds[0] >> 4
     // height_cy = (bounds[1] - bounds[0]) >> 4
     // ceil_cy = floor_cy + height_cy
@@ -573,6 +573,62 @@ JavaRawChunk JavaRawDimension::encode_chunk(
     //     get_layer_obj(data, OldLevel, pop_last=True)
 
     // return data
+}
+
+
+JavaRawChunk JavaRawDimension::encode_chunk(
+    JavaChunk& chunk,
+    std::int64_t cx,
+    std::int64_t cz)
+{
+    // See the decoder for version documentation.
+    if (auto* chunk_ = dynamic_cast<JavaChunk2203*>(&chunk)) {
+        auto data_version = chunk_->get_data_version();
+        if (3463 <= data_version) {
+            return encode_java_chunk<3463>(*chunk_);
+        } else if (2844 <= data_version) {
+            return encode_java_chunk<2844>(*chunk_);
+        } else if (2836 <= data_version) {
+            return encode_java_chunk<2836>(*chunk_);
+        } else if (2709 <= data_version) {
+            return encode_java_chunk<2709>(*chunk_);
+        } else if (2681 <= data_version) {
+            return encode_java_chunk<2681>(*chunk_);
+        } else if (2529 <= data_version) {
+            return encode_java_chunk<2529>(*chunk_);
+        } else {
+            return encode_java_chunk<2203>(*chunk_);
+        }
+    } else if (auto* chunk_ = dynamic_cast<JavaChunk1466*>(&chunk)) {
+        auto data_version = chunk_->get_data_version();
+        if (1934 <= data_version) {
+            return encode_java_chunk<1934>(*chunk_);
+        } else if (1912 <= data_version) {
+            return encode_java_chunk<1912>(*chunk_);
+        } else if (1908 <= data_version) {
+            return encode_java_chunk<1908>(*chunk_);
+        } else if (1901 <= data_version) {
+            return encode_java_chunk<1901>(*chunk_);
+        } else if (1519 <= data_version) {
+            return encode_java_chunk<1519>(*chunk_);
+        } else if (1503 <= data_version) {
+            return encode_java_chunk<1503>(*chunk_);
+        } else if (1484 <= data_version) {
+            return encode_java_chunk<1484>(*chunk_);
+        } else if (1467 <= data_version) {
+            return encode_java_chunk<1467>(*chunk_);
+        } else {
+            return encode_java_chunk<1466>(*chunk_);
+        }
+    } else if (auto* chunk_ = dynamic_cast<JavaChunk1444*>(&chunk)) {
+        return encode_java_chunk<1444>(*chunk_);
+    } else if (auto* chunk_ = dynamic_cast<JavaChunk0*>(&chunk)) {
+        return encode_java_chunk<0>(*chunk_);
+    } else if (auto* chunk_ = dynamic_cast<JavaChunkNA*>(&chunk)) {
+        return encode_java_chunk<-1>(*chunk_);
+    } else {
+        throw std::invalid_argument("Unsupported chunk class" + chunk.get_chunk_id());
+    }
 }
 
 } // namespace Amulet

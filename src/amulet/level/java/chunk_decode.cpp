@@ -867,7 +867,7 @@ std::unique_ptr<JavaChunk> JavaRawDimension::decode_chunk(
             default_block,
             default_biome);
         if (1934 <= data_version) {
-            decode_java_chunk<1466>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
+            decode_java_chunk<1934>(*chunk, std::move(raw_chunk), region, cx, cz, version, data_version, default_block, default_biome);
             // isLightOn added
             // BlockLight and SkyLight are now optional
         } else if (1912 <= data_version) {

@@ -5,6 +5,8 @@ from builtins import str as DimensionId
 
 import amulet.core.biome
 import amulet.core.block
+import amulet.core.selection.box
+import amulet.core.selection.box_group
 import amulet.level.abc.chunk_handle
 
 __all__: list[str] = ["Dimension", "DimensionId"]

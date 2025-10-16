@@ -3,6 +3,7 @@
 #include <memory>
 #include <stdexcept>
 
+#include <amulet/nbt/tag/compound.hpp>
 #include <amulet/nbt/tag/named_tag.hpp>
 
 #include <amulet/core/chunk/chunk.hpp>
@@ -10,139 +11,177 @@
 #include "chunk.hpp"
 #include "raw_dimension.hpp"
 
+using namespace Amulet::NBT;
+
 namespace Amulet {
+
+template <typename tagT>
+tagT setdefault_tag(CompoundTag& compound, std::string name, std::function<tagT()> get_default)
+{
+    auto it = compound.find(name);
+    if (it == compound.end() || !std::holds_alternative<tagT>(it->second)) {
+        it = compound.insert_or_assign(name, get_default()).first;
+    }
+    return std::get<tagT>(it->second);
+}
 
 template <int DataVersion, typename ChunkT>
 JavaRawChunk encode_java_chunk(
-    ChunkT& chunk
-)
+    ChunkT& chunk,
+    std::int64_t cx,
+    std::int64_t cz,
+    std::int64_t min_y,
+    std::int64_t max_y)
 {
-    throw std::runtime_error("NotImpelementedError");
-    // floor_cy = bounds[0] >> 4
-    // height_cy = (bounds[1] - bounds[0]) >> 4
-    // ceil_cy = floor_cy + height_cy
+    // Extract the unhandled data from the chunk
+    JavaRawChunk raw_chunk;
+    for (auto& [k, v] : *chunk.get_raw_data()) {
+        raw_chunk.emplace(std::move(k), std::move(*v));
+    }
 
-    // data = chunk.misc.get("_java_chunk_data_layers", None)
-    // if not isinstance(data, dict):
-    //     data = {}
-    // data = {
-    //     key: value
-    //     for key, value in data.items()
-    //     if isinstance(key, str) and isinstance(value, NamedTag)
-    // }
+    // Populate the region tag
+    CompoundTag& region_tag = [&raw_chunk]() -> CompoundTag& {
+        auto it = raw_chunk.find("region");
+        if (it == raw_chunk.end()) {
+            it = raw_chunk.emplace("region", NamedTag("", std::make_shared<CompoundTag>())).first;
+        } else {
+            auto& region_named_tag = it->second;
+            region_named_tag.name = "";
+            auto& node = region_named_tag.tag_node;
+            if (!std::holds_alternative<CompoundTagPtr>(node)) {
+                node = std::make_shared<CompoundTag>();
+            }
+        }
+        return *std::get<CompoundTagPtr>(it->second.tag_node);
+    }();
 
-    // DataVersion = data_version
+    // Populate the Level tag.
+    // In newer versions this is just the root tag.
+    CompoundTag& level_tag = [&region_tag]() -> CompoundTag& {
+        if constexpr (DataVersion >= 2844) {
+            return region_tag;
+        } else {
+            return *setdefault_tag<CompoundTagPtr>(
+                region_tag,
+                "Level",
+                []() { return std::make_shared<CompoundTag>(); });
+        }
+    }();
+
+    auto floor_cy = min_y >> 4;
+    auto ceil_cy = max_y >> 4;
+    auto height_cy = ceil_cy - floor_cy;
 
     // LongArrayDense = DataVersion < 2529
 
-    // # Version tag
-    // if 0 <= DataVersion:
-    //     set_layer_obj(
-    //         data,
-    //         (
-    //             "region",
-    //             [("DataVersion", IntTag)],
-    //             IntTag,
-    //         ),
-    //         IntTag(max_world_version[1])
-    //     )
-    // else:
-    //     V = (
-    //         "region",
-    //         [("Level", CompoundTag), ("V", ByteTag)],
-    //         ByteTag(1),
-    //     )
-    //     set_layer_obj(data, V, ByteTag(chunk.misc.get("V", 1)))
+    // Version tag
+    if constexpr (0 <= DataVersion) {
+        region_tag.insert_or_assign(
+            "DataVersion",
+            IntTag(static_cast<std::int32_t>(chunk.get_data_version())));
+    } else {
+        // TODO: Pull this from the chunk
+        level_tag.insert_or_assign("V", ByteTag(1));
+    }
 
     // # Coords
-    // if 2844 <= DataVersion:
-    //     xPos = ("region", [("xPos", IntTag)], IntTag)
-    //     zPos = ("region", [("zPos", IntTag)], IntTag)
-    //     set_layer_obj(data, ("region", [("yPos", IntTag)], IntTag), IntTag(floor_cy))
-    // else:
-    //     xPos = (
-    //         "region",
-    //         [("Level", CompoundTag), ("xPos", IntTag)],
-    //         IntTag,
-    //     )
-    //     zPos = (
-    //         "region",
-    //         [("Level", CompoundTag), ("zPos", IntTag)],
-    //         IntTag,
-    //     )
-    // set_layer_obj(data, xPos, IntTag(chunk.cx))
-    // set_layer_obj(data, zPos, IntTag(chunk.cz))
+    level_tag.insert_or_assign("xPos", IntTag(static_cast<std::int32_t>(cx)));
+    level_tag.insert_or_assign("zPos", IntTag(static_cast<std::int32_t>(cz)));
+    if constexpr (2844 <= DataVersion) {
+        level_tag.insert_or_assign("yPos", IntTag(static_cast<std::int32_t>(floor_cy)));
+    }
 
-    // def _get_encode_sections() -> dict[int, CompoundTag]:
-    //     """Get or create the section array populating all valid sections"""
-    //     if 2844 <= DataVersion:
-    //         Sections = ("region", [("sections", ListTag)], ListTag)
-    //     else:
-    //         Sections = (
-    //             "region",
-    //             [("Level", CompoundTag), ("Sections", ListTag)],
-    //             ListTag,
-    //         )
-    //     sections: ListTag = set_layer_obj(data, Sections, setdefault=True)
-    //     section_map: dict[int, CompoundTag] = {}
-    //     section: CompoundTag
-    //     for section_index in range(len(sections) - 1, -1, -1):
-    //         section = sections[section_index]
-    //         cy = section.get("Y", None)
-    //         if isinstance(cy, ByteTag):
-    //             section_map[cy.py_int] = section
-    //         else:
-    //             sections.pop(section_index)
-    //     for cy in range(floor_cy, ceil_cy):
-    //         if cy not in section_map:
-    //             section = section_map[cy] = CompoundTag({"Y": ByteTag(cy)})
-    //             sections.append(section)
-    //     return section_map
+    // Extract sections tag into a more usable format.
+    std::map<std::int64_t, CompoundTagPtr> sections_map;
+    {
+        // Extract sections tag from unhandled data.
+        auto sections_node = [&level_tag]() {
+            if constexpr (2844 <= DataVersion) {
+                return level_tag.extract("sections");
+            } else {
+                return level_tag.extract("Sections");
+            }
+        }();
+        if (sections_node && std::holds_alternative<ListTagPtr>(sections_node.mapped())) {
+            auto& sections_tag = *std::get<ListTagPtr>(sections_node.mapped());
+            if (std::holds_alternative<CompoundListTag>(sections_tag)) {
+                auto& compound_sections_tag = std::get<CompoundListTag>(sections_tag);
+                for (auto& section_tag : compound_sections_tag) {
+                    auto y_it = section_tag->find("Y");
+                    if (y_it != section_tag->end() && std::holds_alternative<ByteTag>(y_it->second)) {
+                        auto cy = std::get<ByteTag>(y_it->second).value;
+                        sections_map.insert_or_assign(cy, section_tag);
+                    }
+                }
+            }
+        }
+    }
 
-    // sections = _get_encode_sections()
+    auto get_section = [&sections_map](std::int64_t cy) -> CompoundTag& {
+        if (!(-127 <= cy && cy < 128)) {
+            throw std::runtime_error("Section " + std::to_string(cy) + " is out of bounds. It must be between -127 and 128.");
+        }
+        const auto& it = sections_map.find(cy);
+        if (it == sections_map.end()) {
+            auto& section_tag = *sections_map.emplace(cy, std::make_shared<CompoundTag>()).first->second;
+            section_tag.emplace("Y", ByteTag(static_cast<std::int8_t>(cy)));
+            return section_tag;
+        } else {
+            return *it->second;
+        }
+    };
 
-    // for cy in chunk.blocks.sub_chunks:
-    //     if floor_cy <= cy < ceil_cy:
-    //         if 1444 <= DataVersion:
-    //             block_sub_array = numpy.transpose(
-    //                 chunk.blocks.get_sub_chunk(cy), (1, 2, 0)
-    //             ).ravel()
-    //             sub_palette_, block_sub_array = numpy.unique(
-    //                 block_sub_array, return_inverse=True
-    //             )
-    //             sub_palette = _encode_block_palette(block_palette[sub_palette_])
+    // Encode block data
+    {
+        auto block_component = chunk.get_block_storage();
+        auto& block_palette = block_component->get_palette();
+        auto& block_sections = block_component->get_sections();
+        for (auto& [cy, block_array] : block_sections.get_arrays()) {
+            if (!(floor_cy <= cy && cy < ceil_cy)) {
+                continue;
+            }
+        }
+        //         if 1444 <= DataVersion:
+        //             block_sub_array = numpy.transpose(
+        //                 chunk.blocks.get_sub_chunk(cy), (1, 2, 0)
+        //             ).ravel()
+        //             sub_palette_, block_sub_array = numpy.unique(
+        //                 block_sub_array, return_inverse=True
+        //             )
+        //             sub_palette = _encode_block_palette(block_palette[sub_palette_])
 
-    //            if (
-    //                DataVersion < 2844
-    //                and len(sub_palette) == 1
-    //                and sub_palette[0].get_string("Name").py_str == "minecraft:air"
-    //            ):
-    //                # TODO: do we need to save this in 2844+?
-    //                continue
+        //            if (
+        //                DataVersion < 2844
+        //                and len(sub_palette) == 1
+        //                and sub_palette[0].get_string("Name").py_str == "minecraft:air"
+        //            ):
+        //                # TODO: do we need to save this in 2844+?
+        //                continue
 
-    //            section = sections.setdefault(cy, CompoundTag())
+        //            section = sections.setdefault(cy, CompoundTag())
 
-    //            if 2844 <= DataVersion:
-    //                block_states = section["block_states"] = CompoundTag({"palette": sub_palette})
-    //                if len(sub_palette) != 1:
-    //                    block_states["data"] = LongArrayTag(
-    //                        encode_long_array(
-    //                            block_sub_array, dense=LongArrayDense, min_bits_per_entry=4
-    //                        )
-    //                    )
-    //            elif 1444 <= DataVersion:
-    //                section["BlockStates"] = LongArrayTag(
-    //                    encode_long_array(
-    //                        block_sub_array, dense=LongArrayDense, min_bits_per_entry=4
-    //                    )
-    //                )
-    //                section["Palette"] = sub_palette
-    //        else:
-    //            block_sub_array = palette[
-    //                numpy.transpose(
-    //                    chunk.blocks.get_sub_chunk(cy), (1, 2, 0)
-    //                ).ravel()  # XYZ -> YZX
-    //            ]
+        //            if 2844 <= DataVersion:
+        //                block_states = section["block_states"] = CompoundTag({"palette": sub_palette})
+        //                if len(sub_palette) != 1:
+        //                    block_states["data"] = LongArrayTag(
+        //                        encode_long_array(
+        //                            block_sub_array, dense=LongArrayDense, min_bits_per_entry=4
+        //                        )
+        //                    )
+        //            elif 1444 <= DataVersion:
+        //                section["BlockStates"] = LongArrayTag(
+        //                    encode_long_array(
+        //                        block_sub_array, dense=LongArrayDense, min_bits_per_entry=4
+        //                    )
+        //                )
+        //                section["Palette"] = sub_palette
+        //        else:
+        //            block_sub_array = palette[
+        //                numpy.transpose(
+        //                    chunk.blocks.get_sub_chunk(cy), (1, 2, 0)
+        //                ).ravel()  # XYZ -> YZX
+        //            ]
+    }
 
     //            data_sub_array = block_sub_array[:, 1]
     //            block_sub_array = block_sub_array[:, 0]
@@ -572,60 +611,80 @@ JavaRawChunk encode_java_chunk(
     //     OldLevel = ("region", [("Level", CompoundTag)], CompoundTag)
     //     get_layer_obj(data, OldLevel, pop_last=True)
 
-    // return data
-}
+    // Pack sections tag back into the data
+    {
+        CompoundListTag sections_tag;
+        sections_tag.reserve(sections_map.size());
+        for (auto& [_, section_tag] : sections_map) {
+            sections_tag.emplace_back(std::move(section_tag));
+        }
+        if constexpr (2844 <= DataVersion) {
+            level_tag.insert_or_assign(
+                "sections",
+                std::make_shared<ListTag>(std::move(sections_tag)));
+        } else {
+            level_tag.insert_or_assign(
+                "Sections",
+                std::make_shared<ListTag>(std::move(sections_tag)));
+        }
+    }
 
+    return raw_chunk;
+}
 
 JavaRawChunk JavaRawDimension::encode_chunk(
     JavaChunk& chunk,
     std::int64_t cx,
     std::int64_t cz)
 {
+    auto min_y = get_bounds().min_y();
+    auto max_y = get_bounds().max_y();
+
     // See the decoder for version documentation.
     if (auto* chunk_ = dynamic_cast<JavaChunk2203*>(&chunk)) {
         auto data_version = chunk_->get_data_version();
         if (3463 <= data_version) {
-            return encode_java_chunk<3463>(*chunk_);
+            return encode_java_chunk<3463>(*chunk_, cx, cz, min_y, max_y);
         } else if (2844 <= data_version) {
-            return encode_java_chunk<2844>(*chunk_);
+            return encode_java_chunk<2844>(*chunk_, cx, cz, min_y, max_y);
         } else if (2836 <= data_version) {
-            return encode_java_chunk<2836>(*chunk_);
+            return encode_java_chunk<2836>(*chunk_, cx, cz, min_y, max_y);
         } else if (2709 <= data_version) {
-            return encode_java_chunk<2709>(*chunk_);
+            return encode_java_chunk<2709>(*chunk_, cx, cz, min_y, max_y);
         } else if (2681 <= data_version) {
-            return encode_java_chunk<2681>(*chunk_);
+            return encode_java_chunk<2681>(*chunk_, cx, cz, min_y, max_y);
         } else if (2529 <= data_version) {
-            return encode_java_chunk<2529>(*chunk_);
+            return encode_java_chunk<2529>(*chunk_, cx, cz, min_y, max_y);
         } else {
-            return encode_java_chunk<2203>(*chunk_);
+            return encode_java_chunk<2203>(*chunk_, cx, cz, min_y, max_y);
         }
     } else if (auto* chunk_ = dynamic_cast<JavaChunk1466*>(&chunk)) {
         auto data_version = chunk_->get_data_version();
         if (1934 <= data_version) {
-            return encode_java_chunk<1934>(*chunk_);
+            return encode_java_chunk<1934>(*chunk_, cx, cz, min_y, max_y);
         } else if (1912 <= data_version) {
-            return encode_java_chunk<1912>(*chunk_);
+            return encode_java_chunk<1912>(*chunk_, cx, cz, min_y, max_y);
         } else if (1908 <= data_version) {
-            return encode_java_chunk<1908>(*chunk_);
+            return encode_java_chunk<1908>(*chunk_, cx, cz, min_y, max_y);
         } else if (1901 <= data_version) {
-            return encode_java_chunk<1901>(*chunk_);
+            return encode_java_chunk<1901>(*chunk_, cx, cz, min_y, max_y);
         } else if (1519 <= data_version) {
-            return encode_java_chunk<1519>(*chunk_);
+            return encode_java_chunk<1519>(*chunk_, cx, cz, min_y, max_y);
         } else if (1503 <= data_version) {
-            return encode_java_chunk<1503>(*chunk_);
+            return encode_java_chunk<1503>(*chunk_, cx, cz, min_y, max_y);
         } else if (1484 <= data_version) {
-            return encode_java_chunk<1484>(*chunk_);
+            return encode_java_chunk<1484>(*chunk_, cx, cz, min_y, max_y);
         } else if (1467 <= data_version) {
-            return encode_java_chunk<1467>(*chunk_);
+            return encode_java_chunk<1467>(*chunk_, cx, cz, min_y, max_y);
         } else {
-            return encode_java_chunk<1466>(*chunk_);
+            return encode_java_chunk<1466>(*chunk_, cx, cz, min_y, max_y);
         }
     } else if (auto* chunk_ = dynamic_cast<JavaChunk1444*>(&chunk)) {
-        return encode_java_chunk<1444>(*chunk_);
+        return encode_java_chunk<1444>(*chunk_, cx, cz, min_y, max_y);
     } else if (auto* chunk_ = dynamic_cast<JavaChunk0*>(&chunk)) {
-        return encode_java_chunk<0>(*chunk_);
+        return encode_java_chunk<0>(*chunk_, cx, cz, min_y, max_y);
     } else if (auto* chunk_ = dynamic_cast<JavaChunkNA*>(&chunk)) {
-        return encode_java_chunk<-1>(*chunk_);
+        return encode_java_chunk<-1>(*chunk_, cx, cz, min_y, max_y);
     } else {
         throw std::invalid_argument("Unsupported chunk class" + chunk.get_chunk_id());
     }

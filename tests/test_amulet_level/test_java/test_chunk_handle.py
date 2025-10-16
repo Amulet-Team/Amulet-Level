@@ -66,7 +66,10 @@ class JavaChunkHandleTestCase(TestCase):
                     )
                 )
                 self.assertEqual(
-                    67, block_component.block_storage.palette.block_stack_to_index(block_stack)
+                    67,
+                    block_component.block_storage.palette.block_stack_to_index(
+                        block_stack
+                    ),
                 )
                 self.assertEqual(68, len(block_component.block_storage.palette))
 
@@ -86,7 +89,8 @@ class JavaChunkHandleTestCase(TestCase):
                 block_component = self.assertCast(chunk_3, BlockComponent)
                 self.assertEqual(68, len(block_component.block_storage.palette))
                 self.assertEqual(
-                    block_stack, block_component.block_storage.palette.index_to_block_stack(67)
+                    block_stack,
+                    block_component.block_storage.palette.index_to_block_stack(67),
                 )
 
                 # delete it
@@ -103,7 +107,8 @@ class JavaChunkHandleTestCase(TestCase):
                 block_component = self.assertCast(chunk_4, BlockComponent)
                 self.assertEqual(68, len(block_component.block_storage.palette))
                 self.assertEqual(
-                    block_stack, block_component.block_storage.palette.index_to_block_stack(67)
+                    block_stack,
+                    block_component.block_storage.palette.index_to_block_stack(67),
                 )
 
             finally:

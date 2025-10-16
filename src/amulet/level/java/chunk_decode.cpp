@@ -150,9 +150,9 @@ void decode_java_chunk(
 
     // blocks
     {
-        std::shared_ptr<BlockComponentData> block_component = chunk.get_block();
-        auto& block_palette = block_component->get_palette();
-        auto& block_sections = block_component->get_sections();
+        std::shared_ptr<BlockStorage> block_storage = chunk.get_block_storage();
+        auto& block_palette = block_storage->get_palette();
+        auto& block_sections = block_storage->get_sections();
         if constexpr (1444 <= DataVersion) {
             // Palette format
             // if 2844 <= data_version:

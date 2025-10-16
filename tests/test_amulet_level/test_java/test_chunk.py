@@ -10,7 +10,7 @@ from amulet.core.biome import Biome
 from amulet.core.chunk import Chunk
 from amulet.core.chunk.component import (
     BlockComponent,
-    BlockComponentData,
+    BlockStorage,
     SectionArrayMap,
 )
 from amulet.core.palette.block_palette import BlockPalette
@@ -83,9 +83,9 @@ class JavaChunkTestCase(TestCase):
     def _test_block_component(self, chunk: Chunk) -> None:
         self.assertIsInstance(chunk, BlockComponent)
         assert isinstance(chunk, BlockComponent)
-        self.assertIsInstance(chunk.block, BlockComponentData)
-        self.assertIsInstance(chunk.block.palette, BlockPalette)
-        self.assertIsInstance(chunk.block.sections, SectionArrayMap)
+        self.assertIsInstance(chunk.block_storage, BlockStorage)
+        self.assertIsInstance(chunk.block_storage.palette, BlockPalette)
+        self.assertIsInstance(chunk.block_storage.sections, SectionArrayMap)
 
     def test_java_raw_chunk_component(self) -> None:
         self._test_component(JavaRawChunkComponent)

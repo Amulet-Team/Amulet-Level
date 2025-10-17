@@ -3,15 +3,21 @@
 #include <memory>
 #include <stdexcept>
 
+#include <amulet/nbt/tag/array.hpp>
 #include <amulet/nbt/tag/compound.hpp>
 #include <amulet/nbt/tag/named_tag.hpp>
 
 #include <amulet/core/chunk/chunk.hpp>
 
+#include <amulet/game/game.hpp>
+#include <amulet/game/java/version.hpp>
+
 #include "chunk.hpp"
+#include "long_array.hpp"
 #include "raw_dimension.hpp"
 
 using namespace Amulet::NBT;
+using namespace Amulet::game;
 
 namespace Amulet {
 
@@ -131,64 +137,157 @@ JavaRawChunk encode_java_chunk(
         }
     };
 
+    std::shared_ptr<JavaGameVersion> game_version = get_java_game_version(VersionNumber({ chunk.get_data_version() }));
+
     // Encode block data
     {
         auto block_component = chunk.get_block_storage();
         auto& block_palette = block_component->get_palette();
         auto& block_sections = block_component->get_sections();
-        for (auto& [cy, block_array] : block_sections.get_arrays()) {
+        auto version_block_data = game_version->get_block_data();
+        for (auto& [cy, block_array_ptr] : block_sections.get_arrays()) {
             if (!(floor_cy <= cy && cy < ceil_cy)) {
                 continue;
             }
+            if constexpr (1444 <= DataVersion) {
+                if (block_array_ptr->get_shape() != SectionShape(16, 16, 16)) {
+                    throw std::runtime_error("Unsupported sub-chunk shape.");
+                }
+                auto block_array = block_array_ptr->get_span();
+
+                // create a lut from chunk palette index to encoded palette index
+                std::map<size_t, std::uint16_t> lut;
+                for (size_t index = 0; index < 4096; index++) {
+                    lut.emplace(
+                        block_array[index],
+                        static_cast<std::uint16_t>(lut.size()));
+                }
+
+                // Pack waterlogging. Some states may encode to the same state.
+                std::list<Block> encoded_blocks;
+                std::map<Block, std::uint16_t> encoded_block_to_index;
+                for (auto& [src_index, dst_index] : lut) {
+                    auto block = [&]() -> Block {
+                        auto& block_stack = block_palette.index_to_block_stack(src_index);
+                        auto& base_block = block_stack.at(0);
+                        switch (version_block_data->is_waterloggable(
+                            base_block.get_namespace(),
+                            base_block.get_base_name())) {
+                        case Waterloggable::Yes: {
+                            auto properties = base_block.get_properties();
+                            if (1 < block_stack.size()) {
+                                // Has an extra block
+                                auto& extra_block = block_stack.at(1);
+                                if (
+                                    extra_block.get_namespace() == "minecraft"
+                                    && extra_block.get_base_name() == "water") {
+                                    properties.insert_or_assign("waterlogged", StringTag("true"));
+                                } else {
+                                    properties.insert_or_assign("waterlogged", StringTag("false"));
+                                }
+                            }
+                            return Block(
+                                base_block.get_platform(),
+                                base_block.get_version(),
+                                base_block.get_namespace(),
+                                base_block.get_base_name(),
+                                std::move(properties));
+                        }
+                        default:
+                            return base_block;
+                        }
+                    }();
+                    encoded_blocks.emplace_back(block);
+                    dst_index = encoded_block_to_index
+                                    .emplace(
+                                        block,
+                                        static_cast<std::uint16_t>(encoded_block_to_index.size()))
+                                    .first->second;
+                }
+
+                if constexpr (DataVersion < 2844) {
+                    if (encoded_blocks.size() == 1
+                        && encoded_blocks.front().get_namespace() == "minecraft"
+                        && encoded_blocks.front().get_base_name() == "air") {
+                        // Skip saving the blocks if it only contains air.
+                        // TODO: Do we need to save this in 2844+?
+                        // TODO: What if the default block is not air?
+                        continue;
+                    }
+                }
+
+                // Encode the palette
+                CompoundListTag block_tags;
+                block_tags.reserve(encoded_blocks.size());
+                for (const auto& block : encoded_blocks) {
+                    auto properties = std::make_shared<CompoundTag>();
+                    for (const auto& [k, v] : block.get_properties()) {
+                        if (std::holds_alternative<StringTag>(v)) {
+                            properties->emplace(k, std::get<StringTag>(v));
+                        }
+                    }
+                    auto block_tag = std::make_shared<CompoundTag>();
+                    block_tag->emplace("Name", StringTag(block.get_namespace() + ":" + block.get_base_name()));
+                    if (!properties->empty()) {
+                        block_tag->emplace("Properties", std::move(properties));
+                    }
+                    block_tags.emplace_back(std::move(block_tag));
+                }
+
+                auto encode_block_array = [&block_array, &lut, &block_tags]() -> LongArrayTagPtr {
+                    // Convert and pack the array
+                    std::vector<std::uint16_t> converted_block_array;
+                    converted_block_array.reserve(4096);
+                    for (size_t y = 0; y < 16; y++) {
+                        for (size_t z = 0; z < 16; z++) {
+                            for (size_t x = 0; x < 16; x++) {
+                                converted_block_array.emplace_back(
+                                    lut.at(block_array[x * 256 + y * 16 + z]));
+                            }
+                        }
+                    }
+                    auto bits_per_entry = std::max<std::uint8_t>(4, std::bit_width(block_tags.size() - 1));
+                    bool dense = DataVersion < 2529;
+                    auto packed_array = std::make_shared<LongArrayTag>(encoded_long_array_size(4096, bits_per_entry, dense));
+                    std::span<std::uint64_t> packed_span(reinterpret_cast<std::uint64_t*>(packed_array->data()), packed_array->size());
+                    encode_long_array<std::uint16_t>(
+                        converted_block_array,
+                        packed_span,
+                        bits_per_entry,
+                        dense);
+                    return packed_array;
+                };
+
+                auto& section = get_section(cy);
+
+                if constexpr (2844 <= DataVersion) {
+                    auto block_states_tag = std::make_shared<CompoundTag>();
+                    if (1 < block_tags.size()) {
+                        block_states_tag->emplace("data", encode_block_array());
+                    }
+                    block_states_tag->emplace("palette", std::make_shared<ListTag>(std::move(block_tags)));
+                    section.insert_or_assign("block_states", std::move(block_states_tag));
+                } else {
+                    section.insert_or_assign("Palette", std::make_shared<ListTag>(std::move(block_tags)));
+                    section.insert_or_assign("BlockStates", encode_block_array());
+                }
+            } else {
+                throw std::runtime_error("NotImplementedError");
+                //            block_sub_array = palette[
+                //                numpy.transpose(
+                //                    chunk.blocks.get_sub_chunk(cy), (1, 2, 0)
+                //                ).ravel()  # XYZ -> YZX
+                //            ]
+
+                //            data_sub_array = block_sub_array[:, 1]
+                //            block_sub_array = block_sub_array[:, 0]
+                //            # if not numpy.any(block_sub_array) and not numpy.any(data_sub_array):
+                //            #     return False
+                //            sections[cy]["Blocks"] = ByteArrayTag(block_sub_array.astype("uint8"))
+                //            sections[cy]["Data"] = ByteArrayTag(world_utils.to_nibble_array(data_sub_array))
+            }
         }
-        //         if 1444 <= DataVersion:
-        //             block_sub_array = numpy.transpose(
-        //                 chunk.blocks.get_sub_chunk(cy), (1, 2, 0)
-        //             ).ravel()
-        //             sub_palette_, block_sub_array = numpy.unique(
-        //                 block_sub_array, return_inverse=True
-        //             )
-        //             sub_palette = _encode_block_palette(block_palette[sub_palette_])
-
-        //            if (
-        //                DataVersion < 2844
-        //                and len(sub_palette) == 1
-        //                and sub_palette[0].get_string("Name").py_str == "minecraft:air"
-        //            ):
-        //                # TODO: do we need to save this in 2844+?
-        //                continue
-
-        //            section = sections.setdefault(cy, CompoundTag())
-
-        //            if 2844 <= DataVersion:
-        //                block_states = section["block_states"] = CompoundTag({"palette": sub_palette})
-        //                if len(sub_palette) != 1:
-        //                    block_states["data"] = LongArrayTag(
-        //                        encode_long_array(
-        //                            block_sub_array, dense=LongArrayDense, min_bits_per_entry=4
-        //                        )
-        //                    )
-        //            elif 1444 <= DataVersion:
-        //                section["BlockStates"] = LongArrayTag(
-        //                    encode_long_array(
-        //                        block_sub_array, dense=LongArrayDense, min_bits_per_entry=4
-        //                    )
-        //                )
-        //                section["Palette"] = sub_palette
-        //        else:
-        //            block_sub_array = palette[
-        //                numpy.transpose(
-        //                    chunk.blocks.get_sub_chunk(cy), (1, 2, 0)
-        //                ).ravel()  # XYZ -> YZX
-        //            ]
     }
-
-    //            data_sub_array = block_sub_array[:, 1]
-    //            block_sub_array = block_sub_array[:, 0]
-    //            # if not numpy.any(block_sub_array) and not numpy.any(data_sub_array):
-    //            #     return False
-    //            sections[cy]["Blocks"] = ByteArrayTag(block_sub_array.astype("uint8"))
-    //            sections[cy]["Data"] = ByteArrayTag(world_utils.to_nibble_array(data_sub_array))
 
     // if 2844 <= DataVersion:
     //     BlockEntities = ("region", [("block_entities", ListTag)], ListTag)

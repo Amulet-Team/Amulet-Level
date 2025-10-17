@@ -153,6 +153,7 @@ void decode_java_chunk(
         std::shared_ptr<BlockStorage> block_storage = chunk.get_block_storage();
         auto& block_palette = block_storage->get_palette();
         auto& block_sections = block_storage->get_sections();
+        auto version_block_data = game_version->get_block_data();
         if constexpr (1444 <= DataVersion) {
             // Palette format
             // if 2844 <= data_version:
@@ -207,11 +208,11 @@ void decode_java_chunk(
                             [&block_properties, &k](auto&& arg) {
                                 using T = std::decay_t<decltype(arg)>;
                                 if constexpr (
-                                    std::is_same_v<T, Amulet::NBT::ByteTag>
-                                    || std::is_same_v<T, Amulet::NBT::ShortTag>
-                                    || std::is_same_v<T, Amulet::NBT::IntTag>
-                                    || std::is_same_v<T, Amulet::NBT::LongTag>
-                                    || std::is_same_v<T, Amulet::NBT::StringTag>) {
+                                    std::is_same_v<T, ByteTag>
+                                    || std::is_same_v<T, ShortTag>
+                                    || std::is_same_v<T, IntTag>
+                                    || std::is_same_v<T, LongTag>
+                                    || std::is_same_v<T, StringTag>) {
                                     block_properties.emplace(k, arg);
                                 }
                             },
@@ -219,7 +220,7 @@ void decode_java_chunk(
                     }
                     std::vector<Block> blocks;
 
-                    auto waterloggable = game_version->get_block_data()->is_waterloggable(block_namespace, block_base_name);
+                    auto waterloggable = version_block_data->is_waterloggable(block_namespace, block_base_name);
                     switch (waterloggable) {
                     case Waterloggable::Yes: {
                         auto waterlogged_it = block_properties.find("waterlogged");
@@ -259,7 +260,7 @@ void decode_java_chunk(
                 } else {
                     std::vector<std::uint32_t> decoded_vector(4096);
                     std::span<std::uint32_t> decoded_span(decoded_vector);
-                    Amulet::decode_long_array(
+                    decode_long_array(
                         std::span<std::uint64_t>(reinterpret_cast<std::uint64_t*>(block_data_tag->data()), block_data_tag->size()),
                         decoded_span,
                         std::max<std::uint8_t>(4, std::bit_width(palette_size - 1)),

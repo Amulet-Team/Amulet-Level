@@ -64,7 +64,11 @@ JavaRawChunk JavaRawDimension::get_raw_chunk(std::int64_t cx, std::int64_t cz)
     auto& mutex = _anvil_dimension.get_mutex();
     mutex.lock<ThreadAccessMode::Read, ThreadShareMode::SharedReadWrite>();
     std::lock_guard lock(mutex, std::adopt_lock);
-    return _anvil_dimension.get_chunk_data(cx, cz);
+    try {
+        return _anvil_dimension.get_chunk_data(cx, cz);
+    } catch (const RegionEntryDoesNotExist& e) {
+        throw ChunkDoesNotExist(e.what());
+    }
 }
 void JavaRawDimension::set_raw_chunk(std::int64_t cx, std::int64_t cz, const JavaRawChunk& chunk)
 {

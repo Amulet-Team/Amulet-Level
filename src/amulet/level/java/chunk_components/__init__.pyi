@@ -15,7 +15,12 @@ class DataVersionComponent:
 class JavaRawChunkComponent:
     ComponentID: typing.ClassVar[str] = "Amulet::JavaRawChunkComponent"
     @property
-    def raw_data(self) -> collections.abc.MutableMapping[str, amulet.nbt.NamedTag]: ...
+    def raw_data(self) -> collections.abc.MutableMapping[str, amulet.nbt.NamedTag]:
+        """
+        This is subject to change as data gets moved into the chunk class.
+        Do not rely on data in here existing.
+        """
+
     @raw_data.setter
     def raw_data(
         self, arg1: collections.abc.Mapping[str, amulet.nbt.NamedTag]

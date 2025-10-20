@@ -54,28 +54,31 @@ class JavaChunkHandleTestCase(TestCase):
                 chunk = chunk_handle.get_chunk()
                 self.assertIsInstance(chunk, JavaChunk)
                 block_component = self.assertCast(chunk, BlockComponent)
-                self.assertEqual(67, len(block_component.block.palette))
+                self.assertEqual(67, len(block_component.block_storage.palette))
 
                 # modify the chunk
                 block_stack = BlockStack(
                     Block(
                         "java",
-                        block_component.block.palette.version_range.max_version,
+                        block_component.block_storage.palette.version_range.max_version,
                         "my_namespace",
                         "my_basename",
                     )
                 )
                 self.assertEqual(
-                    67, block_component.block.palette.block_stack_to_index(block_stack)
+                    67,
+                    block_component.block_storage.palette.block_stack_to_index(
+                        block_stack
+                    ),
                 )
-                self.assertEqual(68, len(block_component.block.palette))
+                self.assertEqual(68, len(block_component.block_storage.palette))
 
                 # reload it from the cache
                 chunk_2 = chunk_handle.get_chunk()
                 self.assertIsInstance(chunk_2, JavaChunk)
                 self.assertIs(chunk_2.__class__, chunk.__class__)
                 block_component = self.assertCast(chunk_2, BlockComponent)
-                self.assertEqual(67, len(block_component.block.palette))
+                self.assertEqual(67, len(block_component.block_storage.palette))
 
                 # override it
                 chunk_handle.set_chunk(chunk)
@@ -84,9 +87,10 @@ class JavaChunkHandleTestCase(TestCase):
                 self.assertIsInstance(chunk_3, JavaChunk)
                 self.assertIs(chunk_3.__class__, chunk.__class__)
                 block_component = self.assertCast(chunk_3, BlockComponent)
-                self.assertEqual(68, len(block_component.block.palette))
+                self.assertEqual(68, len(block_component.block_storage.palette))
                 self.assertEqual(
-                    block_stack, block_component.block.palette.index_to_block_stack(67)
+                    block_stack,
+                    block_component.block_storage.palette.index_to_block_stack(67),
                 )
 
                 # delete it
@@ -101,9 +105,10 @@ class JavaChunkHandleTestCase(TestCase):
                 self.assertIsInstance(chunk_4, JavaChunk)
                 self.assertIs(chunk_4.__class__, chunk.__class__)
                 block_component = self.assertCast(chunk_4, BlockComponent)
-                self.assertEqual(68, len(block_component.block.palette))
+                self.assertEqual(68, len(block_component.block_storage.palette))
                 self.assertEqual(
-                    block_stack, block_component.block.palette.index_to_block_stack(67)
+                    block_stack,
+                    block_component.block_storage.palette.index_to_block_stack(67),
                 )
 
             finally:
@@ -145,17 +150,17 @@ class JavaChunkHandleTestCase(TestCase):
                     BlockStack(Block("java", VersionNumber(1466), "minecraft", "air")),
                     Biome("java", VersionNumber(1466), "minecraft", "plains"),
                 )
-                self.assertEqual(1, len(chunk.block.palette))
+                self.assertEqual(1, len(chunk.block_storage.palette))
 
                 # Set the chunk
                 chunk_handle.set_chunk(chunk)
 
                 self.assertTrue(chunk_handle.exists())
                 chunk_2 = self.assertCast(chunk_handle.get_chunk(), JavaChunk1466)
-                self.assertEqual(1, len(chunk_2.block.palette))
+                self.assertEqual(1, len(chunk_2.block_storage.palette))
                 self.assertEqual(
                     BlockStack(Block("java", VersionNumber(1466), "minecraft", "air")),
-                    chunk_2.block.palette.index_to_block_stack(0),
+                    chunk_2.block_storage.palette.index_to_block_stack(0),
                 )
 
                 # Delete the chunk
@@ -188,7 +193,7 @@ class JavaChunkHandleTestCase(TestCase):
 
                 def validate_original_chunk(original_chunk: Chunk) -> None:
                     chunk_1466 = self.assertCast(original_chunk, JavaChunk1466)
-                    self.assertEqual(67, len(chunk_1466.block.palette))
+                    self.assertEqual(67, len(chunk_1466.block_storage.palette))
 
                 validate_original_chunk(chunk)
 
@@ -196,21 +201,21 @@ class JavaChunkHandleTestCase(TestCase):
                 block_stack = BlockStack(
                     Block(
                         "java",
-                        chunk.block.palette.version_range.max_version,
+                        chunk.block_storage.palette.version_range.max_version,
                         "my_namespace",
                         "my_basename",
                     )
                 )
                 self.assertEqual(
-                    67, chunk.block.palette.block_stack_to_index(block_stack)
+                    67, chunk.block_storage.palette.block_stack_to_index(block_stack)
                 )
 
                 def validate_edited_1(edited_chunk: Chunk) -> None:
                     block_component = self.assertCast(edited_chunk, JavaChunk1466)
-                    self.assertEqual(68, len(block_component.block.palette))
+                    self.assertEqual(68, len(block_component.block_storage.palette))
                     self.assertEqual(
                         block_stack,
-                        block_component.block.palette.index_to_block_stack(67),
+                        block_component.block_storage.palette.index_to_block_stack(67),
                     )
 
                 validate_edited_1(chunk)
@@ -235,25 +240,25 @@ class JavaChunkHandleTestCase(TestCase):
                 block_stack_2 = BlockStack(
                     Block(
                         "java",
-                        chunk.block.palette.version_range.max_version,
+                        chunk.block_storage.palette.version_range.max_version,
                         "my_namespace",
                         "my_basename_2",
                     )
                 )
                 self.assertEqual(
-                    68, chunk.block.palette.block_stack_to_index(block_stack_2)
+                    68, chunk.block_storage.palette.block_stack_to_index(block_stack_2)
                 )
 
                 def validate_edited_2(edited_chunk: Chunk) -> None:
                     block_component = self.assertCast(edited_chunk, JavaChunk1466)
-                    self.assertEqual(69, len(block_component.block.palette))
+                    self.assertEqual(69, len(block_component.block_storage.palette))
                     self.assertEqual(
                         block_stack,
-                        block_component.block.palette.index_to_block_stack(67),
+                        block_component.block_storage.palette.index_to_block_stack(67),
                     )
                     self.assertEqual(
                         block_stack_2,
-                        block_component.block.palette.index_to_block_stack(68),
+                        block_component.block_storage.palette.index_to_block_stack(68),
                     )
 
                 validate_edited_2(chunk)
@@ -281,25 +286,25 @@ class JavaChunkHandleTestCase(TestCase):
                 block_stack_3 = BlockStack(
                     Block(
                         "java",
-                        chunk.block.palette.version_range.max_version,
+                        chunk.block_storage.palette.version_range.max_version,
                         "my_namespace",
                         "my_basename_3",
                     )
                 )
                 self.assertEqual(
-                    69, chunk.block.palette.block_stack_to_index(block_stack_3)
+                    69, chunk.block_storage.palette.block_stack_to_index(block_stack_3)
                 )
 
                 def validate_edited_3(edited_chunk: Chunk) -> None:
                     block_component = self.assertCast(edited_chunk, JavaChunk1466)
-                    self.assertEqual(70, len(block_component.block.palette))
+                    self.assertEqual(70, len(block_component.block_storage.palette))
                     self.assertEqual(
                         block_stack,
-                        block_component.block.palette.index_to_block_stack(67),
+                        block_component.block_storage.palette.index_to_block_stack(67),
                     )
                     self.assertEqual(
                         block_stack_2,
-                        block_component.block.palette.index_to_block_stack(68),
+                        block_component.block_storage.palette.index_to_block_stack(68),
                     )
 
                 validate_edited_3(chunk)
@@ -368,7 +373,7 @@ class JavaChunkHandleTestCase(TestCase):
                 level.undo()
                 chunk_2 = chunk_handle.get_chunk()
                 block_component = self.assertCast(chunk_2, JavaChunk1466)
-                self.assertEqual(67, len(block_component.block.palette))
+                self.assertEqual(67, len(block_component.block_storage.palette))
 
             finally:
                 level.close()
@@ -402,7 +407,7 @@ class JavaChunkHandleTestCase(TestCase):
                 level.undo()
                 chunk_2 = chunk_handle.get_chunk()
                 block_component = self.assertCast(chunk_2, JavaChunk1444)
-                self.assertEqual(1, len(block_component.block.palette))
+                self.assertEqual(1, len(block_component.block_storage.palette))
 
             finally:
                 level.close()

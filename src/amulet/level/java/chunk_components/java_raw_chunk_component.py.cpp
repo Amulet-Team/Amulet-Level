@@ -6,10 +6,10 @@
 #include <memory>
 
 #include <amulet/pybind11_extensions/collections.hpp>
+#include <amulet/pybind11_extensions/mutable_mapping.hpp>
 
 #include <amulet/nbt/tag/named_tag.hpp>
 
-#include <amulet/pybind11_extensions/mutable_mapping.hpp>
 #include <amulet/level/java/chunk_components/java_raw_chunk_component.hpp>
 
 namespace py = pybind11;
@@ -40,5 +40,8 @@ void init_java_raw_chunk_component(py::module m)
                     py_raw_data.attr("__getitem__")(*it).cast<std::shared_ptr<Amulet::NBT::NamedTag>>());
             }
             self.set_raw_data(raw_data);
-        });
+        },
+        py::doc(
+            "This is subject to change as data gets moved into the chunk class.\n"
+            "Do not rely on data in here existing."));
 }

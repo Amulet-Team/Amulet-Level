@@ -118,10 +118,12 @@ public:
     AMULET_LEVEL_EXPORT void set_raw_chunk(std::int64_t cx, std::int64_t cz, const JavaRawChunk& chunk);
 
     // Decode a raw chunk to a chunk object.
+    // This will mutate the chunk data.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT std::unique_ptr<JavaChunk> decode_chunk(const JavaRawChunk& raw_chunk, std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT std::unique_ptr<JavaChunk> decode_chunk(JavaRawChunk raw_chunk, std::int64_t cx, std::int64_t cz);
 
     // Encode a chunk object to its raw data.
+    // This will mutate the chunk data.
     // TODO: thread safety
     AMULET_LEVEL_EXPORT JavaRawChunk encode_chunk(JavaChunk& chunk, std::int64_t cx, std::int64_t cz);
 

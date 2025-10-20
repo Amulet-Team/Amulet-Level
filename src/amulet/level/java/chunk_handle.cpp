@@ -66,7 +66,7 @@ void JavaChunkHandle::_preload()
     // Decode the chunk.
     std::unique_ptr<JavaChunk> chunk;
     try {
-        chunk = _raw_dimension->decode_chunk(raw_chunk, _cx, _cz);
+        chunk = _raw_dimension->decode_chunk(std::move(raw_chunk), _cx, _cz);
     } catch (const ChunkLoadError& e) {
         _chunk_history->set_initial_value(_key, 'e' + std::string(e.what()));
         return;

@@ -18,6 +18,19 @@ JavaDimension::~JavaDimension()
 {
 }
 
+void JavaDimension::save() {
+    for (const auto& [chunk_key, resource] : _chunk_history->get_resources()) {
+        if (!resource->has_changed()) {
+            continue;
+        }
+        auto cx = chunk_key.get_cx();
+        auto cz = chunk_key.get_cz();
+        auto chunk_handle = get_java_chunk_handle(cx, cz);
+        auto chunk = chunk_handle->get_java_chunk();
+        _raw_dimension->set_chunk(cx, cz, *chunk);
+    }
+}
+
 const DimensionId& JavaDimension::get_dimension_id() const
 {
     return _raw_dimension->get_dimension_id();

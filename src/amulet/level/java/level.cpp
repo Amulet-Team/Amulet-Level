@@ -113,7 +113,10 @@ void JavaLevel::purge()
 
 void JavaLevel::save()
 {
-    throw std::runtime_error("NotImplementedError");
+    for (const auto& dimension_id : get_dimension_ids()) {
+        auto dimension = get_java_dimension(dimension_id);
+        dimension->save();
+    }
 }
 
 void JavaLevel::close()

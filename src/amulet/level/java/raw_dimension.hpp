@@ -126,6 +126,15 @@ public:
     // This will mutate the chunk data.
     // TODO: thread safety
     AMULET_LEVEL_EXPORT JavaRawChunk encode_chunk(JavaChunk& chunk, std::int64_t cx, std::int64_t cz);
+    
+    // Get and decode the chunk.
+    // TODO: thread safety
+    AMULET_LEVEL_EXPORT std::unique_ptr<JavaChunk> get_chunk(std::int64_t cx, std::int64_t cz);
+
+    // Encode and set the chunk.
+    // This will mutate the chunk data.
+    // TODO: thread safety
+    AMULET_LEVEL_EXPORT void set_chunk(std::int64_t cx, std::int64_t cz, JavaChunk& chunk);
 
     // Compact the level.
     // External Read:SharedReadWrite lock required.

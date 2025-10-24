@@ -33,6 +33,8 @@ private:
 
     friend class JavaLevel;
 
+    void save();
+
 public:
     // Destructor
     AMULET_LEVEL_EXPORT ~JavaDimension() override;

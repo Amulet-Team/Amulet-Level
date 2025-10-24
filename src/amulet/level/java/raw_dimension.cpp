@@ -85,6 +85,14 @@ void JavaRawDimension::compact()
     _anvil_dimension.compact();
 }
 
+std::unique_ptr<JavaChunk> JavaRawDimension::get_chunk(std::int64_t cx, std::int64_t cz) {
+    return decode_chunk(get_raw_chunk(cx, cz), cz, cz);
+}
+
+void JavaRawDimension::set_chunk(std::int64_t cx, std::int64_t cz, JavaChunk& chunk) {
+    set_raw_chunk(cx, cz, encode_chunk(chunk, cx, cz));
+}
+
 void JavaRawDimension::destroy()
 {
     _destroyed = true;

@@ -175,10 +175,10 @@ void decode_java_chunk(
                         continue;
                     }
                     block_palette_tag = pop_tag<ListTagPtr>(*block_states_tag, "palette", []() { return nullptr; });
-                    block_data_tag = pop_tag<LongArrayTagPtr>(*block_states_tag, "data", []() { return std::make_shared<LongArrayTag>(); });
+                    block_data_tag = pop_tag<LongArrayTagPtr>(*block_states_tag, "data", []() { return nullptr; });
                 } else {
                     block_palette_tag = pop_tag<ListTagPtr>(*section, "Palette", []() { return nullptr; });
-                    block_data_tag = pop_tag<LongArrayTagPtr>(*section, "BlockStates", []() { return std::make_shared<LongArrayTag>(); });
+                    block_data_tag = pop_tag<LongArrayTagPtr>(*section, "BlockStates", []() { return nullptr; });
                 }
                 if (!block_palette_tag || !std::holds_alternative<CompoundListTag>(*block_palette_tag)) {
                     continue;
@@ -253,11 +253,7 @@ void decode_java_chunk(
 
                 std::shared_ptr<IndexArray3D> index_array;
 
-                if (block_data_tag->empty()) {
-                    index_array = std::make_shared<IndexArray3D>(
-                        std::make_tuple<std::uint16_t>(16, 16, 16),
-                        0);
-                } else {
+                if (block_data_tag) {
                     std::vector<std::uint32_t> decoded_vector(4096);
                     std::span<std::uint32_t> decoded_span(decoded_vector);
                     decode_long_array(
@@ -287,6 +283,12 @@ void decode_java_chunk(
                             }
                         }
                     }
+                } else if (lut.size() == 1) {
+                    index_array = std::make_shared<IndexArray3D>(
+                        std::make_tuple<std::uint16_t>(16, 16, 16),
+                        lut[0]);
+                } else {
+                    throw std::runtime_error("Block palette size != 1 and block array does not exist.");
                 }
                 block_sections.set_section(cy, index_array);
             }

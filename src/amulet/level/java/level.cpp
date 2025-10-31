@@ -43,9 +43,7 @@ const std::string JavaLevel::get_platform()
 
 const VersionNumber JavaLevel::get_max_game_version()
 {
-    auto& mutex = _raw_level->get_mutex();
-    mutex.lock<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite>();
-    std::lock_guard lock(mutex, std::adopt_lock);
+    OrderedLockGuard<ThreadAccessMode::Read, ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     return _raw_level->get_data_version();
 }
 
@@ -61,17 +59,13 @@ PIL::Image::Image JavaLevel::get_thumbnail()
 
 const std::string JavaLevel::get_level_name()
 {
-    auto& mutex = _raw_level->get_mutex();
-    mutex.lock<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite>();
-    std::lock_guard lock(mutex, std::adopt_lock);
+    OrderedLockGuard<ThreadAccessMode::Read, ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     return _raw_level->get_level_name();
 }
 
 std::chrono::system_clock::time_point JavaLevel::get_modified_time()
 {
-    auto& mutex = _raw_level->get_mutex();
-    mutex.lock<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite>();
-    std::lock_guard lock(mutex, std::adopt_lock);
+    OrderedLockGuard<ThreadAccessMode::Read, ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     return _raw_level->get_modified_time();
 }
 
@@ -91,9 +85,7 @@ void JavaLevel::open()
         return;
     }
     {
-        auto& mutex = _raw_level->get_mutex();
-        mutex.lock<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::Unique>();
-        std::lock_guard lock(mutex, std::adopt_lock);
+        OrderedLockGuard<ThreadAccessMode::ReadWrite, ThreadShareMode::Unique> lock(_raw_level->get_mutex());
         _raw_level->open();
     }
     _open_data = std::make_unique<JavaLevelOpenData>();
@@ -126,9 +118,7 @@ void JavaLevel::close()
     }
     _open_data = nullptr;
     {
-        auto& mutex = _raw_level->get_mutex();
-        mutex.lock<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::Unique>();
-        std::lock_guard lock(mutex, std::adopt_lock);
+        OrderedLockGuard<ThreadAccessMode::ReadWrite, ThreadShareMode::Unique> lock(_raw_level->get_mutex());
         _raw_level->close();
     }
     closed.dispatch();
@@ -191,9 +181,7 @@ void JavaLevel::set_history_enabled(bool history_enabled)
 
 std::vector<std::string> JavaLevel::get_dimension_ids()
 {
-    auto& mutex = _raw_level->get_mutex();
-    mutex.lock<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite>();
-    std::lock_guard lock(mutex, std::adopt_lock);
+    OrderedLockGuard<ThreadAccessMode::Read, ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     return _raw_level->get_dimension_ids();
 }
 
@@ -237,9 +225,7 @@ std::shared_ptr<Dimension> JavaLevel::get_dimension(const DimensionId& dimension
 
 void JavaLevel::compact()
 {
-    auto& mutex = _raw_level->get_mutex();
-    mutex.lock<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite>();
-    std::lock_guard lock(mutex, std::adopt_lock);
+    OrderedLockGuard<ThreadAccessMode::Read, ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     _raw_level->compact();
 }
 

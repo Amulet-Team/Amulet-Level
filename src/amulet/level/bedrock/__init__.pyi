@@ -1,3 +1,5 @@
 from __future__ import annotations
 
-__all__: list[str] = list()
+from . import level_dat
+
+__all__: list[str] = ["level_dat"]

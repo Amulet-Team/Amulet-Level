@@ -15,6 +15,8 @@ public:
     std::uint32_t version;
     NBT::NamedTag named_tag;
 
+    AMULET_LEVEL_EXPORT BedrockLevelDat();
+
     // Construct with the level.dat version and named tag
     AMULET_LEVEL_EXPORT BedrockLevelDat(std::uint32_t version, const NBT::NamedTag& named_tag);
 
@@ -29,6 +31,8 @@ public:
 
     // Encode and write to the file.
     AMULET_LEVEL_EXPORT void save_to(std::filesystem::path path) const;
+
+    AMULET_LEVEL_EXPORT BedrockLevelDat deep_copy() const;
 };
 
 } // namespace Amulet

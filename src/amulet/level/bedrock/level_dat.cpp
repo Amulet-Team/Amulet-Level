@@ -5,10 +5,18 @@
 
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/string_encoding/string_encoding.hpp>
+#include <amulet/nbt/tag/compound.hpp>
+#include <amulet/nbt/tag/copy.hpp>
 
 #include "level_dat.hpp"
 
 namespace Amulet {
+
+BedrockLevelDat::BedrockLevelDat()
+    : version()
+    , named_tag("", std::make_shared<Amulet::NBT::CompoundTag>())
+{
+}
 
 BedrockLevelDat::BedrockLevelDat(std::uint32_t version, const NBT::NamedTag& named_tag)
     : version(version)
@@ -103,6 +111,11 @@ void BedrockLevelDat::save_to(std::filesystem::path path) const
         }
         throw;
     }
+}
+
+BedrockLevelDat BedrockLevelDat::deep_copy() const
+{
+    return BedrockLevelDat(version, NBT::deep_copy(named_tag));
 }
 
 } // namespace Amulet

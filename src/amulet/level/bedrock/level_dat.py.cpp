@@ -61,4 +61,17 @@ void init_bedrock_level_dat(py::module m_parent)
                 + std::to_string(self.version) + ", "
                 + py::repr(py::cast(self.named_tag, py::return_value_policy::reference)).cast<std::string>() + ")";
         });
+
+    BedrockLevelDat.def(
+        "__copy__",
+        [](const Amulet::BedrockLevelDat& self) {
+            return self;
+        });
+
+    BedrockLevelDat.def(
+        "__deepcopy__",
+        [](const Amulet::BedrockLevelDat& self, py::dict) {
+            return self.deep_copy();
+        },
+        py::arg("memo"));
 }

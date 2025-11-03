@@ -1,0 +1,66 @@
+from __future__ import annotations
+
+import amulet.core.biome
+import amulet.core.block
+import amulet.core.selection.box
+import amulet.utils.lock
+
+__all__: list[str] = ["BedrockRawDimension"]
+
+class BedrockRawDimension:
+    def destroy(self) -> None:
+        """
+        Destroy the instance.
+        Calls made after this will fail.
+        This may only be called by the owner of the instance.
+        External ReadWrite:Unique lock required.
+        """
+
+    def is_destroyed(self) -> bool:
+        """
+        Has the instance been destroyed.
+        If this is false, other calls will fail.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def bounds(self) -> amulet.core.selection.box.SelectionBox:
+        """
+        The selection box that fills the whole world.
+        Thread safe.
+        """
+
+    @property
+    def default_biome(self) -> amulet.core.biome.Biome:
+        """
+        The default biome for this dimension.
+        Thread safe.
+        """
+
+    @property
+    def default_block(self) -> amulet.core.block.BlockStack:
+        """
+        The default block for this dimension.
+        Thread safe.
+        """
+
+    @property
+    def dimension_id(self) -> str:
+        """
+        The identifier for this dimension. eg. "minecraft:overworld".
+        Thread safe.
+        """
+
+    @property
+    def internal_dimension_id(self) -> int:
+        """
+        The internal identifier for this dimension. eg 0, 1 or 2
+        Thread safe.
+        """
+
+    @property
+    def lock(self) -> amulet.utils.lock.OrderedLock:
+        """
+        The public lock
+        Thread safe.
+        """

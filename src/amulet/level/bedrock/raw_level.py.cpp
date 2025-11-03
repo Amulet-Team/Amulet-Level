@@ -1,6 +1,6 @@
 // #include <pybind11/chrono.h>
 #include <pybind11/pybind11.h>
-// #include <pybind11/stl.h>
+#include <pybind11/stl.h>
 
 // #include <memory>
 
@@ -187,21 +187,21 @@ py::module init_bedrock_raw_level(py::module m_parent)
     //                "Setter:\n"
     //                "Set the level name.\n"
     //                "External ReadWrite:Unique lock required."));
-    //    BedrockRawLevel.def_property_readonly(
-    //        "dimension_ids",
-    //        py::cpp_function(
-    //            &Amulet::BedrockRawLevel::get_dimension_ids,
-    //            py::call_guard<py::gil_scoped_release>()),
-    //        py::doc("The identifiers for all dimensions in this level.\n"
-    //                "External Read:SharedReadWrite lock required.\n"
-    //                "External Read:SharedReadOnly lock optional."));
-    //    BedrockRawLevel.def(
-    //        "get_dimension",
-    //        &Amulet::BedrockRawLevel::get_dimension,
-    //        py::arg("dimension_id"),
-    //        py::call_guard<py::gil_scoped_release>(),
-    //        py::doc("Get the raw dimension object for a specific dimension.\n"
-    //                "External Read:SharedReadWrite lock required."));
+    BedrockRawLevel.def_property_readonly(
+        "dimension_ids",
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::get_dimension_ids,
+            py::call_guard<py::gil_scoped_release>()),
+        py::doc("The identifiers for all dimensions in this level.\n"
+                "External Read:SharedReadWrite lock required.\n"
+                "External Read:SharedReadOnly lock optional."));
+    BedrockRawLevel.def(
+        "get_dimension",
+        py::overload_cast<const Amulet::DimensionId&>(&Amulet::BedrockRawLevel::get_dimension),
+        py::arg("dimension_id"),
+        py::call_guard<py::gil_scoped_release>(),
+        py::doc("Get the raw dimension object for a specific dimension.\n"
+                "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def(
         "compact",
         &Amulet::BedrockRawLevel::compact,

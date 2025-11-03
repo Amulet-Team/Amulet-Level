@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import amulet.level.abc.registry
 import amulet.level.bedrock.level_dat
+import amulet.level.bedrock.raw_dimension
 import amulet.leveldb
 import amulet.utils.event
 import amulet.utils.lock
@@ -27,6 +28,14 @@ class BedrockRawLevel:
     def compact(self) -> None:
         """
         Compact the level.
+        External Read:SharedReadWrite lock required.
+        """
+
+    def get_dimension(
+        self, dimension_id: str
+    ) -> amulet.level.bedrock.raw_dimension.BedrockRawDimension:
+        """
+        Get the raw dimension object for a specific dimension.
         External Read:SharedReadWrite lock required.
         """
 
@@ -79,6 +88,14 @@ class BedrockRawLevel:
 
     @property
     def closed(self) -> amulet.utils.event.Event[()]: ...
+    @property
+    def dimension_ids(self) -> list[str]:
+        """
+        The identifiers for all dimensions in this level.
+        External Read:SharedReadWrite lock required.
+        External Read:SharedReadOnly lock optional.
+        """
+
     @property
     def level_dat(self) -> amulet.level.bedrock.level_dat.BedrockLevelDat:
         """

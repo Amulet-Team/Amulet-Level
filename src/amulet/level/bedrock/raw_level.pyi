@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import amulet.level.abc.registry
 import amulet.level.bedrock.level_dat
+import amulet.leveldb
 import amulet.utils.event
 import amulet.utils.lock
 import PIL.Image
@@ -95,6 +96,13 @@ class BedrockRawLevel:
     def level_dat(
         self, arg1: amulet.level.bedrock.level_dat.BedrockLevelDat
     ) -> None: ...
+    @property
+    def leveldb(self) -> amulet.leveldb.LevelDB:
+        """
+        Get the LevelDB database.
+        External Read::SharedReadWrite lock required.
+        """
+
     @property
     def lock(self) -> amulet.utils.lock.OrderedLock:
         """

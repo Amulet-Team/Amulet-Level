@@ -7,20 +7,22 @@
 // #include <shared_mutex>
 // #include <stdexcept>
 
+#include <amulet/leveldb.hpp>
+
 #include <amulet/nbt/tag/named_tag.hpp>
 
 #include <amulet/utils/event.hpp>
 #include <amulet/utils/image.hpp>
 #include <amulet/utils/lock_file.hpp>
 #include <amulet/utils/mutex.hpp>
-//
+
 // #include <amulet/core/selection/box.hpp>
 #include <amulet/core/version/version.hpp>
-//
+
 #include <amulet/level/abc/dimension.hpp>
 #include <amulet/level/abc/registry.hpp>
 #include <amulet/level/dll.hpp>
-//
+
 // #include "dimension.hpp"
 #include "level_dat.hpp"
 #include "raw_dimension.hpp"
@@ -51,6 +53,7 @@ class BedrockRawLevelOpenData {
 public:
     std::unique_ptr<LockFile> session_lock;
     // TODO: data_pack
+    std::shared_ptr<LevelDB> db;
     std::shared_mutex dimensions_mutex;
     // std::map<BedrockInternalDimensionID, std::shared_ptr<BedrockRawDimension>> dimensions;
     // std::map<DimensionId, BedrockInternalDimensionID> dimension_ids;
@@ -58,12 +61,8 @@ public:
     std::shared_ptr<IdRegistry> biome_id_override;
 
     BedrockRawLevelOpenData(
-        std::unique_ptr<LockFile> session_lock)
-        : session_lock(std::move(session_lock))
-        , block_id_override(std::make_shared<IdRegistry>())
-        , biome_id_override(std::make_shared<IdRegistry>())
-    {
-    }
+        std::unique_ptr<LockFile> session_lock,
+        std::shared_ptr<LevelDB> db);
 };
 
 class BedrockRawLevel {
@@ -215,6 +214,10 @@ public:
     // Overridden biome ids.
     // External Read:SharedReadWrite lock required.
     AMULET_LEVEL_EXPORT std::shared_ptr<IdRegistry> get_biome_id_override();
+
+    // Get the LevelDB database.
+    // External Read::SharedReadWrite lock required.
+    AMULET_LEVEL_EXPORT std::shared_ptr<LevelDB> get_leveldb();
 };
 
 } // namespace Amulet

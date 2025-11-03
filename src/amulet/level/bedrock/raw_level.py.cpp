@@ -225,6 +225,11 @@ py::module init_bedrock_raw_level(py::module m_parent)
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Overridden biome ids.\n"
                 "External Read:SharedReadWrite lock required."));
+    BedrockRawLevel.def_property_readonly(
+        "leveldb",
+        &Amulet::BedrockRawLevel::get_leveldb,
+        py::doc("Get the LevelDB database.\n"
+                "External Read::SharedReadWrite lock required."));
 
     return m;
 }

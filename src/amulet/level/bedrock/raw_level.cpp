@@ -6,7 +6,11 @@
 // #include <regex>
 // #include <stdexcept>
 // #include <variant>
-//
+
+#include <leveldb/cache.h>
+#include <leveldb/decompress_allocator.h>
+#include <leveldb/filter_policy.h>
+
 // #include <amulet/nbt/nbt_encoding/binary.hpp>
 // #include <amulet/nbt/string_encoding/string_encoding.hpp>
 // #include <amulet/nbt/tag/compound.hpp>
@@ -14,10 +18,57 @@
 //
 // #include <amulet/utils/lock_file.hpp>
 // #include <amulet/utils/logging.hpp>
-//
-// #include <amulet/zlib/zlib.hpp>
 
 #include "raw_level.hpp"
+
+namespace {
+
+class NullLogger : public leveldb::Logger {
+public:
+    void Logv(const char*, va_list) override { }
+};
+
+class LevelDBOptions : public Amulet::LevelDBOptions {
+public:
+    NullLogger logger;
+    leveldb::DecompressAllocator decompress_allocator;
+};
+
+static std::unique_ptr<Amulet::LevelDB> open_leveldb(std::filesystem::path path, bool create = false)
+{
+    // Expand dots and symbolic links
+    path = std::filesystem::absolute(path);
+    // If there is not a directory at the path
+    if (!std::filesystem::is_directory(path)) {
+        if (create) {
+            std::filesystem::create_directories(path);
+        } else {
+            throw std::runtime_error("leveldb directory does not exist.");
+        }
+    }
+
+    auto options = std::make_unique<LevelDBOptions>();
+    options->options.create_if_missing = create;
+    options->options.filter_policy = leveldb::NewBloomFilterPolicy(10);
+    options->options.block_cache = leveldb::NewLRUCache(40 * 1024 * 1024);
+    options->options.write_buffer_size = 4 * 1024 * 1024;
+    options->options.info_log = &options->logger;
+    options->options.compression = leveldb::CompressionType::kZlibRawCompression;
+    options->options.block_size = 163840;
+
+    options->read_options.decompress_allocator = &options->decompress_allocator;
+
+    leveldb::DB* _db = NULL;
+    auto status = leveldb::DB::Open(options->options, path.string(), &_db);
+    if (status.ok()) {
+        return std::make_unique<Amulet::LevelDB>(
+            std::unique_ptr<leveldb::DB>(_db),
+            std::move(options));
+    }
+    throw std::runtime_error("Could not create leveldb database at \"" + path.string() + "\" " + status.ToString());
+}
+
+}
 
 namespace Amulet {
 
@@ -25,6 +76,16 @@ namespace Amulet {
 // static const std::string THE_NETHER = "minecraft:the_nether";
 // static const std::string THE_END = "minecraft:the_end";
 // static const std::regex number_regex(R"(^(\-?\d+)$)");
+
+BedrockRawLevelOpenData::BedrockRawLevelOpenData(
+    std::unique_ptr<LockFile> session_lock,
+    std::shared_ptr<LevelDB> db)
+    : session_lock(std::move(session_lock))
+    , db(std::move(db))
+    , block_id_override(std::make_shared<IdRegistry>())
+    , biome_id_override(std::make_shared<IdRegistry>())
+{
+}
 
 BedrockRawLevel::BedrockRawLevel(const std::filesystem::path path)
     : _path(path)
@@ -157,8 +218,11 @@ void BedrockRawLevel::_open(std::unique_ptr<LockFile> session_lock)
     // Reload the metadata to ensure it is up to date.
     reload_metadata();
 
+    std::shared_ptr<Amulet::LevelDB> db = open_leveldb(_path / "db");
+
     _raw_open_data = std::make_unique<BedrockRawLevelOpenData>(
-        std::move(session_lock));
+        std::move(session_lock),
+        std::move(db));
 }
 
 void BedrockRawLevel::open()
@@ -184,6 +248,7 @@ std::unique_ptr<LockFile> BedrockRawLevel::_close()
     auto lock_file = std::move(raw_open_data->session_lock);
 
     // destroy open data
+    raw_open_data->db->close();
     /*std::lock_guard dimensions_lock(raw_open_data->dimensions_mutex);
     for (auto& [_, dimension_ptr] : raw_open_data->dimensions) {
         dimension_ptr->destroy();
@@ -612,6 +677,11 @@ std::shared_ptr<IdRegistry> BedrockRawLevel::get_block_id_override()
 std::shared_ptr<IdRegistry> BedrockRawLevel::get_biome_id_override()
 {
     return _get_raw_open().biome_id_override;
+}
+
+std::shared_ptr<LevelDB> BedrockRawLevel::get_leveldb()
+{
+    return _get_raw_open().db;
 }
 
 } // namespace Amulet

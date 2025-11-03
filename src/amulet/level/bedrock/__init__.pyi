@@ -1,5 +1,7 @@
 from __future__ import annotations
 
-from . import level_dat
+from amulet.level.bedrock.raw_level import BedrockRawLevel
 
-__all__: list[str] = ["level_dat"]
+from . import level_dat, raw_level
+
+__all__: list[str] = ["BedrockRawLevel", "level_dat", "raw_level"]

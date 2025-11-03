@@ -5,12 +5,16 @@
 namespace py = pybind11;
 
 void init_bedrock_level_dat(py::module);
+py::module init_bedrock_raw_level(py::module);
 
 py::module init_bedrock(py::module m_parent)
 {
     auto m = Amulet::pybind11_extensions::def_subpackage(m_parent, "bedrock");
 
     init_bedrock_level_dat(m);
+    
+    auto level = init_bedrock_raw_level(m);
+    m.attr("BedrockRawLevel") = level.attr("BedrockRawLevel");
 
     return m;
 }

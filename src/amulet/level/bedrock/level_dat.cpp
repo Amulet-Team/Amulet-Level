@@ -78,7 +78,7 @@ std::string BedrockLevelDat::to_binary() const
     return buffer;
 }
 
-static bool write_to_file(std::filesystem::path path, std::string_view buffer)
+static void write_to_file(std::filesystem::path path, std::string_view buffer)
 {
     std::ofstream file(path, std::ios::binary);
     if (!file) {

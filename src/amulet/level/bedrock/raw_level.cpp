@@ -26,9 +26,24 @@ namespace Amulet {
 // static const std::string THE_END = "minecraft:the_end";
 // static const std::regex number_regex(R"(^(\-?\d+)$)");
 
+BedrockRawLevel::BedrockRawLevel(const std::filesystem::path path)
+    : _path(path)
+    , _level_dat()
+//, _data_version({})
+{
+}
+
 BedrockRawLevel::~BedrockRawLevel()
 {
     close();
+}
+
+BedrockRawLevelOpenData& BedrockRawLevel::_get_raw_open()
+{
+    if (!_raw_open_data) {
+        throw std::runtime_error("The level is not open.");
+    }
+    return *_raw_open_data;
 }
 
 std::unique_ptr<BedrockRawLevel> BedrockRawLevel::load(const std::filesystem::path& path)
@@ -571,18 +586,18 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //     return dimension_ids;
 // }
 
-//std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const DimensionId& dimension_id)
+// std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const DimensionId& dimension_id)
 //{
-//    //     auto& raw_open = _find_dimensions();
-//    //     std::shared_lock lock(raw_open.dimensions_mutex);
-//    //     auto it = raw_open.dimension_ids.find(dimension_id);
-//    //     BedrockInternalDimensionID internal_dimension_id = (it == raw_open.dimension_ids.end()) ? dimension_id : it->second;
-//    //     auto it2 = raw_open.dimensions.find(internal_dimension_id);
-//    //     if (it2 == raw_open.dimensions.end()) {
-//    //         throw std::invalid_argument("Dimension " + dimension_id + " does not exist.");
-//    //     }
-//    //     return it2->second;
-//}
+//     //     auto& raw_open = _find_dimensions();
+//     //     std::shared_lock lock(raw_open.dimensions_mutex);
+//     //     auto it = raw_open.dimension_ids.find(dimension_id);
+//     //     BedrockInternalDimensionID internal_dimension_id = (it == raw_open.dimension_ids.end()) ? dimension_id : it->second;
+//     //     auto it2 = raw_open.dimensions.find(internal_dimension_id);
+//     //     if (it2 == raw_open.dimensions.end()) {
+//     //         throw std::invalid_argument("Dimension " + dimension_id + " does not exist.");
+//     //     }
+//     //     return it2->second;
+// }
 
 void BedrockRawLevel::compact()
 {

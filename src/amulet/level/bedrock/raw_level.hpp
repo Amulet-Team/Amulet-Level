@@ -52,8 +52,8 @@ public:
     std::unique_ptr<LockFile> session_lock;
     // TODO: data_pack
     std::shared_mutex dimensions_mutex;
-    //std::map<BedrockInternalDimensionID, std::shared_ptr<BedrockRawDimension>> dimensions;
-    //std::map<DimensionId, BedrockInternalDimensionID> dimension_ids;
+    // std::map<BedrockInternalDimensionID, std::shared_ptr<BedrockRawDimension>> dimensions;
+    // std::map<DimensionId, BedrockInternalDimensionID> dimension_ids;
     std::shared_ptr<IdRegistry> block_id_override;
     std::shared_ptr<IdRegistry> biome_id_override;
 
@@ -71,29 +71,18 @@ private:
     OrderedMutex _public_mutex;
     std::filesystem::path _path;
     BedrockLevelDat _level_dat;
-    //VersionNumber _data_version;
+    // VersionNumber _data_version;
 
     // Data that is only valid when the level is open.
     // The external unique lock must be held to change this pointer.
     std::unique_ptr<BedrockRawLevelOpenData> _raw_open_data;
 
     // Construct a new instance. Path is the directory containing the level.dat file.
-    BedrockRawLevel(const std::filesystem::path path)
-        : _path(path)
-        , _level_dat()
-        //, _data_version({})
-    {
-    }
+    BedrockRawLevel(const std::filesystem::path path);
 
     // Validate _raw_open_data is valid and return a reference.
     // External Read:SharedReadWrite lock required.
-    BedrockRawLevelOpenData& _get_raw_open()
-    {
-        if (!_raw_open_data) {
-            throw std::runtime_error("The level is not open.");
-        }
-        return *_raw_open_data;
-    }
+    BedrockRawLevelOpenData& _get_raw_open();
 
     // BedrockRawLevelOpenData& _find_dimensions();
     void _open(std::unique_ptr<LockFile> session_lock);
@@ -213,7 +202,7 @@ public:
 
     // Get the raw dimension object for a specific dimension.
     // External Read:SharedReadWrite lock required.
-    //AMULET_LEVEL_EXPORT std::shared_ptr<BedrockRawDimension> get_dimension(const DimensionId&);
+    // AMULET_LEVEL_EXPORT std::shared_ptr<BedrockRawDimension> get_dimension(const DimensionId&);
 
     // Compact the level.
     // External Read:SharedReadWrite lock required.

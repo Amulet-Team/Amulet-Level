@@ -721,8 +721,6 @@ std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const Bedroc
 {
     auto& raw_open = _find_dimensions();
     std::shared_lock lock(raw_open.dimensions_mutex);
-
-    return get_dimension(internal_dimension_id);
     auto it = raw_open.dimensions.find(internal_dimension_id);
     if (it == raw_open.dimensions.end()) {
         throw std::invalid_argument("dimension " + std::to_string(internal_dimension_id) + " does not exist.");

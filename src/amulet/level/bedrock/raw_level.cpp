@@ -72,9 +72,9 @@ static std::unique_ptr<Amulet::LevelDB> open_leveldb(std::filesystem::path path,
 
 namespace Amulet {
 
-// static const std::string OVERWORLD = "minecraft:overworld";
-// static const std::string THE_NETHER = "minecraft:the_nether";
-// static const std::string THE_END = "minecraft:the_end";
+static const std::string OVERWORLD = "minecraft:overworld";
+static const std::string THE_NETHER = "minecraft:the_nether";
+static const std::string THE_END = "minecraft:the_end";
 // static const std::regex number_regex(R"(^(\-?\d+)$)");
 
 BedrockRawLevelOpenData::BedrockRawLevelOpenData(
@@ -248,11 +248,13 @@ std::unique_ptr<LockFile> BedrockRawLevel::_close()
     auto lock_file = std::move(raw_open_data->session_lock);
 
     // destroy open data
-    raw_open_data->db->close();
-    /*std::lock_guard dimensions_lock(raw_open_data->dimensions_mutex);
+    std::lock_guard dimensions_lock(raw_open_data->dimensions_mutex);
     for (auto& [_, dimension_ptr] : raw_open_data->dimensions) {
         dimension_ptr->destroy();
-    }*/
+    }
+
+    auto db = std::move(raw_open_data->db);
+    db->close();
 
     return lock_file;
 }
@@ -517,152 +519,216 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //         dimension_type_node);
 // }
 
-// void BedrockRawLevel::_register_dimension(
-//     BedrockRawLevelOpenData& raw_open,
-//     const BedrockInternalDimensionID& relative_dimension_path,
-//     const DimensionId& dimension_id)
-//{
-//     if (!raw_open.dimension_ids.contains(dimension_id) && !raw_open.dimensions.contains(relative_dimension_path)) {
-//         // Get the dimension path
-//         auto path = _path;
-//         if (!relative_dimension_path.empty()) {
-//             path = path / relative_dimension_path;
-//         }
-//
-//         // Build the list of layer names
-//         std::list<std::string> layers;
-//         if (VersionNumber { 2681 } <= _data_version) {
-//             layers = { "region", "entities" };
-//         } else {
-//             layers = { "region" };
-//         }
-//
-//         // Create the raw dimension instance
-//         auto raw_dimension = std::shared_ptr<BedrockRawDimension>(
-//             new BedrockRawDimension(
-//                 path,
-//                 get_data_version() > VersionNumber { 2203 },
-//                 layers,
-//                 relative_dimension_path,
-//                 dimension_id,
-//                 _get_dimension_bounds(dimension_id),
-//                 // TODO: Is this data stored somewhere?
-//                 BlockStack { Block("bedrock", VersionNumber { 3700 }, "minecraft", "air") },
-//                 [&] {
-//                     if (dimension_id == THE_NETHER) {
-//                         return Biome("bedrock", VersionNumber { 3700 }, "minecraft", "nether_wastes");
-//                     } else if (dimension_id == THE_END) {
-//                         return Biome("bedrock", VersionNumber { 3700 }, "minecraft", "the_end");
-//                     } else {
-//                         return Biome("bedrock", VersionNumber { 3700 }, "minecraft", "plains");
-//                     }
-//                 }()));
-//
-//         raw_open.dimension_ids.emplace(dimension_id, relative_dimension_path);
-//         raw_open.dimensions.emplace(relative_dimension_path, raw_dimension);
-//     }
-// }
+void _register_dimension(
+    BedrockRawLevelOpenData& raw_open,
+    const BedrockInternalDimensionID& internal_dimension_id,
+    const DimensionId& dimension_id,
+    const SelectionBox& bounds,
+    const BlockStack& default_block,
+    const Biome& default_biome)
+{
+    if (!raw_open.dimension_ids.contains(dimension_id) && !raw_open.dimensions.contains(internal_dimension_id)) {
+        // Create the raw dimension instance
+        auto raw_dimension = std::shared_ptr<BedrockRawDimension>(
+            new BedrockRawDimension(
+                raw_open.db,
+                internal_dimension_id,
+                dimension_id,
+                bounds,
+                default_block,
+                default_biome));
 
-// BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
-//{
-//     auto& raw_open = _get_raw_open();
-//     std::unique_lock lock(raw_open.dimensions_mutex);
-//
-//     if (!raw_open.dimensions.empty()) {
-//         return raw_open;
-//     }
-//
-//     // Add hard coded dimensions
-//     _register_dimension(raw_open, "", OVERWORLD);
-//     _register_dimension(raw_open, "DIM-1", THE_NETHER);
-//     _register_dimension(raw_open, "DIM1", THE_END);
-//
-//     // Find DIM style dimensions
-//     for (const auto& dir_entry : std::filesystem::directory_iterator { _path }) {
-//         if (!dir_entry.is_directory()) {
-//             continue;
-//         }
-//         auto dir_name = dir_entry.path().filename().string();
-//         if (dir_name.substr(0, 3) != "DIM") {
-//             continue;
-//         }
-//         std::smatch match;
-//         if (!std::regex_search(dir_name, match, number_regex)) {
-//             continue;
-//         }
-//         _register_dimension(raw_open, dir_name, dir_name);
-//     }
-//
-//     // Find dimensions in "dimensions" directory
-//     auto dimensions_path = _path / "dimensions";
-//     if (std::filesystem::is_directory(dimensions_path)) {
-//         for (const auto& dir_entry : std::filesystem::recursive_directory_iterator { dimensions_path }) {
-//             if (!dir_entry.is_directory()) {
-//                 // Skip if it isn't a directory
-//                 continue;
-//             }
-//             auto& path = dir_entry.path();
-//             if (path.filename().string() != "region") {
-//                 // Skip if it doesn't end with region
-//                 continue;
-//             }
-//             // Get the dimension path relative to the world
-//             auto rel_dimension_path = std::filesystem::relative(path.parent_path(), _path);
-//
-//             std::string dimension_name;
-//             auto it = rel_dimension_path.begin();
-//
-//             // Get the namespace
-//             if (it == rel_dimension_path.end()) {
-//                 continue;
-//             }
-//             dimension_name += it->string();
-//             dimension_name += ":";
-//             it++;
-//
-//             // Get the base name
-//             if (it == rel_dimension_path.end()) {
-//                 continue;
-//             }
-//             dimension_name += it->string();
-//
-//             // Get base name extension
-//             for (; it == rel_dimension_path.end(); it++) {
-//                 dimension_name += "/";
-//                 dimension_name += it->string();
-//             }
-//
-//             _register_dimension(raw_open, rel_dimension_path.string(), dimension_name);
-//         }
-//     }
-//
-//     return raw_open;
-// }
+        raw_open.dimension_ids.emplace(dimension_id, internal_dimension_id);
+        raw_open.dimensions.emplace(internal_dimension_id, std::move(raw_dimension));
+    }
+}
 
-// std::vector<std::string> BedrockRawLevel::get_dimension_ids()
-//{
-//     auto& raw_open = _find_dimensions();
-//     std::shared_lock lock(raw_open.dimensions_mutex);
-//     std::vector<DimensionId> dimension_ids;
-//     dimension_ids.reserve(raw_open.dimension_ids.size());
-//     for (auto& [dimension_id, _] : raw_open.dimension_ids) {
-//         dimension_ids.push_back(dimension_id);
-//     }
-//     return dimension_ids;
-// }
+BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
+{
+    auto& raw_open = _get_raw_open();
+    std::unique_lock lock(raw_open.dimensions_mutex);
 
-// std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const DimensionId& dimension_id)
-//{
-//     //     auto& raw_open = _find_dimensions();
-//     //     std::shared_lock lock(raw_open.dimensions_mutex);
-//     //     auto it = raw_open.dimension_ids.find(dimension_id);
-//     //     BedrockInternalDimensionID internal_dimension_id = (it == raw_open.dimension_ids.end()) ? dimension_id : it->second;
-//     //     auto it2 = raw_open.dimensions.find(internal_dimension_id);
-//     //     if (it2 == raw_open.dimensions.end()) {
-//     //         throw std::invalid_argument("Dimension " + dimension_id + " does not exist.");
-//     //     }
-//     //     return it2->second;
-// }
+    if (!raw_open.dimensions.empty()) {
+        return raw_open;
+    }
+
+    // Add hard coded dimensions
+    // TODO: What format should biome version use?
+    _register_dimension(
+        raw_open,
+        0,
+        OVERWORLD,
+        SelectionBox(-30'000'000, -64, -30'000'000, 60'000'000, 384, 60'000'000),
+        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"));
+
+    _register_dimension(
+        raw_open,
+        1,
+        THE_NETHER,
+        SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 128, 60'000'000),
+        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"));
+
+    _register_dimension(
+        raw_open,
+        2,
+        THE_END,
+        SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000),
+        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"));
+
+    //_get_dimension_bounds(dimension_id),
+    //    // TODO: Is this data stored somewhere?
+    //    BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
+    //    [&] {
+    //        if (dimension_id == THE_NETHER) {
+    //            return Biome("bedrock", VersionNumber { 17432626 }, "minecraft", "nether_wastes");
+    //        } else if (dimension_id == THE_END) {
+    //            return Biome("bedrock", VersionNumber { 17432626 }, "minecraft", "the_end");
+    //        } else {
+    //            return Biome("bedrock", VersionNumber { 17432626 }, "minecraft", "plains");
+    //        }
+    //    }()
+
+    // experiments = self.root_tag.compound.get_compound(
+    //     "experiments", CompoundTag()
+    //)
+    // if (
+    //     experiments.get_byte("caves_and_cliffs", ByteTag()).py_int
+    //     or experiments.get_byte("caves_and_cliffs_internal", ByteTag()).py_int
+    //     or self.version >= (1, 18)
+    //):
+    //     self._bounds[OVERWORLD] = SelectionGroup(
+    //         SelectionBox(
+    //             (-30_000_000, -64, -30_000_000), (30_000_000, 320, 30_000_000)
+    //         )
+    //     )
+    // else:
+    //     self._bounds[OVERWORLD] = DefaultSelection
+    // self._bounds[THE_NETHER] = SelectionGroup(
+    //     SelectionBox(
+    //         (-30_000_000, 0, -30_000_000), (30_000_000, 128, 30_000_000)
+    //     )
+    //)
+    // self._bounds[THE_END] = DefaultSelection
+
+    // if b"LevelChunkMetaDataDictionary" in self.level_db:
+    //     data = self.level_db[b"LevelChunkMetaDataDictionary"]
+    //     count, data = struct.unpack("<I", data[:4])[0], data[4:]
+    //     for _ in range(count):
+    //         key, data = data[:8], data[8:]
+    //         context = ReadContext()
+    //         value = load_nbt(
+    //             data,
+    //             little_endian=True,
+    //             compressed=False,
+    //             string_decoder=utf8_escape_decoder,
+    //             read_context=context,
+    //         ).compound
+    //         data = data[context.offset :]
+
+    //        try:
+    //            dimension_name = value.get_string("DimensionName").py_str
+    //            # The dimension names are stored differently TODO: split local and global names
+    //            dimension_name = {
+    //                "Overworld": OVERWORLD,
+    //                "Nether": THE_NETHER,
+    //                "TheEnd": THE_END,
+    //            }.get(dimension_name, dimension_name)
+
+    //        except KeyError:
+    //            # Some entries seem to not have a dimension assigned to them. Is there a default? We will skip over these for now.
+    //            # {'LastSavedBaseGameVersion': StringTag("1.19.81"), 'LastSavedDimensionHeightRange': CompoundTag({'max': ShortTag(320), 'min': ShortTag(-64)})}
+    //            pass
+    //        else:
+    //            previous_bounds = self._bounds.get(
+    //                dimension_name, DefaultSelection
+    //            )
+    //            min_y = min(
+    //                value.get_compound(
+    //                    "LastSavedDimensionHeightRange", CompoundTag()
+    //                )
+    //                .get_short("min", ShortTag())
+    //                .py_int,
+    //                value.get_compound(
+    //                    "OriginalDimensionHeightRange", CompoundTag()
+    //                )
+    //                .get_short("min", ShortTag())
+    //                .py_int,
+    //                previous_bounds.min_y,
+    //            )
+    //            max_y = max(
+    //                value.get_compound(
+    //                    "LastSavedDimensionHeightRange", CompoundTag()
+    //                )
+    //                .get_short("max", ShortTag())
+    //                .py_int,
+    //                value.get_compound(
+    //                    "OriginalDimensionHeightRange", CompoundTag()
+    //                )
+    //                .get_short("max", ShortTag())
+    //                .py_int,
+    //                previous_bounds.max_y,
+    //            )
+    //            self._bounds[dimension_name] = SelectionGroup(
+    //                SelectionBox(
+    //                    (previous_bounds.min_x, min_y, previous_bounds.min_z),
+    //                    (previous_bounds.max_x, max_y, previous_bounds.max_z),
+    //                )
+    //            )
+
+    // # Give all other dimensions found an entry
+    // known_dimensions = set(self._dimension_to_internal.values())
+    // for internal_dimension in self._dimension_manager.dimensions:
+    //     if internal_dimension not in known_dimensions:
+    //         dimension_name = f"DIM{internal_dimension}"
+    //         self._dimension_to_internal[dimension_name] = internal_dimension
+    //         self._bounds[dimension_name] = DefaultSelection
+
+    return raw_open;
+}
+
+std::vector<std::string> BedrockRawLevel::get_dimension_ids()
+{
+    auto& raw_open = _find_dimensions();
+    std::shared_lock lock(raw_open.dimensions_mutex);
+    std::vector<DimensionId> dimension_ids;
+    dimension_ids.reserve(raw_open.dimension_ids.size());
+    for (auto& [dimension_id, _] : raw_open.dimension_ids) {
+        dimension_ids.push_back(dimension_id);
+    }
+    return dimension_ids;
+}
+
+std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const DimensionId& dimension_id)
+{
+    auto& raw_open = _find_dimensions();
+    std::shared_lock lock(raw_open.dimensions_mutex);
+    auto it = raw_open.dimension_ids.find(dimension_id);
+    if (it == raw_open.dimension_ids.end()) {
+        throw std::invalid_argument("Dimension " + dimension_id + " does not exist.");
+    }
+    BedrockInternalDimensionID internal_dimension_id = it->second;
+    auto it2 = raw_open.dimensions.find(internal_dimension_id);
+    if (it2 == raw_open.dimensions.end()) {
+        throw std::invalid_argument("dimension " + dimension_id + " does not exist.");
+    }
+    return it2->second;
+}
+
+std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const BedrockInternalDimensionID& internal_dimension_id)
+{
+    auto& raw_open = _find_dimensions();
+    std::shared_lock lock(raw_open.dimensions_mutex);
+
+    return get_dimension(internal_dimension_id);
+    auto it = raw_open.dimensions.find(internal_dimension_id);
+    if (it == raw_open.dimensions.end()) {
+        throw std::invalid_argument("dimension " + std::to_string(internal_dimension_id) + " does not exist.");
+    }
+    return it->second;
+}
 
 void BedrockRawLevel::compact()
 {

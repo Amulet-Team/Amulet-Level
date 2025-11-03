@@ -732,7 +732,8 @@ std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const Bedroc
 
 void BedrockRawLevel::compact()
 {
-    throw std::runtime_error("NotImplementedError");
+    auto& db = *_get_raw_open().db;
+    db->CompactRange(nullptr, nullptr);
 }
 
 std::shared_ptr<IdRegistry> BedrockRawLevel::get_block_id_override()

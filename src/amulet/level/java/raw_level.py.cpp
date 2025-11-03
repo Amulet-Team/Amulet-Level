@@ -4,8 +4,6 @@
 
 #include <memory>
 
-#include <amulet/pybind11_extensions/nogil_holder.hpp>
-
 #include <amulet/utils/event.py.hpp>
 
 #include <amulet/core/version/version.hpp>
@@ -13,7 +11,6 @@
 #include "raw_level.hpp"
 
 namespace py = pybind11;
-namespace pyext = Amulet::pybind11_extensions;
 
 py::module init_java_raw_level(py::module m_parent)
 {
@@ -43,13 +40,11 @@ py::module init_java_raw_level(py::module m_parent)
         "level_name",
         &Amulet::JavaCreateArgsV1::level_name);
 
-    py::class_<
-        Amulet::JavaRawLevel,
-        pyext::nogil_shared_ptr<Amulet::JavaRawLevel>>
-        JavaRawLevel(m, "JavaRawLevel");
+    py::classh<Amulet::JavaRawLevel>
+        JavaRawLevel(m, "JavaRawLevel", py::release_gil_before_calling_cpp_dtor());
     JavaRawLevel.def_static(
         "load",
-        [](const std::string& path) -> pyext::nogil_shared_ptr<Amulet::JavaRawLevel> {
+        [](const std::string& path) {
             return Amulet::JavaRawLevel::load(path);
         },
         py::arg("path"),
@@ -58,7 +53,7 @@ py::module init_java_raw_level(py::module m_parent)
                 "Thread safe."));
     JavaRawLevel.def_static(
         "create",
-        [](const Amulet::JavaCreateArgsV1& args) -> pyext::nogil_shared_ptr<Amulet::JavaRawLevel> {
+        [](const Amulet::JavaCreateArgsV1& args) {
             return Amulet::JavaRawLevel::create(args);
         },
         py::arg("args"),

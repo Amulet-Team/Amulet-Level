@@ -3,21 +3,16 @@
 
 #include <memory>
 
-#include <amulet/pybind11_extensions/nogil_holder.hpp>
-
 #include "raw_dimension.hpp"
 
 namespace py = pybind11;
-namespace pyext = Amulet::pybind11_extensions;
 
 py::module init_java_raw_dimension(py::module m_parent)
 {
     auto m = m_parent.def_submodule("raw_dimension");
 
-    py::class_<
-        Amulet::JavaRawDimension,
-        pyext::nogil_shared_ptr<Amulet::JavaRawDimension>>
-        JavaRawDimension(m, "JavaRawDimension");
+    py::classh<Amulet::JavaRawDimension>
+        JavaRawDimension(m, "JavaRawDimension", py::release_gil_before_calling_cpp_dtor());
     JavaRawDimension.def_property_readonly(
         "lock",
         &Amulet::JavaRawDimension::get_mutex,

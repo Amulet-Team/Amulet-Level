@@ -186,9 +186,9 @@ public:
     // External Read:SharedReadWrite lock required.
     AMULET_LEVEL_EXPORT std::string get_level_name() const;
 
-    //// Set the level name.
-    //// External ReadWrite:Unique lock required.
-    // AMULET_LEVEL_EXPORT void set_level_name(const std::string&);
+    // Set the level name.
+    // External ReadWrite:Unique lock required.
+    AMULET_LEVEL_EXPORT void set_level_name(const std::string&);
 
     // The identifiers for all dimensions in this level.
     // External Read:SharedReadWrite lock required.

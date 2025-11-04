@@ -172,21 +172,21 @@ py::module init_bedrock_raw_level(py::module m_parent)
     //            py::call_guard<py::gil_scoped_release>()),
     //        py::doc("The time when the level was lasted edited.\n"
     //                "External Read:SharedReadWrite lock required."));
-    //    BedrockRawLevel.def_property(
-    //        "level_name",
-    //        py::cpp_function(
-    //            &Amulet::BedrockRawLevel::get_level_name,
-    //            py::call_guard<py::gil_scoped_release>()),
-    //        py::cpp_function(
-    //            &Amulet::BedrockRawLevel::set_level_name,
-    //            py::call_guard<py::gil_scoped_release>()),
-    //        py::doc("Getter:\n"
-    //                "The name of the level.\n"
-    //                "External Read:SharedReadWrite lock required.\n"
-    //                "\n"
-    //                "Setter:\n"
-    //                "Set the level name.\n"
-    //                "External ReadWrite:Unique lock required."));
+    BedrockRawLevel.def_property(
+        "level_name",
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::get_level_name,
+            py::call_guard<py::gil_scoped_release>()),
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::set_level_name,
+            py::call_guard<py::gil_scoped_release>()),
+        py::doc("Getter:\n"
+                "The name of the level.\n"
+                "External Read:SharedReadWrite lock required.\n"
+                "\n"
+                "Setter:\n"
+                "Set the level name.\n"
+                "External ReadWrite:Unique lock required."));
     BedrockRawLevel.def_property_readonly(
         "dimension_ids",
         py::cpp_function(

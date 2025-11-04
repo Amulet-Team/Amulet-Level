@@ -367,24 +367,23 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //     }
 // }
 
-// std::string BedrockRawLevel::get_level_name() const
-//{
-//     try {
-//         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
-//         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
-//         return std::get<Amulet::NBT::StringTag>(data->at("LevelName"));
-//     } catch (...) {
-//         return "Undefined";
-//     }
-// }
+std::string BedrockRawLevel::get_level_name() const
+{
+    try {
+        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.named_tag.tag_node);
+        return std::get<NBT::StringTag>(root->at("LevelName"));
+    } catch (...) {
+        return "Undefined";
+    }
+}
 
-// void BedrockRawLevel::set_level_name(const std::string& level_name)
-//{
-//     auto level_dat = get_level_dat();
-//     auto& data = get_level_dat_data(level_dat);
-//     data.insert_or_assign("LevelName", Amulet::NBT::StringTag(level_name));
-//     set_level_dat(level_dat);
-// }
+void BedrockRawLevel::set_level_name(const std::string& level_name)
+{
+    auto level_dat = get_level_dat();
+    auto& data = get_level_dat_data(level_dat.named_tag);
+    data.insert_or_assign("LevelName", NBT::StringTag(level_name));
+    set_level_dat(level_dat);
+}
 
 // static const SelectionBox DefaultSelection { -30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000 };
 

@@ -130,6 +130,20 @@ class BedrockRawLevel:
         self, arg1: amulet.level.bedrock.level_dat.BedrockLevelDat
     ) -> None: ...
     @property
+    def level_name(self) -> str:
+        """
+        Getter:
+        The name of the level.
+        External Read:SharedReadWrite lock required.
+
+        Setter:
+        Set the level name.
+        External ReadWrite:Unique lock required.
+        """
+
+    @level_name.setter
+    def level_name(self, arg1: str) -> None: ...
+    @property
     def leveldb(self) -> amulet.leveldb.LevelDB:
         """
         Get the LevelDB database.

@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import datetime
+
 import amulet.core.version
 import amulet.level.abc.registry
 import amulet.level.bedrock.level_dat
@@ -155,6 +157,13 @@ class BedrockRawLevel:
         """
         The public lock
         Thread safe.
+        """
+
+    @property
+    def modified_time(self) -> datetime.datetime:
+        """
+        The time when the level was lasted edited.
+        External Read:SharedReadWrite lock required.
         """
 
     @property

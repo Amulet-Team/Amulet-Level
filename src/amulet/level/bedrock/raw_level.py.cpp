@@ -1,4 +1,4 @@
-// #include <pybind11/chrono.h>
+#include <pybind11/chrono.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
@@ -165,13 +165,13 @@ py::module init_bedrock_raw_level(py::module m_parent)
         &Amulet::BedrockRawLevel::get_thumbnail,
         py::doc("Get the thumbnail for the level.\n"
                 "Thread safe."));
-    //    BedrockRawLevel.def_property_readonly(
-    //        "modified_time",
-    //        py::cpp_function(
-    //            &Amulet::BedrockRawLevel::get_modified_time,
-    //            py::call_guard<py::gil_scoped_release>()),
-    //        py::doc("The time when the level was lasted edited.\n"
-    //                "External Read:SharedReadWrite lock required."));
+    BedrockRawLevel.def_property_readonly(
+        "modified_time",
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::get_modified_time,
+            py::call_guard<py::gil_scoped_release>()),
+        py::doc("The time when the level was lasted edited.\n"
+                "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def_property(
         "level_name",
         py::cpp_function(

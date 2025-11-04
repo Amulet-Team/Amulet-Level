@@ -354,18 +354,17 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
     }
 }
 
-// std::chrono::system_clock::time_point BedrockRawLevel::get_modified_time() const
-//{
-//
-//     try {
-//         auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.tag_node);
-//         auto& data = std::get<NBT::CompoundTagPtr>(root->at("Data"));
-//         return std::chrono::system_clock::time_point(std::chrono::milliseconds(
-//             std::get<NBT::LongTag>(data->at("LastPlayed")).value));
-//     } catch (...) {
-//         return std::chrono::system_clock::time_point(std::chrono::milliseconds(0));
-//     }
-// }
+std::chrono::system_clock::time_point BedrockRawLevel::get_modified_time() const
+{
+
+    try {
+        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.named_tag.tag_node);
+        return std::chrono::system_clock::time_point(std::chrono::seconds(
+            std::get<NBT::LongTag>(root->at("LastPlayed")).value));
+    } catch (...) {
+        return std::chrono::system_clock::time_point(std::chrono::seconds(0));
+    }
+}
 
 std::string BedrockRawLevel::get_level_name() const
 {

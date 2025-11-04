@@ -117,12 +117,12 @@ std::unique_ptr<BedrockRawLevel> BedrockRawLevel::load(const std::filesystem::pa
     return self;
 }
 
-// static void _write_level_dat(const std::filesystem::path& level_dat_path, const Amulet::NBT::NamedTag& level_dat)
+// static void _write_level_dat(const std::filesystem::path& level_dat_path, const NBT::NamedTag& level_dat)
 //{
 //     auto level_dat_temp_path = level_dat_path;
 //     level_dat_temp_path += ".tmp";
 //     // Encode
-//     std::string encoded_level_dat = Amulet::NBT::encode_nbt(level_dat, std::endian::big, Amulet::NBT::utf8_to_mutf8);
+//     std::string encoded_level_dat = NBT::encode_nbt(level_dat, std::endian::big, NBT::utf8_to_mutf8);
 //     // Compress
 //     std::string compressed_level_dat;
 //     zlib::compress_gzip(encoded_level_dat, compressed_level_dat);
@@ -150,28 +150,28 @@ std::unique_ptr<BedrockRawLevel> BedrockRawLevel::load(const std::filesystem::pa
 //     std::filesystem::create_directories(args.path);
 //
 //     // Get the data version
-//     Amulet::NBT::IntTagNative data_version;
+//     NBT::IntTagNative data_version;
 //     if (args.version.size() == 1) {
-//         data_version = static_cast<Amulet::NBT::IntTagNative>(args.version[0]);
+//         data_version = static_cast<NBT::IntTagNative>(args.version[0]);
 //     } else {
 //         throw std::runtime_error("NotImplementedError");
 //         // data_version = get_game_version("bedrock", version).max_version
 //     }
 //
 //     // Get the current unix time in milliseconds
-//     auto time_now = static_cast<Amulet::NBT::LongTagNative>(
+//     auto time_now = static_cast<NBT::LongTagNative>(
 //         std::chrono::duration_cast<std::chrono::milliseconds>(
 //             std::chrono::system_clock::now().time_since_epoch())
 //             .count());
 //
 //     // Create the level.dat file
-//     auto root = std::make_shared<Amulet::NBT::CompoundTag>();
-//     auto data = std::make_shared<Amulet::NBT::CompoundTag>();
+//     auto root = std::make_shared<NBT::CompoundTag>();
+//     auto data = std::make_shared<NBT::CompoundTag>();
 //     root->emplace("Data", data);
-//     data->emplace("version", Amulet::NBT::IntTag(19133));
-//     data->emplace("DataVersion", Amulet::NBT::IntTag(data_version));
-//     data->emplace("LastPlayed", Amulet::NBT::LongTag(time_now));
-//     data->emplace("LevelName", Amulet::NBT::StringTag(args.level_name));
+//     data->emplace("version", NBT::IntTag(19133));
+//     data->emplace("DataVersion", NBT::IntTag(data_version));
+//     data->emplace("LastPlayed", NBT::LongTag(time_now));
+//     data->emplace("LevelName", NBT::StringTag(args.level_name));
 //     _write_level_dat(args.path / "level.dat", { "", root });
 //
 //     return load(args.path);
@@ -370,10 +370,10 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //{
 //
 //     try {
-//         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
-//         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
+//         auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.tag_node);
+//         auto& data = std::get<NBT::CompoundTagPtr>(root->at("Data"));
 //         return std::chrono::system_clock::time_point(std::chrono::milliseconds(
-//             std::get<Amulet::NBT::LongTag>(data->at("LastPlayed")).value));
+//             std::get<NBT::LongTag>(data->at("LastPlayed")).value));
 //     } catch (...) {
 //         return std::chrono::system_clock::time_point(std::chrono::milliseconds(0));
 //     }
@@ -409,13 +409,13 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //     }
 //
 //     // Look for a dimension configuration
-//     Amulet::NBT::CompoundTagPtr dimension_settings;
+//     NBT::CompoundTagPtr dimension_settings;
 //     try {
-//         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
-//         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
-//         auto& world_gen_settings = std::get<Amulet::NBT::CompoundTagPtr>(data->at("WorldGenSettings"));
-//         auto& dimensions = std::get<Amulet::NBT::CompoundTagPtr>(world_gen_settings->at("dimensions"));
-//         dimension_settings = std::get<Amulet::NBT::CompoundTagPtr>(dimensions->at(dimension_id));
+//         auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.tag_node);
+//         auto& data = std::get<NBT::CompoundTagPtr>(root->at("Data"));
+//         auto& world_gen_settings = std::get<NBT::CompoundTagPtr>(data->at("WorldGenSettings"));
+//         auto& dimensions = std::get<NBT::CompoundTagPtr>(world_gen_settings->at("dimensions"));
+//         dimension_settings = std::get<NBT::CompoundTagPtr>(dimensions->at(dimension_id));
 //     } catch (...) {
 //         return DefaultSelection;
 //     }
@@ -424,7 +424,7 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //     return std::visit(
 //         [&](auto&& dimension_type) {
 //             using T = std::decay_t<decltype(dimension_type)>;
-//             if constexpr (std::is_same_v<Amulet::NBT::StringTag, T>) {
+//             if constexpr (std::is_same_v<NBT::StringTag, T>) {
 //                 // Reference type. Load the dimension data
 //                 auto colon_index = dimension_type.find(':');
 //                 std::string namespace_;
@@ -486,12 +486,12 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //                 } else {
 //                     error("Could not find dimension_type " + namespace_ + ":" + base_name);
 //                 }
-//             } else if constexpr (std::is_same_v<Amulet::NBT::CompoundTagPtr, T>) {
+//             } else if constexpr (std::is_same_v<NBT::CompoundTagPtr, T>) {
 //                 // Inline type
-//                 Amulet::NBT::IntTagNative min_y = [&dimension_type] {
+//                 NBT::IntTagNative min_y = [&dimension_type] {
 //                     auto it = dimension_type->find("min_y");
 //                     if (it != dimension_type->end()) {
-//                         auto* ptr = std::get_if<Amulet::NBT::IntTag>(&it->second);
+//                         auto* ptr = std::get_if<NBT::IntTag>(&it->second);
 //                         if (ptr) {
 //                             return ptr->value & ~15;
 //                         }
@@ -499,10 +499,10 @@ PIL::Image::Image BedrockRawLevel::get_thumbnail() const
 //                     return 0;
 //                 }();
 //
-//                 Amulet::NBT::IntTagNative height = [&dimension_type] {
+//                 NBT::IntTagNative height = [&dimension_type] {
 //                     auto it = dimension_type->find("height");
 //                     if (it != dimension_type->end()) {
-//                         auto* ptr = std::get_if<Amulet::NBT::IntTag>(&it->second);
+//                         auto* ptr = std::get_if<NBT::IntTag>(&it->second);
 //                         if (ptr) {
 //                             return ptr->value & ~15;
 //                         }

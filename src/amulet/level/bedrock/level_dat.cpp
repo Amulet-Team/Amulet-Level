@@ -71,7 +71,7 @@ std::string BedrockLevelDat::to_binary() const
     writer.write_numeric<std::uint32_t>(writer.get_buffer().size() - 8);
     // Copy it to the correct location
     std::string buffer = writer.get_buffer();
-    std::memcpy(&buffer[buffer.size() - 4], &buffer[4], 4);
+    std::memcpy(&buffer[4], &buffer[buffer.size() - 4], 4);
     // Crop off the end value
     buffer.resize(buffer.size() - 4);
 

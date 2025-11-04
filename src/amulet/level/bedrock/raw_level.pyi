@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import amulet.core.version
 import amulet.level.abc.registry
 import amulet.level.bedrock.level_dat
 import amulet.level.bedrock.raw_dimension
@@ -96,6 +97,21 @@ class BedrockRawLevel:
         External Read:SharedReadOnly lock optional.
         """
 
+    @property
+    def last_opened_version(self) -> amulet.core.version.VersionNumber:
+        """
+        Getter:
+        The game version that the level was last opened in.
+        External Read:SharedReadWrite lock required.
+
+        Setter:
+        Set the maximum game version.
+        If the game version is different this will call :meth:`reload`.
+        External ReadWrite:SharedReadWrite lock required.
+        """
+
+    @last_opened_version.setter
+    def last_opened_version(self, arg1: amulet.core.version.VersionNumber) -> None: ...
     @property
     def level_dat(self) -> amulet.level.bedrock.level_dat.BedrockLevelDat:
         """

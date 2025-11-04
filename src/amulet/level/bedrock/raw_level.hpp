@@ -70,7 +70,7 @@ private:
     OrderedMutex _public_mutex;
     std::filesystem::path _path;
     BedrockLevelDat _level_dat;
-    // VersionNumber _data_version;
+    VersionNumber _last_opened_version;
 
     // Data that is only valid when the level is open.
     // The external unique lock must be held to change this pointer.
@@ -86,7 +86,7 @@ private:
     BedrockRawLevelOpenData& _find_dimensions();
     void _open(std::unique_ptr<LockFile> session_lock);
     std::unique_ptr<LockFile> _close();
-    // VersionNumber _get_data_version();
+    VersionNumber _get_last_opened_version();
 
     // SelectionBox _get_dimension_bounds(const DimensionId&);
 
@@ -159,14 +159,14 @@ public:
     // Thread safe.
     AMULET_LEVEL_EXPORT std::string get_platform() const;
 
-    //// The game data version that the level was last opened in.
-    //// External Read:SharedReadWrite lock required.
-    // AMULET_LEVEL_EXPORT VersionNumber get_data_version() const;
+    // The game version that the level was last opened in.
+    // External Read:SharedReadWrite lock required.
+    AMULET_LEVEL_EXPORT VersionNumber get_last_opened_version() const;
 
-    //// Set the maximum game version.
-    //// If the game version is different this will call `reload`.
-    //// External ReadWrite:Unique lock required.
-    // AMULET_LEVEL_EXPORT void set_data_version(const VersionNumber&);
+    // Set the maximum game version.
+    // If the game version is different this will call `reload`.
+    // External ReadWrite:Unique lock required.
+    AMULET_LEVEL_EXPORT void set_last_opened_version(const VersionNumber&);
 
     // Is this level a supported version.
     // This is true for all versions we support and false for snapshots and unsupported newer versions.

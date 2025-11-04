@@ -139,20 +139,20 @@ py::module init_bedrock_raw_level(py::module m_parent)
         &Amulet::BedrockRawLevel::get_platform,
         py::doc("The platform identifier. \"bedrock\"\n"
                 "Thread safe."));
-    //    BedrockRawLevel.def_property(
-    //        "data_version",
-    //        &Amulet::BedrockRawLevel::get_data_version,
-    //        py::cpp_function(
-    //            &Amulet::BedrockRawLevel::set_data_version,
-    //            py::call_guard<py::gil_scoped_release>()),
-    //        py::doc("Getter:\n"
-    //                "The game data version that the level was last opened in.\n"
-    //                "External Read:SharedReadWrite lock required.\n"
-    //                "\n"
-    //                "Setter:\n"
-    //                "Set the maximum game version.\n"
-    //                "If the game version is different this will call :meth:`reload`.\n"
-    //                "External ReadWrite:SharedReadWrite lock required."));
+    BedrockRawLevel.def_property(
+        "last_opened_version",
+        &Amulet::BedrockRawLevel::get_last_opened_version,
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::set_last_opened_version,
+            py::call_guard<py::gil_scoped_release>()),
+        py::doc("Getter:\n"
+                "The game version that the level was last opened in.\n"
+                "External Read:SharedReadWrite lock required.\n"
+                "\n"
+                "Setter:\n"
+                "Set the maximum game version.\n"
+                "If the game version is different this will call :meth:`reload`.\n"
+                "External ReadWrite:SharedReadWrite lock required."));
     BedrockRawLevel.def(
         "is_supported",
         &Amulet::BedrockRawLevel::is_supported,

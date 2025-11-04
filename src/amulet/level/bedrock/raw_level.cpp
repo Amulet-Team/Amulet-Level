@@ -187,17 +187,17 @@ bool BedrockRawLevel::is_open() const
     return bool(_raw_open_data);
 }
 
-// VersionNumber BedrockRawLevel::_get_data_version()
-//{
-//     try {
-//         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
-//         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
-//         auto& data_version = std::get<Amulet::NBT::IntTag>(data->at("DataVersion"));
-//         return { data_version.value };
-//     } catch (...) {
-//         return { -1 };
-//     }
-// }
+VersionNumber BedrockRawLevel::_get_last_opened_version()
+{
+    try {
+        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.named_tag.tag_node);
+        auto& last_opened_version_tag = std::get<NBT::ListTagPtr>(root->at("lastOpenedWithVersion"));
+        auto& last_opened_version_vector = std::get<NBT::IntListTag>(*last_opened_version_tag);
+        return std::vector<std::int64_t>(last_opened_version_vector.begin(), last_opened_version_vector.end());
+    } catch (...) {
+        return { -1 };
+    }
+}
 
 void BedrockRawLevel::reload_metadata()
 {
@@ -209,8 +209,8 @@ void BedrockRawLevel::reload_metadata()
     auto level_dat_path = _path / "level.dat";
     // Open the file
     _level_dat = BedrockLevelDat::from_file(level_dat_path);
-    //    // Load the data version.
-    //    _data_version = _get_data_version();
+    // Load the data version.
+    _last_opened_version = _get_last_opened_version();
 }
 
 void BedrockRawLevel::_open(std::unique_ptr<LockFile> session_lock)
@@ -300,9 +300,9 @@ void BedrockRawLevel::set_level_dat(const BedrockLevelDat& level_dat)
     _level_dat.save_to(_path / "level.dat");
 
     // Reload the level if the data version changed.
-    //    if (_data_version != _get_data_version()) {
-    //        reload();
-    //    }
+    if (_last_opened_version != _get_last_opened_version()) {
+        reload();
+    }
 }
 
 std::string BedrockRawLevel::get_platform() const
@@ -310,46 +310,34 @@ std::string BedrockRawLevel::get_platform() const
     return "bedrock";
 }
 
-//// Get the "Data" CompoundTag from a level.dat NamedTag.
-// static Amulet::NBT::CompoundTag& get_level_dat_data(Amulet::NBT::NamedTag& level_dat)
-//{
-//     if (!std::holds_alternative<Amulet::NBT::CompoundTagPtr>(level_dat.tag_node)) {
-//         throw std::runtime_error("Level.dat root is not a CompoundTag.");
-//     }
-//     auto& root = std::get<Amulet::NBT::CompoundTagPtr>(level_dat.tag_node);
-//     auto it = root->find("Data");
-//     if (it == root->end()) {
-//         throw std::runtime_error("Level.dat does not contain \"Data\" entry.");
-//     }
-//     if (!std::holds_alternative<Amulet::NBT::CompoundTagPtr>(it->second)) {
-//         throw std::runtime_error("Level.dat[\"Data\"] is not a CompoundTag.");
-//     }
-//     return *std::get<Amulet::NBT::CompoundTagPtr>(it->second);
-// }
+// Get the CompoundTag from a level.dat NamedTag.
+static NBT::CompoundTag& get_level_dat_data(NBT::NamedTag& level_dat)
+{
+    if (!std::holds_alternative<NBT::CompoundTagPtr>(level_dat.tag_node)) {
+        throw std::runtime_error("Level.dat root is not a CompoundTag.");
+    }
+    return *std::get<NBT::CompoundTagPtr>(level_dat.tag_node);
+}
 
-// VersionNumber BedrockRawLevel::get_data_version() const
-//{
-//     return _data_version;
-// }
+VersionNumber BedrockRawLevel::get_last_opened_version() const
+{
+    return _last_opened_version;
+}
 
-// void BedrockRawLevel::set_data_version(const VersionNumber& data_version)
-//{
-//     if (data_version.size() != 1) {
-//         throw std::invalid_argument("Data version must have exactly one value.");
-//     }
-//     if (_data_version == data_version) {
-//         // Data version did not change.
-//         return;
-//     }
-//     auto level_dat = get_level_dat();
-//     auto& data = get_level_dat_data(level_dat);
-//     if (data_version[0] == -1) {
-//         data.erase("DataVersion");
-//     } else {
-//         data.insert_or_assign("DataVersion", Amulet::NBT::IntTag(static_cast<Amulet::NBT::IntTagNative>(data_version[0])));
-//     }
-//     set_level_dat(level_dat);
-// }
+void BedrockRawLevel::set_last_opened_version(const VersionNumber& last_opened_version)
+{
+    if (_last_opened_version == last_opened_version) {
+        // Data version did not change.
+        return;
+    }
+    auto level_dat = get_level_dat();
+    auto& data = get_level_dat_data(level_dat.named_tag);
+    data.insert_or_assign(
+        "lastOpenedWithVersion",
+        std::make_shared<NBT::ListTag>(
+            NBT::IntListTag(last_opened_version.begin(), last_opened_version.end())));
+    set_level_dat(level_dat);
+}
 
 bool BedrockRawLevel::is_supported() const
 {

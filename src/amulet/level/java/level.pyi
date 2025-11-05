@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 import amulet.level.abc.level
 import amulet.level.java.dimension
 import amulet.level.java.raw_level
@@ -20,7 +22,7 @@ class JavaLevel(
         """
 
     @staticmethod
-    def load(path: str) -> JavaLevel:
+    def load(path: os.PathLike | str | bytes) -> JavaLevel:
         """
         Load an existing Java level from the given directory.
         Thread safe.

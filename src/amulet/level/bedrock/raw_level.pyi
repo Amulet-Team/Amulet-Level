@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import typing
 
 import amulet.core.version
 import amulet.level.abc.registry
@@ -35,7 +36,7 @@ class BedrockRawLevel:
         """
 
     def get_dimension(
-        self, dimension_id: str
+        self, dimension_id: str | typing.SupportsInt
     ) -> amulet.level.bedrock.raw_dimension.BedrockRawDimension:
         """
         Get the raw dimension object for a specific dimension.

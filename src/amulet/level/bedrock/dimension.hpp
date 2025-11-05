@@ -1,17 +1,17 @@
-// #pragma once
-//
-// #include <memory>
-// #include <shared_mutex>
-// #include <variant>
-//
-// #include <amulet/level/dll.hpp>
-// #include <amulet/level/abc/chunk_handle.hpp>
+#pragma once
+
+#include <memory>
+#include <shared_mutex>
+#include <variant>
+
+#include <amulet/level/abc/chunk_handle.hpp>
 #include <amulet/level/abc/dimension.hpp>
-// #include <amulet/level/abc/history.hpp>
-//
+#include <amulet/level/abc/history.hpp>
+#include <amulet/level/dll.hpp>
+
 #include "chunk_handle.hpp"
-// #include "raw_dimension.hpp"
-//
+#include "raw_dimension.hpp"
+
 namespace Amulet {
 
 class BedrockDimension : public Dimension {

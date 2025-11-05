@@ -1,11 +1,10 @@
 #pragma once
 
-// #include <chrono>
+#include <chrono>
 #include <filesystem>
 #include <map>
 #include <memory>
-// #include <shared_mutex>
-// #include <stdexcept>
+#include <shared_mutex>
 
 #include <amulet/leveldb.hpp>
 
@@ -23,7 +22,6 @@
 #include <amulet/level/abc/registry.hpp>
 #include <amulet/level/dll.hpp>
 
-// #include "dimension.hpp"
 #include "level_dat.hpp"
 #include "raw_dimension.hpp"
 

@@ -1,14 +1,13 @@
 #pragma once
 
-// #include <chrono>
-// #include <filesystem>
-// #include <map>
-// #include <memory>
+#include <chrono>
+#include <filesystem>
+#include <map>
+#include <memory>
 #include <variant>
 
-// #include <amulet/utils/image.hpp>
+#include <amulet/utils/image.hpp>
 
-// #include <amulet/level/abc/dimension.hpp>
 #include <amulet/level/abc/history.hpp>
 #include <amulet/level/abc/level.hpp>
 

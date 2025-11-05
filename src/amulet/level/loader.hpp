@@ -64,5 +64,6 @@ class NoValidLevelLoader : public std::runtime_error {
 };
 
 AMULET_LEVEL_EXPORT std::shared_ptr<Level> get_level(std::shared_ptr<LevelLoaderToken>);
+AMULET_LEVEL_EXPORT std::shared_ptr<Level> get_level(std::filesystem::path);
 
 } // namespace Amulet

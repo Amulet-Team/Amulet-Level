@@ -130,4 +130,9 @@ std::shared_ptr<Level> get_level(std::shared_ptr<LevelLoaderToken> token)
     throw NoValidLevelLoader("No loader was able to open token " + token->repr());
 }
 
+std::shared_ptr<Level> get_level(std::filesystem::path path)
+{
+    return get_level(std::make_shared<LevelLoaderPathToken>(path));
+}
+
 } // namespace Amulet

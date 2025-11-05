@@ -1,4 +1,5 @@
 #include <pybind11/pybind11.h>
+#include <pybind11/stl/filesystem.h>
 
 #include "loader.hpp"
 
@@ -25,7 +26,14 @@ py::module init_loader(py::module m_parent)
             return Amulet::LevelLoaderPathToken(path);
         }));
 
-    m.def("get_level", &Amulet::get_level, py::arg("token"));
+    m.def(
+        "get_level",
+        py::overload_cast<std::shared_ptr<Amulet::LevelLoaderToken>>(&Amulet::get_level),
+        py::arg("token"));
+    m.def(
+        "get_level",
+        py::overload_cast<std::filesystem::path>(&Amulet::get_level),
+        py::arg("path").noconvert());
 
     return m;
 }

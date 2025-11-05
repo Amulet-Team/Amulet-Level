@@ -16,8 +16,7 @@ py::module init_bedrock_raw_level(py::module m_parent)
 {
     auto m = m_parent.def_submodule("raw_level");
     //
-    //    py::class_<
-    //        Amulet::BedrockCreateArgsV1>
+    //    py::classh<Amulet::BedrockCreateArgsV1>
     //        BedrockCreateArgsV1(m, "BedrockCreateArgsV1");
     //    BedrockCreateArgsV1.def(
     //        py::init<bool, const std::string&, const Amulet::VersionNumber&, const std::string&>(),

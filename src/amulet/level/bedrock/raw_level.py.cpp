@@ -197,7 +197,13 @@ py::module init_bedrock_raw_level(py::module m_parent)
                 "External Read:SharedReadOnly lock optional."));
     BedrockRawLevel.def(
         "get_dimension",
-        py::overload_cast<const Amulet::DimensionId&>(&Amulet::BedrockRawLevel::get_dimension),
+        [](Amulet::BedrockRawLevel& self, std::variant<Amulet::DimensionId, Amulet::BedrockInternalDimensionID> dimension_id) {
+            std::visit(
+                [&](auto&& arg) {
+                    return self.get_dimension(arg);
+                },
+                dimension_id);
+        },
         py::arg("dimension_id"),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Get the raw dimension object for a specific dimension.\n"

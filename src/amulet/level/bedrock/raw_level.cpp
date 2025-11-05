@@ -683,7 +683,7 @@ std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const Dimens
     return it2->second;
 }
 
-std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(const BedrockInternalDimensionID& internal_dimension_id)
+std::shared_ptr<BedrockRawDimension> BedrockRawLevel::get_dimension(BedrockInternalDimensionID internal_dimension_id)
 {
     auto& raw_open = _find_dimensions();
     std::shared_lock lock(raw_open.dimensions_mutex);

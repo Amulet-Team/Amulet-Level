@@ -198,7 +198,7 @@ public:
     // Get the raw dimension object for a specific dimension.
     // External Read:SharedReadWrite lock required.
     AMULET_LEVEL_EXPORT std::shared_ptr<BedrockRawDimension> get_dimension(const DimensionId&);
-    AMULET_LEVEL_EXPORT std::shared_ptr<BedrockRawDimension> get_dimension(const BedrockInternalDimensionID&);
+    AMULET_LEVEL_EXPORT std::shared_ptr<BedrockRawDimension> get_dimension(BedrockInternalDimensionID);
 
     // Compact the level.
     // External Read:SharedReadWrite lock required.

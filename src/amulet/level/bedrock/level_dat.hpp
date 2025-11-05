@@ -20,6 +20,13 @@ public:
     // Construct with the level.dat version and named tag
     AMULET_LEVEL_EXPORT BedrockLevelDat(std::uint32_t version, const NBT::NamedTag& named_tag);
 
+    AMULET_LEVEL_EXPORT BedrockLevelDat(const BedrockLevelDat&);
+    AMULET_LEVEL_EXPORT BedrockLevelDat(BedrockLevelDat&&);
+    AMULET_LEVEL_EXPORT BedrockLevelDat& operator=(const BedrockLevelDat&);
+    AMULET_LEVEL_EXPORT BedrockLevelDat& operator=(BedrockLevelDat&&);
+
+    AMULET_LEVEL_EXPORT ~BedrockLevelDat();
+
     // Construct from the binary data
     AMULET_LEVEL_EXPORT static BedrockLevelDat from_binary(std::string_view);
 

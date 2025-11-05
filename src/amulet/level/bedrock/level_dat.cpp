@@ -24,6 +24,12 @@ BedrockLevelDat::BedrockLevelDat(std::uint32_t version, const NBT::NamedTag& nam
 {
 }
 
+BedrockLevelDat::BedrockLevelDat(const BedrockLevelDat&) = default;
+BedrockLevelDat::BedrockLevelDat(BedrockLevelDat&&) = default;
+BedrockLevelDat& BedrockLevelDat::operator = (const BedrockLevelDat&) = default;
+BedrockLevelDat& BedrockLevelDat::operator = (BedrockLevelDat&&) = default;
+BedrockLevelDat::~BedrockLevelDat() = default;
+
 // Construct from the binary data
 BedrockLevelDat BedrockLevelDat::from_binary(std::string_view buffer)
 {

@@ -198,7 +198,7 @@ py::module init_bedrock_raw_level(py::module m_parent)
     BedrockRawLevel.def(
         "get_dimension",
         [](Amulet::BedrockRawLevel& self, std::variant<Amulet::DimensionId, Amulet::BedrockInternalDimensionID> dimension_id) {
-            std::visit(
+            return std::visit(
                 [&](auto&& arg) {
                     return self.get_dimension(arg);
                 },

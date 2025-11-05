@@ -117,26 +117,6 @@ std::unique_ptr<BedrockRawLevel> BedrockRawLevel::load(const std::filesystem::pa
     return self;
 }
 
-// static void _write_level_dat(const std::filesystem::path& level_dat_path, const NBT::NamedTag& level_dat)
-//{
-//     auto level_dat_temp_path = level_dat_path;
-//     level_dat_temp_path += ".tmp";
-//     // Encode
-//     std::string encoded_level_dat = NBT::encode_nbt(level_dat, std::endian::big, NBT::utf8_to_mutf8);
-//     // Compress
-//     std::string compressed_level_dat;
-//     zlib::compress_gzip(encoded_level_dat, compressed_level_dat);
-//     // Write to file
-//     std::ofstream level_dat_f(level_dat_temp_path, std::ios::out | std::ios::binary);
-//     if (!level_dat_f) {
-//         throw std::runtime_error("Could not open file for writing. " + level_dat_temp_path.string());
-//     }
-//     level_dat_f << compressed_level_dat;
-//     level_dat_f.close();
-//     level_dat_f.flush();
-//     std::filesystem::rename(level_dat_temp_path, level_dat_path);
-// }
-
 // std::unique_ptr<BedrockRawLevel> BedrockRawLevel::create(const BedrockCreateArgsV1& args)
 //{
 //     // Create the directory

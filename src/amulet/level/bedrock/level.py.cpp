@@ -1,6 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
-//#include <pybind11/stl/filesystem.h>
+#include <pybind11/stl/filesystem.h>
 
 #include <amulet/level/abc/level.hpp>
 
@@ -19,13 +19,13 @@ py::module init_bedrock_level(py::module m_parent)
         Amulet::DiskLevel,
         Amulet::ReloadableLevel>
         BedrockLevel(m, "BedrockLevel");
-    //    BedrockLevel.def_static(
-    //        "load",
-    //        &Amulet::BedrockLevel::load,
-    //        py::arg("path"),
-    //        py::call_guard<py::gil_scoped_release>(),
-    //        py::doc("Load an existing Bedrock level from the given directory.\n"
-    //                "Thread safe."));
+    BedrockLevel.def_static(
+        "load",
+        &Amulet::BedrockLevel::load,
+        py::arg("path"),
+        py::call_guard<py::gil_scoped_release>(),
+        py::doc("Load an existing Bedrock level from the given directory.\n"
+                "Thread safe."));
     //    BedrockLevel.def_static(
     //        "create",
     //        [](const Amulet::BedrockCreateArgsV1& args) {

@@ -33,10 +33,10 @@ BedrockLevel::~BedrockLevel()
     close();
 }
 
-// std::unique_ptr<BedrockLevel> BedrockLevel::load(const std::filesystem::path& path)
-//{
-//     return std::unique_ptr<BedrockLevel>(new BedrockLevel(BedrockRawLevel::load(path)));
-// }
+std::unique_ptr<BedrockLevel> BedrockLevel::load(const std::filesystem::path& path)
+{
+    return std::unique_ptr<BedrockLevel>(new BedrockLevel(BedrockRawLevel::load(path)));
+}
 
 // std::unique_ptr<BedrockLevel> BedrockLevel::create(const BedrockCreateArgsV1& args)
 //{

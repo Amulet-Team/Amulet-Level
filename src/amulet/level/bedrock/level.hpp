@@ -49,9 +49,9 @@ public:
 
     AMULET_LEVEL_EXPORT ~BedrockLevel() override;
 
-    //    // Load an existing Bedrock level from the given directory.
-    //    // Thread safe.
-    //    AMULET_LEVEL_EXPORT static std::unique_ptr<BedrockLevel> load(const std::filesystem::path&);
+    // Load an existing Bedrock level from the given directory.
+    // Thread safe.
+    AMULET_LEVEL_EXPORT static std::unique_ptr<BedrockLevel> load(const std::filesystem::path&);
 
     //    // Create a new Bedrock level at the given directory.
     //    // Thread safe.

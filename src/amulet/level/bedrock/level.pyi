@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import typing
 
 import amulet.level.abc.level
@@ -14,6 +15,13 @@ class BedrockLevel(
     amulet.level.abc.level.DiskLevel,
     amulet.level.abc.level.ReloadableLevel,
 ):
+    @staticmethod
+    def load(path: os.PathLike | str | bytes) -> BedrockLevel:
+        """
+        Load an existing Bedrock level from the given directory.
+        Thread safe.
+        """
+
     def get_dimension(
         self, dimension_id: str | typing.SupportsInt
     ) -> amulet.level.bedrock.dimension.BedrockDimension:

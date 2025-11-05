@@ -14,7 +14,7 @@
 #include <amulet/level/abc/dimension.hpp>
 #include <amulet/level/dll.hpp>
 
-// #include "chunk.hpp"
+#include "chunk.hpp"
 
 namespace Amulet {
 
@@ -69,46 +69,46 @@ public:
     // Thread safe.
     AMULET_LEVEL_EXPORT const Biome& get_default_biome() const;
 
-    //    // An iterator of all chunk coordinates in the dimension.
-    //    // External Read:SharedReadWrite lock required.
-    //    // External Read:SharedReadOnly lock optional.
-    //    AMULET_LEVEL_EXPORT AnvilChunkCoordIterator all_chunk_coords() const;
+    // An iterator of all chunk coordinates in the dimension.
+    // External Read:SharedReadWrite lock required.
+    // External Read:SharedReadOnly lock optional.
+    // AMULET_LEVEL_EXPORT AnvilChunkCoordIterator all_chunk_coords() const;
 
     // Does the chunk exist in this dimension.
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    //AMULET_LEVEL_EXPORT bool has_chunk(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT bool has_chunk(std::int64_t cx, std::int64_t cz);
 
     // Delete the chunk from this dimension.
     // External ReadWrite:SharedReadWrite lock required.
-    //AMULET_LEVEL_EXPORT void delete_chunk(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT void delete_chunk(std::int64_t cx, std::int64_t cz);
 
-    //    // Get the raw chunk from this dimension.
-    //    // External Read:SharedReadWrite lock required.
-    //    AMULET_LEVEL_EXPORT BedrockRawChunk get_raw_chunk(std::int64_t cx, std::int64_t cz);
-    //
-    //    // Set the chunk in this dimension from raw data.
-    //    // External ReadWrite:SharedReadWrite lock required.
-    //    AMULET_LEVEL_EXPORT void set_raw_chunk(std::int64_t cx, std::int64_t cz, const BedrockRawChunk& chunk);
-    //
-    //    // Decode a raw chunk to a chunk object.
-    //    // This will mutate the chunk data.
-    //    // TODO: thread safety
-    //    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(BedrockRawChunk raw_chunk, std::int64_t cx, std::int64_t cz);
-    //
-    //    // Encode a chunk object to its raw data.
-    //    // This will mutate the chunk data.
-    //    // TODO: thread safety
-    //    AMULET_LEVEL_EXPORT BedrockRawChunk encode_chunk(BedrockChunk& chunk, std::int64_t cx, std::int64_t cz);
-    //
-    //    // Get and decode the chunk.
-    //    // TODO: thread safety
-    //    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> get_chunk(std::int64_t cx, std::int64_t cz);
-    //
-    //    // Encode and set the chunk.
-    //    // This will mutate the chunk data.
-    //    // TODO: thread safety
-    //    AMULET_LEVEL_EXPORT void set_chunk(std::int64_t cx, std::int64_t cz, BedrockChunk& chunk);
+    // Get the raw chunk from this dimension.
+    // External Read:SharedReadWrite lock required.
+    AMULET_LEVEL_EXPORT BedrockRawChunk get_raw_chunk(std::int64_t cx, std::int64_t cz);
+
+    // Set the chunk in this dimension from raw data.
+    // External ReadWrite:SharedReadWrite lock required.
+    AMULET_LEVEL_EXPORT void set_raw_chunk(std::int64_t cx, std::int64_t cz, const BedrockRawChunk& chunk);
+
+    // Decode a raw chunk to a chunk object.
+    // This will mutate the chunk data.
+    // TODO: thread safety
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(BedrockRawChunk raw_chunk, std::int64_t cx, std::int64_t cz);
+
+    // Encode a chunk object to its raw data.
+    // This will mutate the chunk data.
+    // TODO: thread safety
+    AMULET_LEVEL_EXPORT BedrockRawChunk encode_chunk(BedrockChunk& chunk, std::int64_t cx, std::int64_t cz);
+
+    // Get and decode the chunk.
+    // TODO: thread safety
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> get_chunk(std::int64_t cx, std::int64_t cz);
+
+    // Encode and set the chunk.
+    // This will mutate the chunk data.
+    // TODO: thread safety
+    AMULET_LEVEL_EXPORT void set_chunk(std::int64_t cx, std::int64_t cz, BedrockChunk& chunk);
 
     // Destroy the instance.
     // Calls made after this will fail.

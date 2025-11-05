@@ -51,7 +51,7 @@ py::module init_chunk_handle(py::module m_parent)
             ":return: True if the chunk exists. Calling get on this chunk handle may still throw ChunkLoadError"));
     ChunkHandle.def(
         "get_chunk",
-        [](Amulet::ChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> py_component_ids) -> std::shared_ptr<Amulet::Chunk> {
+        [](Amulet::ChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> py_component_ids) {
             std::optional<std::set<std::string>> component_ids;
             if (py_component_ids) {
                 component_ids = std::set<std::string>(py_component_ids->begin(), py_component_ids->end());

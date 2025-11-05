@@ -1,8 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <memory>
-
 #include "dimension.hpp"
 
 namespace py = pybind11;
@@ -13,10 +11,9 @@ py::module init_java_dimension(py::module m_parent)
 
     m.attr("JavaInternalDimensionID") = py::module::import("builtins").attr("str");
 
-    py::class_<
+    py::classh<
         Amulet::JavaDimension,
-        Amulet::Dimension,
-        std::shared_ptr<Amulet::JavaDimension>>
+        Amulet::Dimension>
         JavaDimension(m, "JavaDimension");
     JavaDimension.attr("get_chunk_handle") = py::cpp_function(
         &Amulet::JavaDimension::get_java_chunk_handle,

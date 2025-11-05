@@ -90,7 +90,7 @@ py::module init_java_raw_dimension(py::module m_parent)
             Amulet::JavaRawDimension& self,
             const Amulet::JavaRawChunk& raw_chunk,
             std::int64_t cx,
-            std::int64_t cz) -> std::shared_ptr<Amulet::JavaChunk> {
+            std::int64_t cz) {
             return self.decode_chunk(raw_chunk, cx, cz);
         },
         py::arg("raw_chunk"),

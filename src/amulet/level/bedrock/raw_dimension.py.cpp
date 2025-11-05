@@ -91,7 +91,7 @@ py::module init_bedrock_raw_dimension(py::module m_parent)
     //            Amulet::BedrockRawDimension& self,
     //            const Amulet::BedrockRawChunk& raw_chunk,
     //            std::int64_t cx,
-    //            std::int64_t cz) -> std::shared_ptr<Amulet::BedrockChunk> {
+    //            std::int64_t cz) {
     //            return self.decode_chunk(raw_chunk, cx, cz);
     //        },
     //        py::arg("raw_chunk"),

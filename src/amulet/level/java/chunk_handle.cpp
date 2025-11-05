@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include <variant>
 
 #include <amulet/utils/mutex.hpp>
 

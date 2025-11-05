@@ -90,7 +90,7 @@ BedrockRawLevelOpenData::BedrockRawLevelOpenData(
 BedrockRawLevel::BedrockRawLevel(const std::filesystem::path path)
     : _path(path)
     , _level_dat()
-//, _data_version({})
+    , _last_opened_version({})
 {
 }
 

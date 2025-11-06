@@ -118,8 +118,8 @@ void BedrockLevel::purge()
 void BedrockLevel::save()
 {
     for (const auto& dimension_id : get_dimension_ids()) {
-        // auto dimension = get_bedrock_dimension(dimension_id);
-        // dimension->save();
+        auto dimension = get_bedrock_dimension(dimension_id);
+        dimension->save();
     }
 }
 

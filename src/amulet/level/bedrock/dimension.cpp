@@ -27,7 +27,7 @@ void BedrockDimension::save() {
         auto cz = chunk_key.get_cz();
         auto chunk_handle = get_bedrock_chunk_handle(cx, cz);
         auto chunk = chunk_handle->get_bedrock_chunk();
-        //_raw_dimension->set_chunk(cx, cz, *chunk);
+        _raw_dimension->set_chunk(cx, cz, *chunk);
     }
 }
 

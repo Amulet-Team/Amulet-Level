@@ -6,7 +6,7 @@
 
 namespace py = pybind11;
 
-void init_bedrock_level_dat(py::module m_parent)
+py::module init_bedrock_level_dat(py::module m_parent)
 {
     auto m = m_parent.def_submodule("level_dat");
 
@@ -71,4 +71,6 @@ void init_bedrock_level_dat(py::module m_parent)
             return self.deep_copy();
         },
         py::arg("memo"));
+
+    return m;
 }

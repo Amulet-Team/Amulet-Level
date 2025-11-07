@@ -5,6 +5,7 @@ from builtins import str as BedrockInternalDimensionID
 from amulet.level.bedrock.chunk_handle import BedrockChunkHandle
 from amulet.level.bedrock.dimension import BedrockDimension
 from amulet.level.bedrock.level import BedrockLevel
+from amulet.level.bedrock.level_dat import BedrockLevelDat
 from amulet.level.bedrock.raw_dimension import BedrockRawDimension
 from amulet.level.bedrock.raw_level import BedrockRawLevel
 
@@ -15,6 +16,7 @@ __all__: list[str] = [
     "BedrockDimension",
     "BedrockInternalDimensionID",
     "BedrockLevel",
+    "BedrockLevelDat",
     "BedrockRawDimension",
     "BedrockRawLevel",
     "chunk",

@@ -1,7 +1,6 @@
 from unittest import TestCase
 from tempfile import TemporaryDirectory
 import os
-import datetime
 
 from PIL import Image
 

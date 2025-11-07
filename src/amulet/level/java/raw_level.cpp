@@ -24,7 +24,7 @@ namespace Amulet {
 static const std::string OVERWORLD = "minecraft:overworld";
 static const std::string THE_NETHER = "minecraft:the_nether";
 static const std::string THE_END = "minecraft:the_end";
-static const std::regex number_regex(R"(^(\-?\d+)$)");
+static const std::regex dim_regex(R"(^(DIM\-?\d+)$)");
 
 JavaRawLevel::~JavaRawLevel()
 {
@@ -520,11 +520,8 @@ JavaRawLevelOpenData& JavaRawLevel::_find_dimensions()
             continue;
         }
         auto dir_name = dir_entry.path().filename().string();
-        if (dir_name.substr(0, 3) != "DIM") {
-            continue;
-        }
         std::smatch match;
-        if (!std::regex_search(dir_name, match, number_regex)) {
+        if (!std::regex_search(dir_name, match, dim_regex)) {
             continue;
         }
         _register_dimension(raw_open, dir_name, dir_name);
@@ -544,7 +541,7 @@ JavaRawLevelOpenData& JavaRawLevel::_find_dimensions()
                 continue;
             }
             // Get the dimension path relative to the world
-            auto rel_dimension_path = std::filesystem::relative(path.parent_path(), _path);
+            auto rel_dimension_path = std::filesystem::relative(path.parent_path(), dimensions_path);
 
             std::string dimension_name;
             auto it = rel_dimension_path.begin();

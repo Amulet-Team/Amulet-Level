@@ -170,7 +170,7 @@ bool BedrockRawLevel::is_open() const
 VersionNumber BedrockRawLevel::_get_last_opened_version()
 {
     try {
-        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.named_tag.tag_node);
+        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.get_named_tag().tag_node);
         auto& last_opened_version_tag = std::get<NBT::ListTagPtr>(root->at("lastOpenedWithVersion"));
         auto& last_opened_version_vector = std::get<NBT::IntListTag>(*last_opened_version_tag);
         return std::vector<std::int64_t>(last_opened_version_vector.begin(), last_opened_version_vector.end());
@@ -311,7 +311,7 @@ void BedrockRawLevel::set_last_opened_version(const VersionNumber& last_opened_v
         return;
     }
     auto level_dat = get_level_dat();
-    auto& data = get_level_dat_data(level_dat.named_tag);
+    auto& data = get_level_dat_data(level_dat.get_named_tag());
     data.insert_or_assign(
         "lastOpenedWithVersion",
         std::make_shared<NBT::ListTag>(
@@ -338,7 +338,7 @@ std::chrono::system_clock::time_point BedrockRawLevel::get_modified_time() const
 {
 
     try {
-        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.named_tag.tag_node);
+        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.get_named_tag().tag_node);
         return std::chrono::system_clock::time_point(std::chrono::seconds(
             std::get<NBT::LongTag>(root->at("LastPlayed")).value));
     } catch (...) {
@@ -349,7 +349,7 @@ std::chrono::system_clock::time_point BedrockRawLevel::get_modified_time() const
 std::string BedrockRawLevel::get_level_name() const
 {
     try {
-        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.named_tag.tag_node);
+        auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.get_named_tag().tag_node);
         return std::get<NBT::StringTag>(root->at("LevelName"));
     } catch (...) {
         return "Undefined";
@@ -359,7 +359,7 @@ std::string BedrockRawLevel::get_level_name() const
 void BedrockRawLevel::set_level_name(const std::string& level_name)
 {
     auto level_dat = get_level_dat();
-    auto& data = get_level_dat_data(level_dat.named_tag);
+    auto& data = get_level_dat_data(level_dat.get_named_tag());
     data.insert_or_assign("LevelName", NBT::StringTag(level_name));
     set_level_dat(level_dat);
 }

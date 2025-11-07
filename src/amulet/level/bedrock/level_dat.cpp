@@ -13,22 +13,63 @@
 namespace Amulet {
 
 BedrockLevelDat::BedrockLevelDat()
-    : version()
-    , named_tag("", std::make_shared<Amulet::NBT::CompoundTag>())
+    : _version()
+    , _named_tag(std::make_shared<NBT::NamedTag>("", std::make_shared<NBT::CompoundTag>()))
+{
+}
+
+BedrockLevelDat::BedrockLevelDat(std::uint32_t version, std::shared_ptr<NBT::NamedTag> named_tag)
+    : _version(version)
+    , _named_tag(std::move(named_tag))
 {
 }
 
 BedrockLevelDat::BedrockLevelDat(std::uint32_t version, const NBT::NamedTag& named_tag)
-    : version(version)
-    , named_tag(named_tag)
+    : _version(version)
+    , _named_tag(std::make_shared<NBT::NamedTag>(named_tag))
 {
 }
 
 BedrockLevelDat::BedrockLevelDat(const BedrockLevelDat&) = default;
 BedrockLevelDat::BedrockLevelDat(BedrockLevelDat&&) = default;
-BedrockLevelDat& BedrockLevelDat::operator = (const BedrockLevelDat&) = default;
-BedrockLevelDat& BedrockLevelDat::operator = (BedrockLevelDat&&) = default;
+BedrockLevelDat& BedrockLevelDat::operator=(const BedrockLevelDat&) = default;
+BedrockLevelDat& BedrockLevelDat::operator=(BedrockLevelDat&&) = default;
 BedrockLevelDat::~BedrockLevelDat() = default;
+
+std::uint32_t BedrockLevelDat::get_version() const
+{
+    return _version;
+}
+
+void BedrockLevelDat::set_version(std::uint32_t version)
+{
+    _version = version;
+}
+
+NBT::NamedTag& BedrockLevelDat::get_named_tag()
+{
+    return *_named_tag;
+}
+
+const NBT::NamedTag& BedrockLevelDat::get_named_tag() const
+{
+    return *_named_tag;
+}
+
+std::shared_ptr<NBT::NamedTag> BedrockLevelDat::get_named_tag_ptr()
+{
+    return _named_tag;
+}
+
+void BedrockLevelDat::set_named_tag(std::shared_ptr<NBT::NamedTag> named_tag)
+{
+    _named_tag = named_tag;
+}
+
+void BedrockLevelDat::set_named_tag(const NBT::NamedTag& named_tag)
+{
+    _named_tag = std::make_shared<NBT::NamedTag>(named_tag);
+}
 
 // Construct from the binary data
 BedrockLevelDat BedrockLevelDat::from_binary(std::string_view buffer)
@@ -69,9 +110,9 @@ BedrockLevelDat BedrockLevelDat::from_file(std::filesystem::path path)
 std::string BedrockLevelDat::to_binary() const
 {
     BinaryWriter writer(std::endian::little, NBT::utf8_escape_to_utf8);
-    writer.write_numeric<std::uint32_t>(version);
+    writer.write_numeric<std::uint32_t>(_version);
     writer.write_numeric<std::uint32_t>(0); // size
-    NBT::encode_nbt(writer, named_tag);
+    NBT::encode_nbt(writer, *_named_tag);
 
     // Write the size to the end
     writer.write_numeric<std::uint32_t>(writer.get_buffer().size() - 8);
@@ -121,7 +162,7 @@ void BedrockLevelDat::save_to(std::filesystem::path path) const
 
 BedrockLevelDat BedrockLevelDat::deep_copy() const
 {
-    return BedrockLevelDat(version, NBT::deep_copy(named_tag));
+    return BedrockLevelDat(_version, NBT::deep_copy(_named_tag));
 }
 
 } // namespace Amulet

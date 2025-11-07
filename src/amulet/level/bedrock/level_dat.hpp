@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 #include <string>
 #include <string_view>
 
@@ -11,13 +12,15 @@
 namespace Amulet {
 
 class BedrockLevelDat {
-public:
-    std::uint32_t version;
-    NBT::NamedTag named_tag;
+private:
+    std::uint32_t _version;
+    std::shared_ptr<NBT::NamedTag> _named_tag;
 
+public:
     AMULET_LEVEL_EXPORT BedrockLevelDat();
 
     // Construct with the level.dat version and named tag
+    AMULET_LEVEL_EXPORT BedrockLevelDat(std::uint32_t version, std::shared_ptr<NBT::NamedTag> named_tag);
     AMULET_LEVEL_EXPORT BedrockLevelDat(std::uint32_t version, const NBT::NamedTag& named_tag);
 
     AMULET_LEVEL_EXPORT BedrockLevelDat(const BedrockLevelDat&);
@@ -26,6 +29,16 @@ public:
     AMULET_LEVEL_EXPORT BedrockLevelDat& operator=(BedrockLevelDat&&);
 
     AMULET_LEVEL_EXPORT ~BedrockLevelDat();
+
+    AMULET_LEVEL_EXPORT std::uint32_t get_version() const;
+    AMULET_LEVEL_EXPORT void set_version(std::uint32_t);
+
+    AMULET_LEVEL_EXPORT NBT::NamedTag& get_named_tag();
+    AMULET_LEVEL_EXPORT const NBT::NamedTag& get_named_tag() const;
+    AMULET_LEVEL_EXPORT std::shared_ptr<NBT::NamedTag> get_named_tag_ptr();
+    
+    AMULET_LEVEL_EXPORT void set_named_tag(std::shared_ptr<NBT::NamedTag>);
+    AMULET_LEVEL_EXPORT void set_named_tag(const NBT::NamedTag&);
 
     // Construct from the binary data
     AMULET_LEVEL_EXPORT static BedrockLevelDat from_binary(std::string_view);

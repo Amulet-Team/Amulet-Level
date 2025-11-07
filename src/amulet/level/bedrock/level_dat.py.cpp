@@ -2,9 +2,21 @@
 #include <pybind11/stl.h>
 #include <pybind11/stl/filesystem.h>
 
+#include <amulet/pybind11_extensions/builtins.hpp>
+
 #include "level_dat.hpp"
 
 namespace py = pybind11;
+namespace pyext = Amulet::pybind11_extensions;
+
+static std::shared_ptr<Amulet::NBT::NamedTag> get_named_tag_ptr(pyext::PyObjectCpp<Amulet::NBT::NamedTag> named_tag)
+{
+    try {
+        return named_tag.cast<std::shared_ptr<Amulet::NBT::NamedTag>>();
+    } catch (const std::runtime_error&) {
+        return std::make_shared<Amulet::NBT::NamedTag>(named_tag.cast<Amulet::NBT::NamedTag&>());
+    }
+}
 
 py::module init_bedrock_level_dat(py::module m_parent)
 {
@@ -16,7 +28,9 @@ py::module init_bedrock_level_dat(py::module m_parent)
         BedrockLevelDat(m, "BedrockLevelDat");
 
     BedrockLevelDat.def(
-        py::init<std::uint32_t, const Amulet::NBT::NamedTag&>(),
+        py::init([](std::uint32_t version, pyext::PyObjectCpp<Amulet::NBT::NamedTag> named_tag) {
+            return Amulet::BedrockLevelDat(version, get_named_tag_ptr(named_tag));
+        }),
         py::arg("version"),
         py::arg("named_tag"));
 
@@ -43,20 +57,27 @@ py::module init_bedrock_level_dat(py::module m_parent)
         &Amulet::BedrockLevelDat::save_to,
         py::arg("path"));
 
-    BedrockLevelDat.def_readwrite(
+    BedrockLevelDat.def_property(
         "version",
-        &Amulet::BedrockLevelDat::version);
+        &Amulet::BedrockLevelDat::get_version,
+        py::cpp_function(
+            &Amulet::BedrockLevelDat::set_version,
+            py::is_method(BedrockLevelDat),
+            py::arg("version")));
 
-    BedrockLevelDat.def_readwrite(
+    BedrockLevelDat.def_property(
         "named_tag",
-        &Amulet::BedrockLevelDat::named_tag);
+        &Amulet::BedrockLevelDat::get_named_tag_ptr,
+        [](Amulet::BedrockLevelDat& self, pyext::PyObjectCpp<Amulet::NBT::NamedTag> tag) {
+            self.set_named_tag(get_named_tag_ptr(tag));
+        });
 
     BedrockLevelDat.def(
         "__repr__",
         [module_name](const Amulet::BedrockLevelDat& self) {
             return module_name + ".BedrockLevelDat("
-                + std::to_string(self.version) + ", "
-                + py::repr(py::cast(self.named_tag, py::return_value_policy::reference)).cast<std::string>() + ")";
+                + std::to_string(self.get_version()) + ", "
+                + py::repr(py::cast(self.get_named_tag(), py::return_value_policy::reference)).cast<std::string>() + ")";
         });
 
     BedrockLevelDat.def(

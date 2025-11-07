@@ -27,6 +27,8 @@ py::module init_bedrock_level_dat(py::module m_parent)
     py::classh<Amulet::BedrockLevelDat>
         BedrockLevelDat(m, "BedrockLevelDat");
 
+    BedrockLevelDat.def(py::init<>());
+
     BedrockLevelDat.def(
         py::init([](std::uint32_t version, pyext::PyObjectCpp<Amulet::NBT::NamedTag> named_tag) {
             return Amulet::BedrockLevelDat(version, get_named_tag_ptr(named_tag));

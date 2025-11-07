@@ -22,8 +22,6 @@ py::module init_bedrock_level_dat(py::module m_parent)
 {
     auto m = m_parent.def_submodule("level_dat");
 
-    std::string module_name = m.attr("__name__").cast<std::string>();
-
     py::classh<Amulet::BedrockLevelDat>
         BedrockLevelDat(m, "BedrockLevelDat");
 
@@ -76,8 +74,8 @@ py::module init_bedrock_level_dat(py::module m_parent)
 
     BedrockLevelDat.def(
         "__repr__",
-        [module_name](const Amulet::BedrockLevelDat& self) {
-            return module_name + ".BedrockLevelDat("
+        [](const Amulet::BedrockLevelDat& self) {
+            return "BedrockLevelDat("
                 + std::to_string(self.get_version()) + ", "
                 + py::repr(py::cast(self.get_named_tag(), py::return_value_policy::reference)).cast<std::string>() + ")";
         });

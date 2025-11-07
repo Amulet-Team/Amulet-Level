@@ -1,4 +1,5 @@
 import unittest
+import os
 
 from PIL import Image
 
@@ -9,7 +10,8 @@ from amulet.nbt import StringTag
 
 from amulet.core.version import VersionNumber
 
-from amulet.level.bedrock import BedrockRawLevel, BedrockLevelDat
+from amulet.level.abc import IdRegistry
+from amulet.level.bedrock import BedrockRawLevel, BedrockLevelDat, BedrockRawDimension
 
 from amulet.minecraft_worlds import WorldTemp, BedrockLevels, BedrockLevelData
 
@@ -140,3 +142,59 @@ class BedrockRawLevelTest(unittest.TestCase):
                     StringTag("HelloWorld"),
                     raw_level_2.level_dat.named_tag.compound["HelloWorld"],
                 )
+
+    def test_dimensions(self) -> None:
+        for src_path in BedrockLevels:
+            with self.subTest(src_path=src_path), WorldTemp(src_path) as world_data:
+                raw_level = BedrockRawLevel.load(world_data.path)
+                raw_level.open()
+                try:
+                    dimension_ids = raw_level.dimension_ids
+                    self.assertIsInstance(dimension_ids, list)
+                    self.assertEqual(
+                        set(world_data.level_data.dim_height),
+                        set(dimension_ids),
+                    )
+                    for dimension_id in dimension_ids:
+                        dimension = raw_level.get_dimension(dimension_id)
+                        self.assertIsInstance(dimension, BedrockRawDimension)
+                finally:
+                    raw_level.close()
+
+    def test_compact(self) -> None:
+        for src_path in BedrockLevels:
+            with self.subTest(src_path=src_path), WorldTemp(src_path) as world_data:
+                def get_db_size() -> int:
+                    return sum(
+                        entry.stat().st_size
+                        for entry in os.scandir(os.path.join(world_data.path, "db"))
+                        if entry.is_file()
+                    )
+
+                start_size = get_db_size()
+                raw_level = BedrockRawLevel.load(world_data.path)
+                with self.assertRaises(RuntimeError):
+                    raw_level.compact()
+                raw_level.open()
+                try:
+                    raw_level.compact()
+                finally:
+                    raw_level.close()
+                end_size = get_db_size()
+                self.assertLessEqual(end_size, start_size)
+
+    def test_id_override(self) -> None:
+        for src_path in BedrockLevels:
+            with self.subTest(src_path=src_path), WorldTemp(src_path) as world_data:
+                raw_level = BedrockRawLevel.load(world_data.path)
+                with self.assertRaises(RuntimeError):
+                    _ = raw_level.block_id_override
+                with self.assertRaises(RuntimeError):
+                    _ = raw_level.biome_id_override
+
+                raw_level.open()
+                try:
+                    self.assertIsInstance(raw_level.block_id_override, IdRegistry)
+                    self.assertIsInstance(raw_level.biome_id_override, IdRegistry)
+                finally:
+                    raw_level.close()

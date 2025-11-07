@@ -211,10 +211,10 @@ void ChunkHandleHelper<RawDimensionT, DimensionT, RawChunkT, ChunkT, get_null_ch
         // Copy defined component data.
         if (old_chunk_id != new_chunk_id) {
             // Error if any component is undefined
-            get_defined_components.operator()<true>();
+            get_defined_components.template operator()<true>();
         } else {
             // Remove undefined components.
-            get_defined_components.operator()<false>();
+            get_defined_components.template operator()<false>();
         }
 
         // Set new state.
@@ -236,7 +236,7 @@ void ChunkHandleHelper<RawDimensionT, DimensionT, RawChunkT, ChunkT, get_null_ch
         // Resource does not exist and history is disabled
 
         // Copy components. Error if any component is undefined.
-        get_defined_components.operator()<true>();
+        get_defined_components.template operator()<true>();
 
         // Set new state. If the resource isn't initialised use this value.
         _chunk_history->set_value<HistoryInitialisationMode::Value>(_key, new_chunk_id);

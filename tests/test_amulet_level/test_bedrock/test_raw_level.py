@@ -19,9 +19,10 @@ from amulet.minecraft_worlds import WorldTemp, BedrockLevels, BedrockLevelData
 class BedrockRawLevelTest(unittest.TestCase):
     def test_load(self) -> None:
         for src_path in BedrockLevels:
-            with WorldTemp(src_path) as world_data:
+            with self.subTest(src_path=src_path), WorldTemp(src_path) as world_data:
                 raw_level = BedrockRawLevel.load(world_data.path)
                 self.assertIsInstance(raw_level, BedrockRawLevel)
+                self.assertFalse(raw_level.is_open())
 
     @unittest.skip("TODO")
     def test_create(self) -> None:
@@ -164,6 +165,7 @@ class BedrockRawLevelTest(unittest.TestCase):
     def test_compact(self) -> None:
         for src_path in BedrockLevels:
             with self.subTest(src_path=src_path), WorldTemp(src_path) as world_data:
+
                 def get_db_size() -> int:
                     return sum(
                         entry.stat().st_size

@@ -1,5 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #include "level_dat.hpp"
 
@@ -28,9 +29,7 @@ void init_bedrock_level_dat(py::module m_parent)
 
     BedrockLevelDat.def_static(
         "from_file",
-        [](std::string path) {
-            return Amulet::BedrockLevelDat::from_file(path);
-        },
+        &Amulet::BedrockLevelDat::from_file,
         py::arg("path"));
 
     BedrockLevelDat.def(
@@ -41,9 +40,7 @@ void init_bedrock_level_dat(py::module m_parent)
 
     BedrockLevelDat.def(
         "save_to",
-        [](const Amulet::BedrockLevelDat& self, std::string path) {
-            self.save_to(path);
-        },
+        &Amulet::BedrockLevelDat::save_to,
         py::arg("path"));
 
     BedrockLevelDat.def_readwrite(

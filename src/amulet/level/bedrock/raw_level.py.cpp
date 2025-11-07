@@ -1,6 +1,7 @@
 #include <pybind11/chrono.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 // #include <memory>
 
@@ -43,9 +44,7 @@ py::module init_bedrock_raw_level(py::module m_parent)
         BedrockRawLevel(m, "BedrockRawLevel", py::release_gil_before_calling_cpp_dtor());
     BedrockRawLevel.def_static(
         "load",
-        [](const std::string& path) {
-            return Amulet::BedrockRawLevel::load(path);
-        },
+        &Amulet::BedrockRawLevel::load,
         py::arg("path"),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Load an existing Bedrock level from the given directory.\n"

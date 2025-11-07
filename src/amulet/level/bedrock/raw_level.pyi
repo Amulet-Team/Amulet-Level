@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import os
 import typing
 
 import amulet.core.version
@@ -16,7 +17,7 @@ __all__: list[str] = ["BedrockRawLevel"]
 
 class BedrockRawLevel:
     @staticmethod
-    def load(path: str) -> BedrockRawLevel:
+    def load(path: os.PathLike | str | bytes) -> BedrockRawLevel:
         """
         Load an existing Bedrock level from the given directory.
         Thread safe.

@@ -1,6 +1,7 @@
 #include <pybind11/chrono.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/stl/filesystem.h>
 
 #include <memory>
 
@@ -20,7 +21,7 @@ py::module init_java_raw_level(py::module m_parent)
         Amulet::JavaCreateArgsV1>
         JavaCreateArgsV1(m, "JavaCreateArgsV1");
     JavaCreateArgsV1.def(
-        py::init<bool, const std::string&, const Amulet::VersionNumber&, const std::string&>(),
+        py::init<bool, const std::filesystem::path&, const Amulet::VersionNumber&, const std::string&>(),
         py::arg("overwrite"),
         py::arg("path"),
         py::arg("version"),
@@ -44,9 +45,7 @@ py::module init_java_raw_level(py::module m_parent)
         JavaRawLevel(m, "JavaRawLevel", py::release_gil_before_calling_cpp_dtor());
     JavaRawLevel.def_static(
         "load",
-        [](const std::string& path) {
-            return Amulet::JavaRawLevel::load(path);
-        },
+        &Amulet::JavaRawLevel::load,
         py::arg("path"),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Load an existing Java level from the given directory.\n"

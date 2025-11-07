@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import os
 
 import amulet.core.version
 import amulet.level.abc.registry
@@ -16,7 +17,7 @@ class JavaCreateArgsV1:
     def __init__(
         self,
         overwrite: bool,
-        path: str,
+        path: os.PathLike | str | bytes,
         version: amulet.core.version.VersionNumber,
         level_name: str,
     ) -> None: ...
@@ -38,7 +39,7 @@ class JavaRawLevel:
         """
 
     @staticmethod
-    def load(path: str) -> JavaRawLevel:
+    def load(path: os.PathLike | str | bytes) -> JavaRawLevel:
         """
         Load an existing Java level from the given directory.
         Thread safe.

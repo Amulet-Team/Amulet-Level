@@ -1,8 +1,6 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
-#include <memory>
-
 #include <amulet/pybind11_extensions/collections.hpp>
 
 #include "chunk_handle.hpp"
@@ -13,13 +11,11 @@ py::module init_java_chunk_handle(py::module m_parent)
 {
     auto m = m_parent.def_submodule("chunk_handle");
 
-    py::class_<
-        Amulet::JavaChunkHandle,
-        Amulet::ChunkHandle,
-        std::shared_ptr<Amulet::JavaChunkHandle>>
+    py::classh<Amulet::JavaChunkHandle, Amulet::ChunkHandle>
         JavaChunkHandle(m, "JavaChunkHandle");
+
     JavaChunkHandle.attr("get_chunk") = py::cpp_function(
-        [](Amulet::JavaChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> py_component_ids) -> std::shared_ptr<Amulet::JavaChunk> {
+        [](Amulet::JavaChunkHandle& self, std::optional<Amulet::pybind11_extensions::collections::Iterable<std::string>> py_component_ids) {
             std::optional<std::set<std::string>> component_ids;
             if (py_component_ids) {
                 component_ids = std::set<std::string>(py_component_ids->begin(), py_component_ids->end());

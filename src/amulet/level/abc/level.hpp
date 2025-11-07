@@ -2,7 +2,6 @@
 
 #include <chrono>
 #include <memory>
-#include <shared_mutex>
 #include <string>
 #include <vector>
 
@@ -10,8 +9,8 @@
 
 #include <amulet/core/version/version.hpp>
 
-#include <amulet/utils/mutex.hpp>
 #include <amulet/utils/event.hpp>
+#include <amulet/utils/mutex.hpp>
 
 #include "dimension.hpp"
 

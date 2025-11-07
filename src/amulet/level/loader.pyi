@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import pathlib
 import types
 import typing
 
@@ -26,4 +27,7 @@ class LevelLoaderToken:
 class NoValidLevelLoader(Exception):
     pass
 
+@typing.overload
 def get_level(token: LevelLoaderToken) -> amulet.level.abc.level.Level: ...
+@typing.overload
+def get_level(path: pathlib.Path) -> amulet.level.abc.level.Level: ...

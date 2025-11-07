@@ -1,7 +1,5 @@
 #include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-
-#include <memory>
+#include <pybind11/stl/filesystem.h>
 
 #include "level.hpp"
 #include <amulet/level/abc/level.hpp>
@@ -12,26 +10,23 @@ py::module init_java_level(py::module m_parent)
 {
     auto m = m_parent.def_submodule("level");
 
-    py::class_<
+    py::classh<
         Amulet::JavaLevel,
         Amulet::Level,
         Amulet::CompactibleLevel,
         Amulet::DiskLevel,
-        Amulet::ReloadableLevel,
-        std::shared_ptr<Amulet::JavaLevel>>
+        Amulet::ReloadableLevel>
         JavaLevel(m, "JavaLevel");
     JavaLevel.def_static(
         "load",
-        [](std::string path) -> std::shared_ptr<Amulet::JavaLevel> {
-            return Amulet::JavaLevel::load(path);
-        },
+        &Amulet::JavaLevel::load,
         py::arg("path"),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Load an existing Java level from the given directory.\n"
                 "Thread safe."));
     JavaLevel.def_static(
         "create",
-        [](const Amulet::JavaCreateArgsV1& args) -> std::shared_ptr<Amulet::JavaLevel> {
+        [](const Amulet::JavaCreateArgsV1& args) {
             return Amulet::JavaLevel::create(args);
         },
         py::arg("args"),

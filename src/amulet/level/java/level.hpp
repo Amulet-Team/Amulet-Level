@@ -52,7 +52,7 @@ public:
     JavaLevel(JavaLevel&&) = delete;
     JavaLevel& operator=(JavaLevel&&) = delete;
 
-    ~JavaLevel();
+    AMULET_LEVEL_EXPORT ~JavaLevel() override;
 
     // Load an existing Java level from the given directory.
     // Thread safe.
@@ -83,7 +83,7 @@ public:
 
     // The thumbnail for the level.
     // External Read:SharedReadWrite lock required.
-    PIL::Image::Image get_thumbnail() override;
+    AMULET_LEVEL_EXPORT PIL::Image::Image get_thumbnail() override;
 
     // The name of the level.
     // External Read:SharedReadWrite lock required.
@@ -126,36 +126,36 @@ public:
     // Create a new history restore point.
     // Any changes made after this point can be reverted by calling undo.
     // External Read:SharedReadWrite lock required.
-    void create_restore_point() override;
+    AMULET_LEVEL_EXPORT void create_restore_point() override;
 
     // Get the number of times undo can be called.
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    size_t get_undo_count() override;
+    AMULET_LEVEL_EXPORT size_t get_undo_count() override;
 
     // Revert the changes made since the previous restore point.
     // External ReadWrite:SharedReadWrite lock required.
     // External ReadWrite:Unique lock optional.
-    void undo() override;
+    AMULET_LEVEL_EXPORT void undo() override;
 
     // Get the number of times redo can be called.
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    size_t get_redo_count() override;
+    AMULET_LEVEL_EXPORT size_t get_redo_count() override;
 
     // Redo changes that were previously reverted.
     // External ReadWrite:SharedReadWrite lock required.
     // External ReadWrite:Unique lock optional.
-    void redo() override;
+    AMULET_LEVEL_EXPORT void redo() override;
 
     // Get if the history system is enabled.
     // If this is true, the caller must call create_restore_point before making changes.
     // External Read:SharedReadWrite lock required.
-    bool get_history_enabled() override;
+    AMULET_LEVEL_EXPORT bool get_history_enabled() override;
 
     // Set if the history system is enabled.
     // External ReadWrite:SharedReadWrite lock required.
-    void set_history_enabled(bool) override;
+    AMULET_LEVEL_EXPORT void set_history_enabled(bool) override;
 
     // The identifiers for all dimensions in the level
     // External Read:SharedReadWrite lock required.

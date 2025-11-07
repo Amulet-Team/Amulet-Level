@@ -1,7 +1,5 @@
 #include <pybind11/pybind11.h>
 
-#include <memory>
-
 #include <amulet/core/biome/biome.hpp>
 #include <amulet/core/block/block.hpp>
 #include <amulet/core/chunk/chunk.hpp>
@@ -17,15 +15,13 @@ void init_java_chunk(py::module m_parent)
 {
     auto m = m_parent.def_submodule("chunk");
 
-    py::class_<
+    py::classh<
         Amulet::JavaChunk,
-        std::shared_ptr<Amulet::JavaChunk>,
         Amulet::Chunk>
         JavaChunk(m, "JavaChunk");
 
-    py::class_<
+    py::classh<
         Amulet::JavaChunkNA,
-        std::shared_ptr<Amulet::JavaChunkNA>,
         Amulet::JavaChunk,
         Amulet::JavaRawChunkComponent,
         Amulet::DataVersionComponent,
@@ -46,9 +42,8 @@ void init_java_chunk(py::module m_parent)
         py::arg("default_block"),
         py::arg("default_biome"));
 
-    py::class_<
+    py::classh<
         Amulet::JavaChunk0,
-        std::shared_ptr<Amulet::JavaChunk0>,
         Amulet::JavaChunk,
         Amulet::JavaRawChunkComponent,
         Amulet::DataVersionComponent,
@@ -72,9 +67,8 @@ void init_java_chunk(py::module m_parent)
         py::arg("default_block"),
         py::arg("default_biome"));
 
-    py::class_<
+    py::classh<
         Amulet::JavaChunk1444,
-        std::shared_ptr<Amulet::JavaChunk1444>,
         Amulet::JavaChunk,
         Amulet::JavaRawChunkComponent,
         Amulet::DataVersionComponent,
@@ -97,9 +91,8 @@ void init_java_chunk(py::module m_parent)
         py::arg("default_block"),
         py::arg("default_biome"));
 
-    py::class_<
+    py::classh<
         Amulet::JavaChunk1466,
-        std::shared_ptr<Amulet::JavaChunk1466>,
         Amulet::JavaChunk,
         Amulet::JavaRawChunkComponent,
         Amulet::DataVersionComponent,
@@ -122,9 +115,8 @@ void init_java_chunk(py::module m_parent)
         py::arg("default_block"),
         py::arg("default_biome"));
 
-    py::class_<
+    py::classh<
         Amulet::JavaChunk2203,
-        std::shared_ptr<Amulet::JavaChunk2203>,
         Amulet::JavaChunk,
         Amulet::JavaRawChunkComponent,
         Amulet::DataVersionComponent,

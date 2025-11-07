@@ -8,6 +8,7 @@ namespace pyext = Amulet::pybind11_extensions;
 py::module init_loader(py::module);
 py::module init_abc(py::module);
 py::module init_java(py::module);
+py::module init_bedrock(py::module);
 
 void init_module(py::module m)
 {
@@ -27,13 +28,9 @@ void init_module(py::module m)
     m.attr("get_level") = loader.attr("get_level");
     m.attr("NoValidLevelLoader") = loader.attr("NoValidLevelLoader");
 
-    // from .temporary_level import TemporaryLevel
-
     // Submodules
-    auto java_module = init_java(m);
-    // m.attr("JavaLevel") = java_module.attr("JavaLevel");
-
-    // m.attr("BedrockLevel") = py::module::import("amulet.level.bedrock").attr("BedrockLevel");
+    init_java(m);
+    init_bedrock(m);
 }
 
 PYBIND11_MODULE(_amulet_level, m)

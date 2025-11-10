@@ -62,39 +62,39 @@ const Biome& BedrockRawDimension::get_default_biome() const
 // }
 //
 
-bool BedrockRawDimension::has_chunk(std::int64_t cx, std::int64_t cz)
+bool BedrockRawDimension::has_chunk(std::int32_t cx, std::int32_t cz)
 {
     throw std::runtime_error("NotImplementedError");
     //     OrderedLockGuard<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite> lock(_anvil_dimension.get_mutex());
     //     return _anvil_dimension.has_chunk(cx, cz);
 }
 
-void BedrockRawDimension::delete_chunk(std::int64_t cx, std::int64_t cz)
+void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
 {
     throw std::runtime_error("NotImplementedError");
     //     OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::SharedReadWrite> lock(_anvil_dimension.get_mutex());
     //     _anvil_dimension.delete_chunk(cx, cz);
 }
 
-std::unique_ptr<BedrockRawChunk> BedrockRawDimension::get_raw_chunk(std::int64_t cx, std::int64_t cz)
+BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int32_t cx, std::int32_t cz)
 {
 }
 
-void BedrockRawDimension::set_raw_chunk(std::int64_t cx, std::int64_t cz, const BedrockRawChunk& chunk)
+void BedrockRawDimension::set_raw_chunk(std::int32_t cx, std::int32_t cz, const BedrockRawChunk& chunk)
 {
     throw std::runtime_error("NotImplementedError");
     //     OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::SharedReadWrite> lock(_anvil_dimension.get_mutex());
     //     _anvil_dimension.set_chunk_data(cx, cz, chunk);
 }
 
-std::unique_ptr<BedrockChunk> BedrockRawDimension::get_chunk(std::int64_t cx, std::int64_t cz)
+std::unique_ptr<BedrockChunk> BedrockRawDimension::get_chunk(std::int32_t cx, std::int32_t cz)
 {
-    return decode_chunk(*get_raw_chunk(cx, cz), cz, cz);
+    return decode_chunk(get_raw_chunk(cx, cz), cz, cz);
 }
 
-void BedrockRawDimension::set_chunk(std::int64_t cx, std::int64_t cz, BedrockChunk& chunk)
+void BedrockRawDimension::set_chunk(std::int32_t cx, std::int32_t cz, BedrockChunk& chunk)
 {
-    set_raw_chunk(cx, cz, *encode_chunk(chunk, cx, cz));
+    set_raw_chunk(cx, cz, encode_chunk(chunk, cx, cz));
 }
 
 void BedrockRawDimension::destroy()

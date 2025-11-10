@@ -12,11 +12,37 @@
 //#include <amulet/core/block/block.hpp>
 #include <amulet/core/chunk/chunk.hpp>
 //#include <amulet/core/chunk/component/block_component.hpp>
-//
-//#include <amulet/level/dll.hpp>
-//
+
+#include <amulet/level/dll.hpp>
+
 namespace Amulet {
-using BedrockRawChunk = std::map<std::string, Amulet::NBT::NamedTag>;
+
+class BedrockRawChunk {
+private:
+    // LevelDB keys and values (keys have the dimension and coord stripped)
+    std::map<std::string, std::string> _data;
+    std::list<std::shared_ptr<NBT::NamedTag>> _entity_actors;
+    std::list<std::shared_ptr<NBT::NamedTag>> _unknown_actors;
+
+public:
+    AMULET_LEVEL_EXPORT BedrockRawChunk();
+    AMULET_LEVEL_EXPORT BedrockRawChunk(
+        std::map<std::string, std::string>,
+        std::list<std::shared_ptr<NBT::NamedTag>>,
+        std::list<std::shared_ptr<NBT::NamedTag>>
+    );
+
+    AMULET_LEVEL_EXPORT BedrockRawChunk(const BedrockRawChunk&);
+    AMULET_LEVEL_EXPORT BedrockRawChunk(BedrockRawChunk&&);
+    AMULET_LEVEL_EXPORT BedrockRawChunk& operator=(const BedrockRawChunk&);
+    AMULET_LEVEL_EXPORT BedrockRawChunk& operator=(BedrockRawChunk&&);
+
+    AMULET_LEVEL_EXPORT ~BedrockRawChunk();
+
+    AMULET_LEVEL_EXPORT std::map<std::string, std::string>& get_data();
+    AMULET_LEVEL_EXPORT std::list<std::shared_ptr<NBT::NamedTag>>& get_entity_actors();
+    AMULET_LEVEL_EXPORT std::list<std::shared_ptr<NBT::NamedTag>>& get_unknown_actors();
+};
 
 class BedrockChunk : public Chunk { };
 

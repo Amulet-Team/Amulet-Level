@@ -8,7 +8,7 @@ using namespace Amulet::NBT;
 
 namespace Amulet {
 
-BedrockRawChunk BedrockRawDimension::encode_chunk(
+std::unique_ptr<BedrockRawChunk> BedrockRawDimension::encode_chunk(
     BedrockChunk& chunk,
     std::int64_t cx,
     std::int64_t cz)

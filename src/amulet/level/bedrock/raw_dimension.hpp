@@ -85,7 +85,7 @@ public:
 
     // Get the raw chunk from this dimension.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT BedrockRawChunk get_raw_chunk(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockRawChunk> get_raw_chunk(std::int64_t cx, std::int64_t cz);
 
     // Set the chunk in this dimension from raw data.
     // External ReadWrite:SharedReadWrite lock required.
@@ -94,12 +94,12 @@ public:
     // Decode a raw chunk to a chunk object.
     // This will mutate the chunk data.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(BedrockRawChunk raw_chunk, std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(const BedrockRawChunk& raw_chunk, std::int64_t cx, std::int64_t cz);
 
     // Encode a chunk object to its raw data.
     // This will mutate the chunk data.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT BedrockRawChunk encode_chunk(BedrockChunk& chunk, std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockRawChunk> encode_chunk(BedrockChunk& chunk, std::int64_t cx, std::int64_t cz);
 
     // Get and decode the chunk.
     // TODO: thread safety

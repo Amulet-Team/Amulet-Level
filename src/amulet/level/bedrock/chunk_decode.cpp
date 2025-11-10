@@ -9,7 +9,7 @@ using namespace Amulet::NBT;
 namespace Amulet {
 
 std::unique_ptr<BedrockChunk> BedrockRawDimension::decode_chunk(
-    BedrockRawChunk raw_chunk,
+    const BedrockRawChunk& raw_chunk,
     std::int64_t cx,
     std::int64_t cz)
 {

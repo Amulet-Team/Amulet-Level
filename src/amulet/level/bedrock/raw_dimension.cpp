@@ -76,15 +76,8 @@ void BedrockRawDimension::delete_chunk(std::int64_t cx, std::int64_t cz)
     //     _anvil_dimension.delete_chunk(cx, cz);
 }
 
-BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int64_t cx, std::int64_t cz)
+std::unique_ptr<BedrockRawChunk> BedrockRawDimension::get_raw_chunk(std::int64_t cx, std::int64_t cz)
 {
-    throw std::runtime_error("NotImplementedError");
-    //     OrderedLockGuard<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite> lock(_anvil_dimension.get_mutex());
-    //     try {
-    //         return _anvil_dimension.get_chunk_data(cx, cz);
-    //     } catch (const RegionEntryDoesNotExist& e) {
-    //         throw ChunkDoesNotExist(e.what());
-    //     }
 }
 
 void BedrockRawDimension::set_raw_chunk(std::int64_t cx, std::int64_t cz, const BedrockRawChunk& chunk)
@@ -96,12 +89,12 @@ void BedrockRawDimension::set_raw_chunk(std::int64_t cx, std::int64_t cz, const 
 
 std::unique_ptr<BedrockChunk> BedrockRawDimension::get_chunk(std::int64_t cx, std::int64_t cz)
 {
-    return decode_chunk(get_raw_chunk(cx, cz), cz, cz);
+    return decode_chunk(*get_raw_chunk(cx, cz), cz, cz);
 }
 
 void BedrockRawDimension::set_chunk(std::int64_t cx, std::int64_t cz, BedrockChunk& chunk)
 {
-    set_raw_chunk(cx, cz, encode_chunk(chunk, cx, cz));
+    set_raw_chunk(cx, cz, *encode_chunk(chunk, cx, cz));
 }
 
 void BedrockRawDimension::destroy()

@@ -4,6 +4,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <amulet/utils/bytes.hpp>
+
 // #include <amulet/core/chunk/chunk.hpp>
 // #include <amulet/core/chunk/component/block_component.hpp>
 
@@ -13,12 +15,10 @@ namespace Amulet {
 
 BedrockRawChunk::BedrockRawChunk() = default;
 BedrockRawChunk::BedrockRawChunk(
-    std::map<std::string, std::string> data,
-    std::list<std::shared_ptr<NBT::NamedTag>> entity_actors,
-    std::list<std::shared_ptr<NBT::NamedTag>> unknown_actors)
+    std::map<Bytes, Bytes> data,
+    std::vector<std::shared_ptr<NBT::NamedTag>> entity_actors)
     : _data(data)
-    , _entity_actors(entity_actors)
-    , _unknown_actors(unknown_actors)
+    , _actors(entity_actors)
 {
 }
 
@@ -29,19 +29,14 @@ BedrockRawChunk& BedrockRawChunk::operator=(BedrockRawChunk&&) = default;
 
 BedrockRawChunk::~BedrockRawChunk() = default;
 
-std::map<std::string, std::string>& BedrockRawChunk::get_data()
+std::map<Bytes, Bytes>& BedrockRawChunk::get_data()
 {
     return _data;
 }
 
-std::list<std::shared_ptr<NBT::NamedTag>>& BedrockRawChunk::get_entity_actors()
+std::vector<std::shared_ptr<NBT::NamedTag>>& BedrockRawChunk::get_actors()
 {
-    return _entity_actors;
-}
-
-std::list<std::shared_ptr<NBT::NamedTag>>& BedrockRawChunk::get_unknown_actors()
-{
-    return _unknown_actors;
+    return _actors;
 }
 
 static std::map<std::string, std::function<std::unique_ptr<BedrockChunk>()>> bedrock_chunk_constructors = {};

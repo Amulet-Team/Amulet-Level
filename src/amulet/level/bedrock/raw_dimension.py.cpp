@@ -70,13 +70,13 @@ py::module init_bedrock_raw_dimension(py::module m_parent)
     //        py::arg("cz"),
     //        py::doc("Delete the chunk from this dimension.\n"
     //                "External ReadWrite:SharedReadWrite lock required."));
-    //    BedrockRawDimension.def(
-    //        "get_raw_chunk",
-    //        &Amulet::BedrockRawDimension::get_raw_chunk,
-    //        py::arg("cx"),
-    //        py::arg("cz"),
-    //        py::doc("Get the raw chunk from this dimension.\n"
-    //                "External Read:SharedReadWrite lock required."));
+    BedrockRawDimension.def(
+        "get_raw_chunk",
+        &Amulet::BedrockRawDimension::get_raw_chunk,
+        py::arg("cx"),
+        py::arg("cz"),
+        py::doc("Get the raw chunk from this dimension.\n"
+                "External Read:SharedReadWrite lock required."));
     //    BedrockRawDimension.def(
     //        "set_raw_chunk",
     //        &Amulet::BedrockRawDimension::set_raw_chunk,

@@ -1,4 +1,7 @@
 #include <bit>
+#include <variant>
+
+#include <amulet/nbt/nbt_encoding/binary.hpp>
 
 #include "raw_dimension.hpp"
 
@@ -111,6 +114,11 @@ bool BedrockRawDimension::has_chunk(std::int32_t cx, std::int32_t cz)
     return db.Get(_db->get_read_options(), key_prefix + ',', &value).ok() || db.Get(_db->get_read_options(), key_prefix + 'v', &value).ok();
 }
 
+// Arbitrary tag type start.
+// This allows us to skip over other dimensions without losing keys.
+// Reduce this number if tags are added before this.
+static const char MinTag = 0x10;
+
 void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
 {
     throw std::runtime_error("NotImplementedError");
@@ -120,6 +128,79 @@ void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
 
 BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int32_t cx, std::int32_t cz)
 {
+    auto key_prefix = get_key_prefix(_internal_dimension_id, cx, cz);
+    std::map<Bytes, Bytes> data;
+
+    {
+        auto it_ptr = _db->create_iterator();
+        auto& it = it_ptr->get_iterator();
+
+        auto key_start = key_prefix + MinTag;
+        auto key_end = key_prefix + "\xFF\xFF";
+
+        it.Seek(key_start);
+        while (it.Valid()) {
+            const auto& key = it.key();
+            if (0 <= it.key().compare(key_end)) {
+                break;
+            }
+            if (key_start.size() == key.size() || key_end.size() == key.size()) {
+                auto value = it.value();
+                data.emplace(
+                    Bytes(key.begin() + key_prefix.size(), key.size() - key_prefix.size()),
+                    Bytes(value.data(), value.size()));
+            }
+            it.Next();
+        }
+    }
+
+    std::vector<std::shared_ptr<NBT::NamedTag>> actors;
+
+    {
+        auto& db = _db->get_database();
+        auto& read_options = _db->get_read_options();
+        std::string digp_key = "digp" + key_prefix;
+        std::string digp;
+        if (db.Get(read_options, digp_key, &digp).ok()) {
+            size_t actor_count = (digp.size() / 8) * 8;
+            for (size_t i = 0; i < actor_count; i += 8) {
+                std::string actor_key;
+                actor_key.reserve(19);
+                actor_key = "actorprefix";
+                actor_key += std::string_view(digp.data() + i, 8);
+
+                std::string actor_bytes;
+                if (!db.Get(read_options, actor_key, &actor_bytes).ok()) {
+                    error("Could not find actor " + actor_key + ". Skipping.");
+                    continue;
+                }
+
+                std::shared_ptr<NBT::NamedTag> actor;
+                try {
+                    actor = std::make_shared<NBT::NamedTag>(
+                        NBT::decode_nbt(actor_bytes, std::endian::little, NBT::utf8_to_utf8_escape));
+                } catch (...) {
+                    error("Failed to parse actor " + actor_key + ". Skipping.");
+                    continue;
+                }
+
+                auto* actor_tag_ptr = std::get_if<NBT::CompoundTagPtr>(&actor->tag_node);
+                if (!actor_tag_ptr) {
+                    error("Actor " + actor_key + " is not a CompoundTag. Skipping.");
+                    continue;
+                }
+                auto& actor_tag = **actor_tag_ptr;
+
+                // Remove internal tags if they exist.
+                actor_tag.erase("UniqueID");
+                actor_tag.erase("internalComponents");
+
+                actors.emplace_back(std::move(actor));
+            }
+        }
+    }
+
+    return BedrockRawChunk(std::move(data), std::move(actors));
 }
 
 void BedrockRawDimension::set_raw_chunk(std::int32_t cx, std::int32_t cz, const BedrockRawChunk& chunk)

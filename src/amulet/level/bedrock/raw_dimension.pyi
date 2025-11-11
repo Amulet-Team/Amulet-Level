@@ -5,6 +5,7 @@ import typing
 import amulet.core.biome
 import amulet.core.block
 import amulet.core.selection.box
+import amulet.level.bedrock.chunk
 import amulet.utils.lock
 
 __all__: list[str] = ["BedrockRawDimension"]
@@ -16,6 +17,14 @@ class BedrockRawDimension:
         Calls made after this will fail.
         This may only be called by the owner of the instance.
         External ReadWrite:Unique lock required.
+        """
+
+    def get_raw_chunk(
+        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+    ) -> amulet.level.bedrock.chunk.BedrockRawChunk:
+        """
+        Get the raw chunk from this dimension.
+        External Read:SharedReadWrite lock required.
         """
 
     def has_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> bool:

@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stdexcept>
 
 #include <amulet/utils/mutex.hpp>

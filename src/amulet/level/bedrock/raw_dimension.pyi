@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import typing
+
 import amulet.core.biome
 import amulet.core.block
 import amulet.core.selection.box
@@ -14,6 +16,13 @@ class BedrockRawDimension:
         Calls made after this will fail.
         This may only be called by the owner of the instance.
         External ReadWrite:Unique lock required.
+        """
+
+    def has_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> bool:
+        """
+        Does the chunk exist in this dimension.
+        External Read:SharedReadWrite lock required.
+        External Read:SharedReadOnly lock optional.
         """
 
     def is_destroyed(self) -> bool:

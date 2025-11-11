@@ -55,14 +55,14 @@ py::module init_bedrock_raw_dimension(py::module m_parent)
     //        py::doc("An iterator of all chunk coordinates in the dimension.\n"
     //                "External Read:SharedReadWrite lock required.\n"
     //                "External Read:SharedReadOnly lock optional."));
-    //    BedrockRawDimension.def(
-    //        "has_chunk",
-    //        &Amulet::BedrockRawDimension::has_chunk,
-    //        py::arg("cx"),
-    //        py::arg("cz"),
-    //        py::doc("Does the chunk exist in this dimension.\n"
-    //                "External Read:SharedReadWrite lock required.\n"
-    //                "External Read:SharedReadOnly lock optional."));
+    BedrockRawDimension.def(
+        "has_chunk",
+        &Amulet::BedrockRawDimension::has_chunk,
+        py::arg("cx"),
+        py::arg("cz"),
+        py::doc("Does the chunk exist in this dimension.\n"
+                "External Read:SharedReadWrite lock required.\n"
+                "External Read:SharedReadOnly lock optional."));
     //    BedrockRawDimension.def(
     //        "delete_chunk",
     //        &Amulet::BedrockRawDimension::delete_chunk,

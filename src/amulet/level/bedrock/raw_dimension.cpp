@@ -1,7 +1,36 @@
-// #include <mutex>
-// #include <shared_mutex>
+#include <bit>
 
 #include "raw_dimension.hpp"
+
+namespace {
+class KeyWriter {
+private:
+    std::string& _data;
+
+public:
+    KeyWriter(std::string& data)
+        : _data(data)
+    {
+    }
+
+    // Fix the endianness of the numeric value and write it to the buffer.
+    template <typename T>
+    void write_numeric(const T& value)
+    {
+        if constexpr (std::endian::native == std::endian::little) {
+            _data.append((char*)&value, sizeof(T));
+        } else {
+            const size_t data_size = _data.size() + sizeof(T);
+            _data.resize(data_size);
+            char* src = (char*)&value;
+            char* dst = _data.data() + data_size;
+            for (size_t i = 0; i < sizeof(T); i++) {
+                *(dst - i - 1) = *(src + i);
+            }
+        }
+    }
+};
+}
 
 namespace Amulet {
 
@@ -62,11 +91,24 @@ const Biome& BedrockRawDimension::get_default_biome() const
 // }
 //
 
+static std::string get_key_prefix(std::int32_t dimension, std::int32_t cx, std::int32_t cz)
+{
+    std::string key;
+    KeyWriter writer(key);
+    writer.write_numeric<std::int32_t>(cx);
+    writer.write_numeric<std::int32_t>(cz);
+    if (dimension != 0) {
+        writer.write_numeric<std::int32_t>(dimension);
+    }
+    return key;
+}
+
 bool BedrockRawDimension::has_chunk(std::int32_t cx, std::int32_t cz)
 {
-    throw std::runtime_error("NotImplementedError");
-    //     OrderedLockGuard<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite> lock(_anvil_dimension.get_mutex());
-    //     return _anvil_dimension.has_chunk(cx, cz);
+    auto& db = _db->get_database();
+    std::string value;
+    auto key_prefix = get_key_prefix(_internal_dimension_id, cx, cz);
+    return db.Get(_db->get_read_options(), key_prefix + ',', &value).ok() || db.Get(_db->get_read_options(), key_prefix + 'v', &value).ok();
 }
 
 void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)

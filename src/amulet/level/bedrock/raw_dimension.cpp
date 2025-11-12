@@ -1,4 +1,5 @@
 #include <bit>
+#include <memory>
 #include <variant>
 
 #include <amulet/leveldb.hpp>
@@ -49,13 +50,16 @@ BedrockRawDimension::BedrockRawDimension(
     const DimensionId& dimension_id,
     const SelectionBox& bounds,
     const BlockStack& default_block,
-    const Biome& default_biome)
+    const Biome& default_biome,
+    std::uint32_t actor_group)
     : _db(std::move(db))
     , _internal_dimension_id(internal_dimension_id)
     , _dimension_id(dimension_id)
     , _bounds(bounds)
     , _default_block(default_block)
     , _default_biome(default_biome)
+    , _actor_group(actor_group)
+    , _actor_index(0)
 {
 }
 
@@ -260,11 +264,95 @@ BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int32_t cx, std::int32_t
     return BedrockRawChunk(std::move(data), std::move(actors));
 }
 
-void BedrockRawDimension::set_raw_chunk(std::int32_t cx, std::int32_t cz, const BedrockRawChunk& chunk)
+void BedrockRawDimension::set_raw_chunk(std::int32_t cx, std::int32_t cz, BedrockRawChunk& chunk)
 {
-    throw std::runtime_error("NotImplementedError");
-    //     OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::SharedReadWrite> lock(_anvil_dimension.get_mutex());
-    //     _anvil_dimension.set_chunk_data(cx, cz, chunk);
+    auto key_prefix = get_key_prefix(_internal_dimension_id, cx, cz);
+
+    // Find keys that were in the chunk
+    std::set<std::string> keys_to_delete;
+    for_keys_in_chunk(
+        *_db,
+        key_prefix,
+        [&keys_to_delete](const leveldb::Slice& key) {
+            keys_to_delete.emplace(key.data(), key.size());
+        });
+
+    leveldb::WriteBatch batch;
+    auto batch_put = [&batch, &keys_to_delete](const std::string& key, const std::string& value) {
+        batch.Put(key, value);
+        keys_to_delete.erase(key);
+    };
+
+    // Write all normal keys to the batch
+    for (const auto& [tag, value] : chunk.get_data()) {
+        if (2 < tag.size()) {
+            // Chunk tags are only 1 or 2 bytes
+            continue;
+        }
+        std::string key = key_prefix + tag;
+        batch_put(key, value);
+    }
+
+    // Encode and write actors to the batch
+    auto& actors = chunk.get_actors();
+    if (!actors.empty()) {
+        std::string digp;
+
+        // Get the actor index and increment by the number of actors we are going to write.
+        std::uint32_t actor_index = _actor_index.fetch_add(actors.size());
+
+        for (std::uint32_t i = 0; i < actors.size(); i++, actor_index++) {
+            std::string actor_key;
+            actor_key.reserve(8);
+            KeyWriter<std::endian::big> actor_key_writer(actor_key);
+            actor_key_writer.write_numeric<std::uint32_t>(_actor_group);
+            actor_key_writer.write_numeric<std::uint32_t>(actor_index);
+
+            auto& actor = actors[i];
+
+            auto* actor_tag_ptr = std::get_if<NBT::CompoundTagPtr>(&actor->tag_node);
+            if (!actor_tag_ptr) {
+                error("Actor " + std::to_string(i) + " in " + _dimension_id + " " + std::to_string(cx) + " " + std::to_string(cz) + " is not a CompoundTag. Skipping.");
+                continue;
+            }
+            auto& actor_tag = **actor_tag_ptr;
+
+            // Set UniqueID
+            actor_tag.insert_or_assign("UniqueID", NBT::LongTag(i - (static_cast<std::int64_t>(_actor_group) << 32)));
+
+            // Set internalComponents
+            auto entity_component = std::make_shared<NBT::CompoundTag>();
+            entity_component->emplace("StorageKey", NBT::StringTag(actor_key));
+            auto internal_components = std::make_shared<NBT::CompoundTag>();
+            internal_components->emplace("EntityStorageKeyComponent", std::move(entity_component));
+            actor_tag.insert_or_assign(
+                "internalComponents",
+                std::move(internal_components)
+            );
+
+            std::string actor_bytes;
+            try {
+                actor_bytes = NBT::encode_nbt(*actor, std::endian::little, NBT::utf8_escape_to_utf8);
+            } catch (...) {
+                error("Failed encoding actor " + std::to_string(i) + " in " + _dimension_id + " " + std::to_string(cx) + " " + std::to_string(cz) + ". Skipping.");
+                continue;
+            }
+
+            batch_put("actorprefix" + actor_key, actor_bytes);
+
+            digp += actor_key;
+        }
+
+        batch_put("digp" + key_prefix, digp);
+    }
+
+    // Mark all keys for deletion that were not overwritten.
+    for (const auto& key : keys_to_delete) {
+        batch.Delete(key);
+    }
+
+    // Write the batch.
+    _db->get_database().Write(_db->get_write_options(), &batch);
 }
 
 std::unique_ptr<BedrockChunk> BedrockRawDimension::get_chunk(std::int32_t cx, std::int32_t cz)
@@ -274,7 +362,8 @@ std::unique_ptr<BedrockChunk> BedrockRawDimension::get_chunk(std::int32_t cx, st
 
 void BedrockRawDimension::set_chunk(std::int32_t cx, std::int32_t cz, BedrockChunk& chunk)
 {
-    set_raw_chunk(cx, cz, encode_chunk(chunk, cx, cz));
+    auto encoded_chunk = encode_chunk(chunk, cx, cz);
+    set_raw_chunk(cx, cz, encoded_chunk);
 }
 
 void BedrockRawDimension::destroy()

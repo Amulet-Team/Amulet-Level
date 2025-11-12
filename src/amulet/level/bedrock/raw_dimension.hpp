@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <string>
 
@@ -31,6 +32,8 @@ private:
     SelectionBox _bounds;
     BlockStack _default_block;
     Biome _default_biome;
+    std::uint32_t _actor_group;
+    std::atomic_uint32_t _actor_index;
     bool _destroyed = false;
 
 public:
@@ -40,7 +43,8 @@ public:
         const DimensionId& dimension_id,
         const SelectionBox& bounds,
         const BlockStack& default_block,
-        const Biome& default_biome);
+        const Biome& default_biome,
+        std::uint32_t actor_group);
 
     // Destructor.
     AMULET_LEVEL_EXPORT ~BedrockRawDimension();
@@ -89,7 +93,7 @@ public:
 
     // Set the chunk in this dimension from raw data.
     // External ReadWrite:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT void set_raw_chunk(std::int32_t cx, std::int32_t cz, const BedrockRawChunk& chunk);
+    AMULET_LEVEL_EXPORT void set_raw_chunk(std::int32_t cx, std::int32_t cz, BedrockRawChunk& chunk);
 
     // Decode a raw chunk to a chunk object.
     // This will mutate the chunk data.

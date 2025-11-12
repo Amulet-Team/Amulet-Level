@@ -1,6 +1,7 @@
 #include <bit>
 #include <variant>
 
+#include <amulet/leveldb.hpp>
 #include <leveldb/write_batch.h>
 
 #include <amulet/nbt/nbt_encoding/binary.hpp>
@@ -121,14 +122,10 @@ bool BedrockRawDimension::has_chunk(std::int32_t cx, std::int32_t cz)
 // Reduce this number if tags are added before this.
 static const char MinTag = 0x10;
 
-void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
+static void for_keys_in_chunk(LevelDB& _db, std::string key_prefix, std::function<void(const leveldb::Slice&)> callback)
 {
-    leveldb::WriteBatch batch;
-
-    auto key_prefix = get_key_prefix(_internal_dimension_id, cx, cz);
-
     {
-        auto it_ptr = _db->create_iterator();
+        auto it_ptr = _db.create_iterator();
         auto& it = it_ptr->get_iterator();
 
         auto key_start = key_prefix + MinTag;
@@ -141,18 +138,18 @@ void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
                 break;
             }
             if (key_start.size() == key.size() || key_end.size() == key.size()) {
-                batch.Delete(key);
+                callback(key);
             }
             it.Next();
         }
     }
 
-    auto& db = _db->get_database();
+    auto& db = _db.get_database();
 
     {
-        auto& read_options = _db->get_read_options();
+        auto& read_options = _db.get_read_options();
         std::string digp_key = "digp" + key_prefix;
-        batch.Delete(digp_key);
+        callback(digp_key);
         std::string digp;
         if (db.Get(read_options, digp_key, &digp).ok()) {
             size_t actor_count = (digp.size() / 8) * 8;
@@ -162,12 +159,25 @@ void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
                 actor_key = "actorprefix";
                 actor_key += std::string_view(digp.data() + i, 8);
 
-                batch.Delete(actor_key);
+                callback(actor_key);
             }
         }
     }
+}
 
-    db.Write(_db->get_write_options(), &batch);
+void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
+{
+    auto key_prefix = get_key_prefix(_internal_dimension_id, cx, cz);
+
+    leveldb::WriteBatch batch;
+    for_keys_in_chunk(
+        *_db,
+        key_prefix,
+        [&batch](const leveldb::Slice& key) {
+            batch.Delete(key);
+        });
+
+    _db->get_database().Write(_db->get_write_options(), &batch);
 }
 
 BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int32_t cx, std::int32_t cz)

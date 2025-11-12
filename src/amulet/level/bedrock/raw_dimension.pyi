@@ -11,6 +11,12 @@ import amulet.utils.lock
 __all__: list[str] = ["BedrockRawDimension"]
 
 class BedrockRawDimension:
+    def delete_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> None:
+        """
+        Delete the chunk from this dimension.
+        External ReadWrite:SharedReadWrite lock required.
+        """
+
     def destroy(self) -> None:
         """
         Destroy the instance.

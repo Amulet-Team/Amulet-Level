@@ -29,6 +29,7 @@ static const std::regex dim_regex(R"(^(DIM\-?\d+)$)");
 JavaRawLevel::JavaRawLevel(const std::filesystem::path path)
     : _path(path)
     , _level_dat("", std::make_shared<Amulet::NBT::CompoundTag>())
+    , _level_dat_lock(std::make_unique<std::shared_mutex>())
     , _data_version({})
 {
 }
@@ -129,7 +130,7 @@ bool JavaRawLevel::is_open() const
 VersionNumber JavaRawLevel::_get_data_version()
 {
     try {
-        std::shared_lock lock(_level_dat_lock);
+        std::shared_lock lock(*_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         auto& data_version = std::get<Amulet::NBT::IntTag>(data->at("DataVersion"));
@@ -148,7 +149,7 @@ void JavaRawLevel::reload_metadata()
     // Load the level.dat
     auto level_dat_path = _path / "level.dat";
     {
-        std::lock_guard lock(_level_dat_lock);
+        std::lock_guard lock(*_level_dat_lock);
 
         // Open the file
         std::ifstream level_dat_f(level_dat_path, std::ios::in | std::ios::binary);
@@ -240,7 +241,7 @@ const std::filesystem::path& JavaRawLevel::get_path() const
 
 Amulet::NBT::NamedTag JavaRawLevel::get_level_dat() const
 {
-    std::shared_lock lock(_level_dat_lock);
+    std::shared_lock lock(*_level_dat_lock);
     return Amulet::NBT::deep_copy(_level_dat);
 }
 
@@ -251,7 +252,7 @@ void JavaRawLevel::set_level_dat(const Amulet::NBT::NamedTag& level_dat)
     }
     auto level_dat_copy = Amulet::NBT::deep_copy(level_dat);
     {
-        std::lock_guard lock(_level_dat_lock);
+        std::lock_guard lock(*_level_dat_lock);
 
         // Copy the level.dat to internal storage
         _level_dat = std::move(level_dat_copy);
@@ -331,7 +332,7 @@ std::chrono::system_clock::time_point JavaRawLevel::get_modified_time() const
 {
 
     try {
-        std::shared_lock lock(_level_dat_lock);
+        std::shared_lock lock(*_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         return std::chrono::system_clock::time_point(std::chrono::milliseconds(
@@ -344,7 +345,7 @@ std::chrono::system_clock::time_point JavaRawLevel::get_modified_time() const
 std::string JavaRawLevel::get_level_name() const
 {
     try {
-        std::shared_lock lock(_level_dat_lock);
+        std::shared_lock lock(*_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         return std::get<Amulet::NBT::StringTag>(data->at("LevelName"));
@@ -374,7 +375,7 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionId& dimension_id
     // Look for a dimension configuration
     Amulet::NBT::CompoundTagPtr dimension_settings;
     try {
-        std::shared_lock lock(_level_dat_lock);
+        std::shared_lock lock(*_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         auto& world_gen_settings = std::get<Amulet::NBT::CompoundTagPtr>(data->at("WorldGenSettings"));

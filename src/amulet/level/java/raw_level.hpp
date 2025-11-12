@@ -13,16 +13,15 @@
 
 #include <amulet/core/version/version.hpp>
 
+#include <amulet/utils/event.hpp>
 #include <amulet/utils/lock_file.hpp>
 #include <amulet/utils/mutex.hpp>
-#include <amulet/utils/event.hpp>
 
-#include <amulet/level/dll.hpp>
 #include <amulet/level/abc/registry.hpp>
+#include <amulet/level/dll.hpp>
 
 #include "dimension.hpp"
 #include "raw_dimension.hpp"
-
 
 namespace Amulet {
 
@@ -70,7 +69,7 @@ private:
     OrderedMutex _public_mutex;
     std::filesystem::path _path;
     Amulet::NBT::NamedTag _level_dat;
-    std::shared_mutex _level_dat_lock;
+    std::unique_ptr<std::shared_mutex> _level_dat_lock;
     VersionNumber _data_version;
 
     // Data that is only valid when the level is open.

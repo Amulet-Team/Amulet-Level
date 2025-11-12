@@ -47,6 +47,17 @@ class BedrockRawDimension:
         External Read:SharedReadWrite lock required.
         """
 
+    def set_raw_chunk(
+        self,
+        cx: typing.SupportsInt,
+        cz: typing.SupportsInt,
+        chunk: amulet.level.bedrock.chunk.BedrockRawChunk,
+    ) -> None:
+        """
+        Set the chunk in this dimension from raw data.
+        External ReadWrite:SharedReadWrite lock required.
+        """
+
     @property
     def bounds(self) -> amulet.core.selection.box.SelectionBox:
         """

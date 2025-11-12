@@ -9,6 +9,8 @@
 #include "raw_dimension.hpp"
 
 namespace {
+
+template <std::endian Endianness = std::endian::little>
 class KeyWriter {
 private:
     std::string& _data;
@@ -23,7 +25,7 @@ public:
     template <typename T>
     void write_numeric(const T& value)
     {
-        if constexpr (std::endian::native == std::endian::little) {
+        if constexpr (std::endian::native == Endianness) {
             _data.append((char*)&value, sizeof(T));
         } else {
             const size_t data_size = _data.size() + sizeof(T);
@@ -36,6 +38,7 @@ public:
         }
     }
 };
+
 }
 
 namespace Amulet {

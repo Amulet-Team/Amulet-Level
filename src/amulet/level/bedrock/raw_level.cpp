@@ -552,8 +552,6 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         }
     }
 
-    actor_group++;
-
     // Add hard coded dimensions
     // TODO: What format should biome version use?
     _register_dimension(
@@ -562,7 +560,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         OVERWORLD,
         SelectionBox(-30'000'000, -64, -30'000'000, 60'000'000, 384, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"), actor_group++);
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"), ++actor_group);
 
     _register_dimension(
         raw_open,
@@ -570,7 +568,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_NETHER,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 128, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"), actor_group++);
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"), ++actor_group);
 
     _register_dimension(
         raw_open,
@@ -578,7 +576,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_END,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"), actor_group++);
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"), ++actor_group);
 
     //_get_dimension_bounds(dimension_id),
     //    // TODO: Is this data stored somewhere?

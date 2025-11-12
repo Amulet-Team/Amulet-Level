@@ -171,6 +171,7 @@ bool BedrockRawLevel::is_open() const
 VersionNumber BedrockRawLevel::_get_last_opened_version()
 {
     try {
+        std::shared_lock lock(_level_dat_lock);
         auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.get_named_tag().tag_node);
         auto& last_opened_version_tag = std::get<NBT::ListTagPtr>(root->at("lastOpenedWithVersion"));
         auto& last_opened_version_vector = std::get<NBT::IntListTag>(*last_opened_version_tag);
@@ -188,8 +189,11 @@ void BedrockRawLevel::reload_metadata()
 
     // Load the level.dat
     auto level_dat_path = _path / "level.dat";
-    // Open the file
-    _level_dat = BedrockLevelDat::from_file(level_dat_path);
+    {
+        std::lock_guard lock(_level_dat_lock);
+        // Open the file
+        _level_dat = BedrockLevelDat::from_file(level_dat_path);
+    }
     // Load the data version.
     _last_opened_version = _get_last_opened_version();
 }
@@ -266,6 +270,7 @@ const std::filesystem::path& BedrockRawLevel::get_path() const
 
 BedrockLevelDat BedrockRawLevel::get_level_dat() const
 {
+    std::shared_lock lock(_level_dat_lock);
     return _level_dat.deep_copy();
 }
 
@@ -274,11 +279,16 @@ void BedrockRawLevel::set_level_dat(const BedrockLevelDat& level_dat)
     if (!is_open()) {
         throw std::runtime_error("Level is not open.");
     }
-    // Copy the level.dat to internal storage
-    _level_dat = level_dat.deep_copy();
+    auto level_dat_copy = level_dat.deep_copy();
+    {
+        std::lock_guard lock(_level_dat_lock);
 
-    // Save to level.dat
-    _level_dat.save_to(_path / "level.dat");
+        // Copy the level.dat to internal storage
+        _level_dat = std::move(level_dat_copy);
+
+        // Save to level.dat
+        _level_dat.save_to(_path / "level.dat");
+    }
 
     // Reload the level if the data version changed.
     if (_last_opened_version != _get_last_opened_version()) {
@@ -339,6 +349,7 @@ std::chrono::system_clock::time_point BedrockRawLevel::get_modified_time() const
 {
 
     try {
+        std::shared_lock lock(_level_dat_lock);
         auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.get_named_tag().tag_node);
         return std::chrono::system_clock::time_point(std::chrono::seconds(
             std::get<NBT::LongTag>(root->at("LastPlayed")).value));
@@ -350,6 +361,7 @@ std::chrono::system_clock::time_point BedrockRawLevel::get_modified_time() const
 std::string BedrockRawLevel::get_level_name() const
 {
     try {
+        std::shared_lock lock(_level_dat_lock);
         auto& root = std::get<NBT::CompoundTagPtr>(_level_dat.get_named_tag().tag_node);
         return std::get<NBT::StringTag>(root->at("LevelName"));
     } catch (...) {

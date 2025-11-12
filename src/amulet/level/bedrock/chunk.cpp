@@ -34,7 +34,17 @@ std::map<Bytes, Bytes>& BedrockRawChunk::get_data()
     return _data;
 }
 
+const std::map<Bytes, Bytes>& BedrockRawChunk::get_data() const
+{
+    return _data;
+}
+
 std::vector<std::shared_ptr<NBT::NamedTag>>& BedrockRawChunk::get_actors()
+{
+    return _actors;
+}
+
+const std::vector<std::shared_ptr<NBT::NamedTag>>& BedrockRawChunk::get_actors() const
 {
     return _actors;
 }

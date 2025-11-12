@@ -39,7 +39,9 @@ public:
     AMULET_LEVEL_EXPORT ~BedrockRawChunk();
 
     AMULET_LEVEL_EXPORT std::map<Bytes, Bytes>& get_data();
+    AMULET_LEVEL_EXPORT const std::map<Bytes, Bytes>& get_data() const;
     AMULET_LEVEL_EXPORT std::vector<std::shared_ptr<NBT::NamedTag>>& get_actors();
+    AMULET_LEVEL_EXPORT const std::vector<std::shared_ptr<NBT::NamedTag>>& get_actors() const;
 };
 
 class BedrockChunk : public Chunk { };

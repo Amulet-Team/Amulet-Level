@@ -114,6 +114,7 @@ bool JavaRawLevel::is_open() const
 VersionNumber JavaRawLevel::_get_data_version()
 {
     try {
+        std::shared_lock lock(_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         auto& data_version = std::get<Amulet::NBT::IntTag>(data->at("DataVersion"));
@@ -131,23 +132,27 @@ void JavaRawLevel::reload_metadata()
 
     // Load the level.dat
     auto level_dat_path = _path / "level.dat";
-    // Open the file
-    std::ifstream level_dat_f(level_dat_path, std::ios::in | std::ios::binary);
-    if (!level_dat_f) {
-        throw std::runtime_error("Could not open file for reading " + level_dat_path.string());
+    {
+        std::lock_guard lock(_level_dat_lock);
+
+        // Open the file
+        std::ifstream level_dat_f(level_dat_path, std::ios::in | std::ios::binary);
+        if (!level_dat_f) {
+            throw std::runtime_error("Could not open file for reading " + level_dat_path.string());
+        }
+        // Find the file length
+        level_dat_f.seekg(0, std::ios::end);
+        size_t level_dat_size = level_dat_f.tellg();
+        level_dat_f.seekg(0);
+        // Read the file
+        std::string level_dat(level_dat_size, 0);
+        level_dat_f.read(&level_dat[0], level_dat_size);
+        // Decompress the file
+        std::string decompressed_level_dat;
+        zlib::decompress_zlib_gzip(level_dat, decompressed_level_dat);
+        // Decode the binary NBT.
+        _level_dat = Amulet::NBT::decode_nbt(decompressed_level_dat, std::endian::big, Amulet::NBT::mutf8_to_utf8);
     }
-    // Find the file length
-    level_dat_f.seekg(0, std::ios::end);
-    size_t level_dat_size = level_dat_f.tellg();
-    level_dat_f.seekg(0);
-    // Read the file
-    std::string level_dat(level_dat_size, 0);
-    level_dat_f.read(&level_dat[0], level_dat_size);
-    // Decompress the file
-    std::string decompressed_level_dat;
-    zlib::decompress_zlib_gzip(level_dat, decompressed_level_dat);
-    // Decode the binary NBT.
-    _level_dat = Amulet::NBT::decode_nbt(decompressed_level_dat, std::endian::big, Amulet::NBT::mutf8_to_utf8);
 
     // Load the data version.
     _data_version = _get_data_version();
@@ -220,6 +225,7 @@ const std::filesystem::path& JavaRawLevel::get_path() const
 
 Amulet::NBT::NamedTag JavaRawLevel::get_level_dat() const
 {
+    std::shared_lock lock(_level_dat_lock);
     return Amulet::NBT::deep_copy(_level_dat);
 }
 
@@ -228,11 +234,16 @@ void JavaRawLevel::set_level_dat(const Amulet::NBT::NamedTag& level_dat)
     if (!is_open()) {
         throw std::runtime_error("Level is not open.");
     }
-    // Copy the level.dat to internal storage
-    _level_dat = Amulet::NBT::deep_copy(level_dat);
+    auto level_dat_copy = Amulet::NBT::deep_copy(level_dat);
+    {
+        std::lock_guard lock(_level_dat_lock);
 
-    // Save to level.dat
-    _write_level_dat(_path / "level.dat", _level_dat);
+        // Copy the level.dat to internal storage
+        _level_dat = std::move(level_dat_copy);
+
+        // Save to level.dat
+        _write_level_dat(_path / "level.dat", _level_dat);
+    }
 
     // Reload the level if the data version changed.
     if (_data_version != _get_data_version()) {
@@ -305,6 +316,7 @@ std::chrono::system_clock::time_point JavaRawLevel::get_modified_time() const
 {
 
     try {
+        std::shared_lock lock(_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         return std::chrono::system_clock::time_point(std::chrono::milliseconds(
@@ -317,6 +329,7 @@ std::chrono::system_clock::time_point JavaRawLevel::get_modified_time() const
 std::string JavaRawLevel::get_level_name() const
 {
     try {
+        std::shared_lock lock(_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         return std::get<Amulet::NBT::StringTag>(data->at("LevelName"));
@@ -346,6 +359,7 @@ SelectionBox JavaRawLevel::_get_dimension_bounds(const DimensionId& dimension_id
     // Look for a dimension configuration
     Amulet::NBT::CompoundTagPtr dimension_settings;
     try {
+        std::shared_lock lock(_level_dat_lock);
         auto& root = std::get<Amulet::NBT::CompoundTagPtr>(_level_dat.tag_node);
         auto& data = std::get<Amulet::NBT::CompoundTagPtr>(root->at("Data"));
         auto& world_gen_settings = std::get<Amulet::NBT::CompoundTagPtr>(data->at("WorldGenSettings"));

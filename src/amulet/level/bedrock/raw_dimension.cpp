@@ -1,6 +1,8 @@
 #include <bit>
 #include <variant>
 
+#include <leveldb/write_batch.h>
+
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 
 #include "raw_dimension.hpp"
@@ -121,9 +123,51 @@ static const char MinTag = 0x10;
 
 void BedrockRawDimension::delete_chunk(std::int32_t cx, std::int32_t cz)
 {
-    throw std::runtime_error("NotImplementedError");
-    //     OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::SharedReadWrite> lock(_anvil_dimension.get_mutex());
-    //     _anvil_dimension.delete_chunk(cx, cz);
+    leveldb::WriteBatch batch;
+
+    auto key_prefix = get_key_prefix(_internal_dimension_id, cx, cz);
+
+    {
+        auto it_ptr = _db->create_iterator();
+        auto& it = it_ptr->get_iterator();
+
+        auto key_start = key_prefix + MinTag;
+        auto key_end = key_prefix + "\xFF\xFF";
+
+        it.Seek(key_start);
+        while (it.Valid()) {
+            const auto& key = it.key();
+            if (0 <= it.key().compare(key_end)) {
+                break;
+            }
+            if (key_start.size() == key.size() || key_end.size() == key.size()) {
+                batch.Delete(key);
+            }
+            it.Next();
+        }
+    }
+
+    auto& db = _db->get_database();
+
+    {
+        auto& read_options = _db->get_read_options();
+        std::string digp_key = "digp" + key_prefix;
+        batch.Delete(digp_key);
+        std::string digp;
+        if (db.Get(read_options, digp_key, &digp).ok()) {
+            size_t actor_count = (digp.size() / 8) * 8;
+            for (size_t i = 0; i < actor_count; i += 8) {
+                std::string actor_key;
+                actor_key.reserve(19);
+                actor_key = "actorprefix";
+                actor_key += std::string_view(digp.data() + i, 8);
+
+                batch.Delete(actor_key);
+            }
+        }
+    }
+
+    db.Write(_db->get_write_options(), &batch);
 }
 
 BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int32_t cx, std::int32_t cz)

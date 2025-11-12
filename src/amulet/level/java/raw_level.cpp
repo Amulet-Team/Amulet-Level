@@ -26,6 +26,21 @@ static const std::string THE_NETHER = "minecraft:the_nether";
 static const std::string THE_END = "minecraft:the_end";
 static const std::regex dim_regex(R"(^(DIM\-?\d+)$)");
 
+JavaRawLevel::JavaRawLevel(const std::filesystem::path path)
+    : _path(path)
+    , _level_dat("", std::make_shared<Amulet::NBT::CompoundTag>())
+    , _data_version({})
+{
+}
+
+JavaRawLevelOpenData& JavaRawLevel::_get_raw_open()
+{
+    if (!_raw_open_data) {
+        throw std::runtime_error("The level is not open.");
+    }
+    return *_raw_open_data;
+}
+
 JavaRawLevel::~JavaRawLevel()
 {
     close();

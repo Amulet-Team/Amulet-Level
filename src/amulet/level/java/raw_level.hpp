@@ -78,22 +78,11 @@ private:
     std::unique_ptr<JavaRawLevelOpenData> _raw_open_data;
 
     // Construct a new instance. Path is the directory containing the level.dat file.
-    JavaRawLevel(const std::filesystem::path path)
-        : _path(path)
-        , _level_dat("", std::make_shared<Amulet::NBT::CompoundTag>())
-        , _data_version({})
-    {
-    }
+    JavaRawLevel(const std::filesystem::path path);
 
     // Validate _raw_open_data is valid and return a reference.
     // External Read:SharedReadWrite lock required.
-    JavaRawLevelOpenData& _get_raw_open()
-    {
-        if (!_raw_open_data) {
-            throw std::runtime_error("The level is not open.");
-        }
-        return *_raw_open_data;
-    }
+    JavaRawLevelOpenData& _get_raw_open();
 
     JavaRawLevelOpenData& _find_dimensions();
     void _open(std::unique_ptr<LockFile> session_lock);

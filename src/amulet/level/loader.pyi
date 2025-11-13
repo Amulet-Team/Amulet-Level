@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import pathlib
 import types
 import typing
@@ -14,7 +15,7 @@ __all__: list[str] = [
 ]
 
 class LevelLoaderPathToken(LevelLoaderToken):
-    def __init__(self, arg0: str) -> None: ...
+    def __init__(self, arg0: os.PathLike | str | bytes) -> None: ...
 
 class LevelLoaderToken:
     @typing.overload

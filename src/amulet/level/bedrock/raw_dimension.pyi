@@ -11,6 +11,18 @@ import amulet.utils.lock
 __all__: list[str] = ["BedrockRawDimension"]
 
 class BedrockRawDimension:
+    def decode_chunk(
+        self,
+        raw_chunk: amulet.level.bedrock.chunk.BedrockRawChunk,
+        cx: typing.SupportsInt,
+        cz: typing.SupportsInt,
+    ) -> amulet.level.bedrock.chunk.BedrockChunk:
+        """
+        Decode a raw chunk to a chunk object.
+        This will mutate the chunk data.
+        TODO: thread safety
+        """
+
     def delete_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> None:
         """
         Delete the chunk from this dimension.
@@ -23,6 +35,26 @@ class BedrockRawDimension:
         Calls made after this will fail.
         This may only be called by the owner of the instance.
         External ReadWrite:Unique lock required.
+        """
+
+    def encode_chunk(
+        self,
+        chunk: amulet.level.bedrock.chunk.BedrockChunk,
+        cx: typing.SupportsInt,
+        cz: typing.SupportsInt,
+    ) -> amulet.level.bedrock.chunk.BedrockRawChunk:
+        """
+        Encode a chunk object to its raw data.
+        This will mutate the chunk data.
+        TODO: thread safety
+        """
+
+    def get_chunk(
+        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+    ) -> amulet.level.bedrock.chunk.BedrockChunk:
+        """
+        Get and decode the chunk.
+        TODO: thread safety
         """
 
     def get_raw_chunk(
@@ -45,6 +77,18 @@ class BedrockRawDimension:
         Has the instance been destroyed.
         If this is false, other calls will fail.
         External Read:SharedReadWrite lock required.
+        """
+
+    def set_chunk(
+        self,
+        cx: typing.SupportsInt,
+        cz: typing.SupportsInt,
+        chunk: amulet.level.bedrock.chunk.BedrockChunk,
+    ) -> None:
+        """
+        Encode and set the chunk.
+        This will mutate the chunk data.
+        TODO: thread safety
         """
 
     def set_raw_chunk(

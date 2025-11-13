@@ -1,7 +1,4 @@
 #include <pybind11/pybind11.h>
-// #include <pybind11/stl.h>
-
-// #include <memory>
 
 #include "raw_dimension.hpp"
 
@@ -85,30 +82,46 @@ py::module init_bedrock_raw_dimension(py::module m_parent)
         py::arg("chunk"),
         py::doc("Set the chunk in this dimension from raw data.\n"
                 "External ReadWrite:SharedReadWrite lock required."));
-    //    BedrockRawDimension.def(
-    //        "decode_chunk",
-    //        [](
-    //            Amulet::BedrockRawDimension& self,
-    //            const Amulet::BedrockRawChunk& raw_chunk,
-    //            std::int64_t cx,
-    //            std::int64_t cz) {
-    //            return self.decode_chunk(raw_chunk, cx, cz);
-    //        },
-    //        py::arg("raw_chunk"),
-    //        py::arg("cx"),
-    //        py::arg("cz"),
-    //        py::doc("Decode a raw chunk to a chunk object.\n"
-    //                "This will mutate the chunk data.\n"
-    //                "TODO: thread safety"));
-    //    BedrockRawDimension.def(
-    //        "encode_chunk",
-    //        &Amulet::BedrockRawDimension::encode_chunk,
-    //        py::arg("chunk"),
-    //        py::arg("cx"),
-    //        py::arg("cz"),
-    //        py::doc("Encode a chunk object to its raw data.\n"
-    //                "This will mutate the chunk data.\n"
-    //                "TODO: thread safety"));
+    BedrockRawDimension.def(
+        "decode_chunk",
+        [](
+            Amulet::BedrockRawDimension& self,
+            const Amulet::BedrockRawChunk& raw_chunk,
+            std::int64_t cx,
+            std::int64_t cz) {
+            return self.decode_chunk(raw_chunk, cx, cz);
+        },
+        py::arg("raw_chunk"),
+        py::arg("cx"),
+        py::arg("cz"),
+        py::doc("Decode a raw chunk to a chunk object.\n"
+                "This will mutate the chunk data.\n"
+                "TODO: thread safety"));
+    BedrockRawDimension.def(
+        "encode_chunk",
+        &Amulet::BedrockRawDimension::encode_chunk,
+        py::arg("chunk"),
+        py::arg("cx"),
+        py::arg("cz"),
+        py::doc("Encode a chunk object to its raw data.\n"
+                "This will mutate the chunk data.\n"
+                "TODO: thread safety"));
+    BedrockRawDimension.def(
+        "get_chunk",
+        &Amulet::BedrockRawDimension::get_chunk,
+        py::arg("cx"),
+        py::arg("cz"),
+        py::doc("Get and decode the chunk.\n"
+                "TODO: thread safety"));
+    BedrockRawDimension.def(
+        "set_chunk",
+        &Amulet::BedrockRawDimension::set_chunk,
+        py::arg("cx"),
+        py::arg("cz"),
+        py::arg("chunk"),
+        py::doc("Encode and set the chunk.\n"
+                "This will mutate the chunk data.\n"
+                "TODO: thread safety"));
     BedrockRawDimension.def(
         "destroy",
         &Amulet::BedrockRawDimension::destroy,

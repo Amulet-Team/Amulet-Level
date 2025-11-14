@@ -69,7 +69,6 @@ private:
     OrderedMutex _public_mutex;
     std::filesystem::path _path;
     Amulet::NBT::NamedTag _level_dat;
-    std::unique_ptr<std::shared_mutex> _level_dat_lock;
     VersionNumber _data_version;
 
     // Data that is only valid when the level is open.

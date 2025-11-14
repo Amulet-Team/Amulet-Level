@@ -11,6 +11,7 @@ from amulet.level.bedrock.raw_level import BedrockRawLevel
 
 from . import (
     chunk,
+    chunk_components,
     chunk_handle,
     dimension,
     level,
@@ -29,6 +30,7 @@ __all__: list[str] = [
     "BedrockRawDimension",
     "BedrockRawLevel",
     "chunk",
+    "chunk_components",
     "chunk_handle",
     "dimension",
     "level",

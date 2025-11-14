@@ -2,6 +2,9 @@
 
 #include <map>
 
+#include <amulet/io/binary_reader.hpp>
+#include <amulet/io/binary_writer.hpp>
+
 #include <amulet/nbt/tag/named_tag.hpp>
 
 #include <amulet/utils/bytes.hpp>
@@ -28,6 +31,9 @@ public:
     AMULET_LEVEL_EXPORT BedrockRawChunk& operator=(BedrockRawChunk&&);
 
     AMULET_LEVEL_EXPORT ~BedrockRawChunk();
+
+    AMULET_LEVEL_EXPORT void serialise(BinaryWriter&) const;
+    AMULET_LEVEL_EXPORT static BedrockRawChunk deserialise(BinaryReader&);
 
     AMULET_LEVEL_EXPORT std::map<Bytes, Bytes>& get_data();
     AMULET_LEVEL_EXPORT const std::map<Bytes, Bytes>& get_data() const;

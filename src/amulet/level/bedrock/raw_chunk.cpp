@@ -3,6 +3,8 @@
 
 #include <amulet/utils/bytes.hpp>
 
+#include <amulet/nbt/nbt_encoding/binary.hpp>
+
 #include "raw_chunk.hpp"
 
 namespace Amulet {
@@ -22,6 +24,49 @@ BedrockRawChunk& BedrockRawChunk::operator=(const BedrockRawChunk&) = default;
 BedrockRawChunk& BedrockRawChunk::operator=(BedrockRawChunk&&) = default;
 
 BedrockRawChunk::~BedrockRawChunk() = default;
+
+void BedrockRawChunk::serialise(BinaryWriter& writer) const
+{
+    // Version
+    writer.write_numeric<std::uint8_t>(1);
+
+    // Write data
+    writer.write_numeric<std::uint64_t>(_data.size());
+    for (const auto& [k, v] : _data) {
+        writer.write_size_and_bytes(k);
+        writer.write_size_and_bytes(v);
+    }
+
+    // Write actors
+    writer.write_numeric<std::uint64_t>(_actors.size());
+    for (const auto& actor : _actors) {
+        NBT::encode_nbt(writer, *actor);
+    }
+}
+
+BedrockRawChunk BedrockRawChunk::deserialise(BinaryReader& reader)
+{
+    auto version_number = reader.read_numeric<std::uint8_t>();
+    switch (version_number) {
+    case 1: {
+        BedrockRawChunk chunk;
+
+        // Write data
+        auto data_count = reader.read_numeric<std::uint64_t>();
+        auto k = reader.read_size_and_bytes();
+        auto v = reader.read_size_and_bytes();
+        chunk._data.emplace(std::move(k), std::move(v));
+
+        // Write actors
+        auto actor_count = reader.read_numeric<std::uint64_t>();
+        for (std::uint64_t i = 0; i < actor_count; i++) {
+            chunk._actors.emplace_back(std::make_shared<NBT::NamedTag>(NBT::decode_nbt(reader)));
+        }
+    }
+    default:
+        throw std::invalid_argument("Unsupported BedrockRawChunk version " + std::to_string(version_number));
+    }
+}
 
 std::map<Bytes, Bytes>& BedrockRawChunk::get_data()
 {

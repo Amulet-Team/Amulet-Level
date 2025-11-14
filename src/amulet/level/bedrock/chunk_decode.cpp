@@ -2,6 +2,7 @@
 #include <stdexcept>
 
 #include "chunk.hpp"
+#include "raw_chunk.hpp"
 #include "raw_dimension.hpp"
 
 using namespace Amulet::NBT;

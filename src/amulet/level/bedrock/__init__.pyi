@@ -9,7 +9,16 @@ from amulet.level.bedrock.level_dat import BedrockLevelDat
 from amulet.level.bedrock.raw_dimension import BedrockRawDimension
 from amulet.level.bedrock.raw_level import BedrockRawLevel
 
-from . import chunk, chunk_handle, dimension, level, level_dat, raw_dimension, raw_level
+from . import (
+    chunk,
+    chunk_handle,
+    dimension,
+    level,
+    level_dat,
+    raw_chunk,
+    raw_dimension,
+    raw_level,
+)
 
 __all__: list[str] = [
     "BedrockChunkHandle",
@@ -24,6 +33,7 @@ __all__: list[str] = [
     "dimension",
     "level",
     "level_dat",
+    "raw_chunk",
     "raw_dimension",
     "raw_level",
 ]

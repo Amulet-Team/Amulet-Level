@@ -8,6 +8,7 @@
 #include <amulet/level/abc/history.hpp>
 
 #include "chunk.hpp"
+#include "raw_chunk.hpp"
 #include "raw_dimension.hpp"
 
 namespace Amulet {

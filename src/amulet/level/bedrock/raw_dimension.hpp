@@ -16,6 +16,7 @@
 #include <amulet/level/dll.hpp>
 
 #include "chunk.hpp"
+#include "raw_chunk.hpp"
 
 namespace Amulet {
 

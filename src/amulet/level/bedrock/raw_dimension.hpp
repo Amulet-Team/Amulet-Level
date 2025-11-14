@@ -21,6 +21,48 @@ namespace Amulet {
 
 using BedrockInternalDimensionID = std::uint32_t;
 
+class BedrockChunkCoordIterator {
+private:
+    std::unique_ptr<LevelDBIterator> _it_ptr;
+    leveldb::Iterator& _it;
+    std::string _dimension_id;
+
+    bool _find_next_chunk();
+
+public:
+    // Constructor
+    AMULET_LEVEL_EXPORT BedrockChunkCoordIterator(std::unique_ptr<LevelDBIterator> it, BedrockInternalDimensionID dimension_id);
+
+    // Copy
+    BedrockChunkCoordIterator(const BedrockChunkCoordIterator&) = delete;
+    BedrockChunkCoordIterator& operator=(const BedrockChunkCoordIterator&) = delete;
+
+    // Move
+    AMULET_LEVEL_EXPORT BedrockChunkCoordIterator(BedrockChunkCoordIterator&&);
+    BedrockChunkCoordIterator& operator=(BedrockChunkCoordIterator&&) = delete;
+
+    // Delete
+    AMULET_LEVEL_EXPORT ~BedrockChunkCoordIterator();
+
+    // Is the iterator valid.
+    AMULET_LEVEL_EXPORT bool is_vaild() const;
+
+    // Seek to the first chunk.
+    // Returns true if a chunk was found.
+    // Requires is_valid() == true
+    AMULET_LEVEL_EXPORT bool seek_to_first();
+
+    // Go to the next coord.
+    // Call seek_to_first() before calling this.
+    // Returns true if the next chunk was found.
+    // Requires is_valid() == true
+    AMULET_LEVEL_EXPORT bool seek_to_next();
+
+    // Get the current coord.
+    // seek_to_first() or seek_to_next() must return true for this to be valid.
+    AMULET_LEVEL_EXPORT const std::pair<std::int32_t, std::int32_t> get_coord() const;
+};
+
 class BedrockRawLevel;
 
 class BedrockRawDimension {
@@ -76,7 +118,7 @@ public:
     // An iterator of all chunk coordinates in the dimension.
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    // AMULET_LEVEL_EXPORT AnvilChunkCoordIterator all_chunk_coords() const;
+    AMULET_LEVEL_EXPORT BedrockChunkCoordIterator all_chunk_coords() const;
 
     // Does the chunk exist in this dimension.
     // External Read:SharedReadWrite lock required.

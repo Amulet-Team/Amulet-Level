@@ -4,12 +4,50 @@
 
 namespace py = pybind11;
 
+class PyBedrockChunkCoordIterator {
+    Amulet::BedrockChunkCoordIterator _it;
+    bool _init;
+
+public:
+    PyBedrockChunkCoordIterator(Amulet::BedrockChunkCoordIterator it)
+        : _it(std::move(it))
+        , _init(false)
+    {
+    }
+
+    std::pair<std::int32_t, std::int32_t> next()
+    {
+        if (!_it.is_vaild()) {
+            throw py::stop_iteration();
+        }
+        if (_init) {
+            if (!_it.seek_to_next()) {
+                throw py::stop_iteration();
+            }
+        } else {
+            _init = true;
+            if (!_it.seek_to_first()) {
+                throw py::stop_iteration();
+            }
+        }
+        return _it.get_coord();
+    }
+};
+
 py::module init_bedrock_raw_dimension(py::module m_parent)
 {
     auto m = m_parent.def_submodule("raw_dimension");
 
-    py::classh<
-        Amulet::BedrockRawDimension>
+    py::classh<PyBedrockChunkCoordIterator>
+        BedrockChunkCoordIterator(m, "BedrockChunkCoordIterator", py::release_gil_before_calling_cpp_dtor());
+    BedrockChunkCoordIterator.def(
+        "__iter__",
+        [](py::object self) { return self; });
+    BedrockChunkCoordIterator.def(
+        "__next__",
+        &PyBedrockChunkCoordIterator::next);
+
+    py::classh<Amulet::BedrockRawDimension>
         BedrockRawDimension(m, "BedrockRawDimension", py::release_gil_before_calling_cpp_dtor());
     BedrockRawDimension.def_property_readonly(
         "lock",
@@ -42,16 +80,14 @@ py::module init_bedrock_raw_dimension(py::module m_parent)
         &Amulet::BedrockRawDimension::get_default_biome,
         py::doc("The default biome for this dimension.\n"
                 "Thread safe."));
-    //    BedrockRawDimension.def_property_readonly(
-    //        "all_chunk_coords",
-    //        [](const Amulet::BedrockRawDimension& self) {
-    //            return py::make_iterator(
-    //                self.all_chunk_coords(),
-    //                Amulet::AnvilChunkCoordIterator());
-    //        },
-    //        py::doc("An iterator of all chunk coordinates in the dimension.\n"
-    //                "External Read:SharedReadWrite lock required.\n"
-    //                "External Read:SharedReadOnly lock optional."));
+    BedrockRawDimension.def_property_readonly(
+        "all_chunk_coords",
+        [](const Amulet::BedrockRawDimension& self) {
+            return PyBedrockChunkCoordIterator(self.all_chunk_coords());
+        },
+        py::doc("An iterator of all chunk coordinates in the dimension.\n"
+                "External Read:SharedReadWrite lock required.\n"
+                "External Read:SharedReadOnly lock optional."));
     BedrockRawDimension.def(
         "has_chunk",
         &Amulet::BedrockRawDimension::has_chunk,

@@ -8,7 +8,11 @@ import amulet.core.selection.box
 import amulet.level.bedrock.chunk
 import amulet.utils.lock
 
-__all__: list[str] = ["BedrockRawDimension"]
+__all__: list[str] = ["BedrockChunkCoordIterator", "BedrockRawDimension"]
+
+class BedrockChunkCoordIterator:
+    def __iter__(self) -> typing.Any: ...
+    def __next__(self) -> tuple[int, int]: ...
 
 class BedrockRawDimension:
     def decode_chunk(
@@ -100,6 +104,14 @@ class BedrockRawDimension:
         """
         Set the chunk in this dimension from raw data.
         External ReadWrite:SharedReadWrite lock required.
+        """
+
+    @property
+    def all_chunk_coords(self) -> BedrockChunkCoordIterator:
+        """
+        An iterator of all chunk coordinates in the dimension.
+        External Read:SharedReadWrite lock required.
+        External Read:SharedReadOnly lock optional.
         """
 
     @property

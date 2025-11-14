@@ -1,5 +1,7 @@
 #include <bit>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <variant>
 
 #include <amulet/leveldb.hpp>
@@ -27,7 +29,7 @@ public:
     void write_numeric(const T& value)
     {
         if constexpr (std::endian::native == Endianness) {
-            _data.append((char*)&value, sizeof(T));
+            _data.append(reinterpret_cast<const char*>(&value), sizeof(T));
         } else {
             const size_t data_size = _data.size() + sizeof(T);
             _data.resize(data_size);
@@ -40,9 +42,114 @@ public:
     }
 };
 
+template <std::endian Endianness = std::endian::little>
+class KeyReader {
+private:
+    const char* _data;
+    size_t _index;
+
+public:
+    KeyReader(const char* data, size_t index = 0)
+        : _data(data)
+        , _index(index)
+    {
+    }
+
+    template <typename T>
+        requires std::is_integral_v<T>
+    T read_numeric()
+    {
+        const char* src_ptr = _data + _index;
+        _index += sizeof(T);
+        T value;
+
+        if constexpr (Endianness == std::endian::native) {
+            std::memcpy(&value, src_ptr, sizeof(T));
+        } else {
+            std::reverse_copy(src_ptr, src_ptr + sizeof(T), reinterpret_cast<char*>(&value));
+        }
+
+        return value;
+    }
+};
+
 }
 
 namespace Amulet {
+
+BedrockChunkCoordIterator::BedrockChunkCoordIterator(
+    std::unique_ptr<LevelDBIterator> it,
+    BedrockInternalDimensionID dimension_id)
+    : _it_ptr(std::move(it))
+    , _it(_it_ptr->get_iterator())
+{
+    if (dimension_id != 0) {
+        KeyWriter dimension_id_writer(_dimension_id);
+        dimension_id_writer.write_numeric<std::int32_t>(dimension_id);
+    }
+}
+
+BedrockChunkCoordIterator::BedrockChunkCoordIterator(BedrockChunkCoordIterator&&) = default;
+
+BedrockChunkCoordIterator::~BedrockChunkCoordIterator() = default;
+
+bool BedrockChunkCoordIterator::is_vaild() const
+{
+    return bool(*_it_ptr);
+}
+
+// Seek to the next valid chunk. Note this may be the current key.
+bool BedrockChunkCoordIterator::_find_next_chunk()
+{
+    const size_t key_size = 9 + _dimension_id.size();
+    const size_t tag_index = key_size - 1;
+    while (_it.Valid()) {
+        auto key = _it.key();
+
+        if (key.size() == key_size && (key[tag_index] == ',' || key[tag_index] == 'v')) {
+            return true;
+        } else {
+            _it.Next();
+        }
+    }
+    return false;
+}
+
+bool BedrockChunkCoordIterator::seek_to_first()
+{
+    _it.SeekToFirst();
+    return _find_next_chunk();
+}
+
+bool BedrockChunkCoordIterator::seek_to_next()
+{
+    if (!_it.Valid()) {
+        return false;
+    }
+    // Validate the key
+    const auto& key = _it.key();
+    if (key.size() < 8) {
+        // This shouldn't happen.
+        // The iterator should be invalid or at a version key.
+        throw std::runtime_error("seek_to_next: invalid key");
+    }
+    _it.Next();
+
+    // Find the next version key
+    return _find_next_chunk();
+}
+
+const std::pair<std::int32_t, std::int32_t> BedrockChunkCoordIterator::get_coord() const
+{
+    auto key = _it.key();
+    if (key.size() != 9 + _dimension_id.size()) {
+        throw std::runtime_error("Chunk version key is not valid");
+    }
+    KeyReader key_reader(key.data());
+    auto cx = key_reader.read_numeric<std::int32_t>();
+    auto cz = key_reader.read_numeric<std::int32_t>();
+    return std::make_pair(cx, cz);
+}
 
 BedrockRawDimension::BedrockRawDimension(
     std::shared_ptr<LevelDB> db,
@@ -98,11 +205,10 @@ const Biome& BedrockRawDimension::get_default_biome() const
     return _default_biome;
 }
 
-// AnvilChunkCoordIterator BedrockRawDimension::all_chunk_coords() const
-//{
-//     return _anvil_dimension.all_chunk_coords();
-// }
-//
+BedrockChunkCoordIterator BedrockRawDimension::all_chunk_coords() const
+{
+    return BedrockChunkCoordIterator(_db->create_iterator(), _internal_dimension_id);
+}
 
 static std::string get_key_prefix(std::int32_t dimension, std::int32_t cx, std::int32_t cz)
 {
@@ -327,8 +433,7 @@ void BedrockRawDimension::set_raw_chunk(std::int32_t cx, std::int32_t cz, Bedroc
             internal_components->emplace("EntityStorageKeyComponent", std::move(entity_component));
             actor_tag.insert_or_assign(
                 "internalComponents",
-                std::move(internal_components)
-            );
+                std::move(internal_components));
 
             std::string actor_bytes;
             try {

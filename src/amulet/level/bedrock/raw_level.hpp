@@ -68,7 +68,6 @@ private:
     OrderedMutex _public_mutex;
     std::filesystem::path _path;
     BedrockLevelDat _level_dat;
-    std::unique_ptr<std::shared_mutex> _level_dat_lock;
     VersionNumber _last_opened_version;
 
     // Data that is only valid when the level is open.

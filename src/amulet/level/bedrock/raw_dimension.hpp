@@ -1,5 +1,6 @@
 #pragma once
 
+#include <atomic>
 #include <memory>
 #include <string>
 
@@ -20,6 +21,48 @@ namespace Amulet {
 
 using BedrockInternalDimensionID = std::uint32_t;
 
+class BedrockChunkCoordIterator {
+private:
+    std::unique_ptr<LevelDBIterator> _it_ptr;
+    leveldb::Iterator& _it;
+    std::string _dimension_id;
+
+    bool _find_next_chunk();
+
+public:
+    // Constructor
+    AMULET_LEVEL_EXPORT BedrockChunkCoordIterator(std::unique_ptr<LevelDBIterator> it, BedrockInternalDimensionID dimension_id);
+
+    // Copy
+    BedrockChunkCoordIterator(const BedrockChunkCoordIterator&) = delete;
+    BedrockChunkCoordIterator& operator=(const BedrockChunkCoordIterator&) = delete;
+
+    // Move
+    AMULET_LEVEL_EXPORT BedrockChunkCoordIterator(BedrockChunkCoordIterator&&);
+    BedrockChunkCoordIterator& operator=(BedrockChunkCoordIterator&&) = delete;
+
+    // Delete
+    AMULET_LEVEL_EXPORT ~BedrockChunkCoordIterator();
+
+    // Is the iterator valid.
+    AMULET_LEVEL_EXPORT bool is_vaild() const;
+
+    // Seek to the first chunk.
+    // Returns true if a chunk was found.
+    // Requires is_valid() == true
+    AMULET_LEVEL_EXPORT bool seek_to_first();
+
+    // Go to the next coord.
+    // Call seek_to_first() before calling this.
+    // Returns true if the next chunk was found.
+    // Requires is_valid() == true
+    AMULET_LEVEL_EXPORT bool seek_to_next();
+
+    // Get the current coord.
+    // seek_to_first() or seek_to_next() must return true for this to be valid.
+    AMULET_LEVEL_EXPORT const std::pair<std::int32_t, std::int32_t> get_coord() const;
+};
+
 class BedrockRawLevel;
 
 class BedrockRawDimension {
@@ -31,6 +74,8 @@ private:
     SelectionBox _bounds;
     BlockStack _default_block;
     Biome _default_biome;
+    std::uint32_t _actor_group;
+    std::atomic_uint32_t _actor_index;
     bool _destroyed = false;
 
 public:
@@ -40,7 +85,8 @@ public:
         const DimensionId& dimension_id,
         const SelectionBox& bounds,
         const BlockStack& default_block,
-        const Biome& default_biome);
+        const Biome& default_biome,
+        std::uint32_t actor_group);
 
     // Destructor.
     AMULET_LEVEL_EXPORT ~BedrockRawDimension();
@@ -72,43 +118,43 @@ public:
     // An iterator of all chunk coordinates in the dimension.
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    // AMULET_LEVEL_EXPORT AnvilChunkCoordIterator all_chunk_coords() const;
+    AMULET_LEVEL_EXPORT BedrockChunkCoordIterator all_chunk_coords() const;
 
     // Does the chunk exist in this dimension.
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    AMULET_LEVEL_EXPORT bool has_chunk(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT bool has_chunk(std::int32_t cx, std::int32_t cz);
 
     // Delete the chunk from this dimension.
     // External ReadWrite:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT void delete_chunk(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT void delete_chunk(std::int32_t cx, std::int32_t cz);
 
     // Get the raw chunk from this dimension.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT BedrockRawChunk get_raw_chunk(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT BedrockRawChunk get_raw_chunk(std::int32_t cx, std::int32_t cz);
 
     // Set the chunk in this dimension from raw data.
     // External ReadWrite:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT void set_raw_chunk(std::int64_t cx, std::int64_t cz, const BedrockRawChunk& chunk);
+    AMULET_LEVEL_EXPORT void set_raw_chunk(std::int32_t cx, std::int32_t cz, BedrockRawChunk& chunk);
 
     // Decode a raw chunk to a chunk object.
     // This will mutate the chunk data.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(BedrockRawChunk raw_chunk, std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(const BedrockRawChunk& raw_chunk, std::int32_t cx, std::int32_t cz);
 
     // Encode a chunk object to its raw data.
     // This will mutate the chunk data.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT BedrockRawChunk encode_chunk(BedrockChunk& chunk, std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT BedrockRawChunk encode_chunk(BedrockChunk& chunk, std::int32_t cx, std::int32_t cz);
 
     // Get and decode the chunk.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> get_chunk(std::int64_t cx, std::int64_t cz);
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> get_chunk(std::int32_t cx, std::int32_t cz);
 
     // Encode and set the chunk.
     // This will mutate the chunk data.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT void set_chunk(std::int64_t cx, std::int64_t cz, BedrockChunk& chunk);
+    AMULET_LEVEL_EXPORT void set_chunk(std::int32_t cx, std::int32_t cz, BedrockChunk& chunk);
 
     // Destroy the instance.
     // Calls made after this will fail.

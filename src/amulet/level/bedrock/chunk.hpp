@@ -1,22 +1,48 @@
 #pragma once
 
 #include <map>
-//#include <optional>
-//#include <stdexcept>
+// #include <optional>
+// #include <stdexcept>
 #include <string>
-//#include <vector>
+// #include <vector>
 
 #include <amulet/nbt/tag/named_tag.hpp>
 
-//#include <amulet/core/biome/biome.hpp>
-//#include <amulet/core/block/block.hpp>
+#include <amulet/utils/bytes.hpp>
+
+// #include <amulet/core/biome/biome.hpp>
+// #include <amulet/core/block/block.hpp>
 #include <amulet/core/chunk/chunk.hpp>
-//#include <amulet/core/chunk/component/block_component.hpp>
-//
-//#include <amulet/level/dll.hpp>
-//
+// #include <amulet/core/chunk/component/block_component.hpp>
+
+#include <amulet/level/dll.hpp>
+
 namespace Amulet {
-using BedrockRawChunk = std::map<std::string, Amulet::NBT::NamedTag>;
+
+class BedrockRawChunk {
+private:
+    // LevelDB keys and values (keys have the dimension and coord stripped)
+    std::map<Bytes, Bytes> _data;
+    std::vector<std::shared_ptr<NBT::NamedTag>> _actors;
+
+public:
+    AMULET_LEVEL_EXPORT BedrockRawChunk();
+    AMULET_LEVEL_EXPORT BedrockRawChunk(
+        std::map<Bytes, Bytes>,
+        std::vector<std::shared_ptr<NBT::NamedTag>>);
+
+    AMULET_LEVEL_EXPORT BedrockRawChunk(const BedrockRawChunk&);
+    AMULET_LEVEL_EXPORT BedrockRawChunk(BedrockRawChunk&&);
+    AMULET_LEVEL_EXPORT BedrockRawChunk& operator=(const BedrockRawChunk&);
+    AMULET_LEVEL_EXPORT BedrockRawChunk& operator=(BedrockRawChunk&&);
+
+    AMULET_LEVEL_EXPORT ~BedrockRawChunk();
+
+    AMULET_LEVEL_EXPORT std::map<Bytes, Bytes>& get_data();
+    AMULET_LEVEL_EXPORT const std::map<Bytes, Bytes>& get_data() const;
+    AMULET_LEVEL_EXPORT std::vector<std::shared_ptr<NBT::NamedTag>>& get_actors();
+    AMULET_LEVEL_EXPORT const std::vector<std::shared_ptr<NBT::NamedTag>>& get_actors() const;
+};
 
 class BedrockChunk : public Chunk { };
 

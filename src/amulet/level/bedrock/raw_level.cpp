@@ -5,10 +5,11 @@
 // #include <memory>
 // #include <regex>
 // #include <stdexcept>
-// #include <variant>
+#include <variant>
 
 #include <leveldb/cache.h>
 #include <leveldb/decompress_allocator.h>
+#include <leveldb/env.h>
 #include <leveldb/filter_policy.h>
 
 // #include <amulet/nbt/nbt_encoding/binary.hpp>
@@ -273,6 +274,7 @@ void BedrockRawLevel::set_level_dat(const BedrockLevelDat& level_dat)
     if (!is_open()) {
         throw std::runtime_error("Level is not open.");
     }
+
     // Copy the level.dat to internal storage
     _level_dat = level_dat.deep_copy();
 
@@ -485,13 +487,14 @@ void BedrockRawLevel::set_level_name(const std::string& level_name)
 //         dimension_type_node);
 // }
 
-void _register_dimension(
+static void _register_dimension(
     BedrockRawLevelOpenData& raw_open,
     const BedrockInternalDimensionID& internal_dimension_id,
     const DimensionId& dimension_id,
     const SelectionBox& bounds,
     const BlockStack& default_block,
-    const Biome& default_biome)
+    const Biome& default_biome,
+    std::uint32_t actor_group)
 {
     if (!raw_open.dimension_ids.contains(dimension_id) && !raw_open.dimensions.contains(internal_dimension_id)) {
         // Create the raw dimension instance
@@ -502,7 +505,8 @@ void _register_dimension(
                 dimension_id,
                 bounds,
                 default_block,
-                default_biome));
+                default_biome,
+                actor_group));
 
         raw_open.dimension_ids.emplace(dimension_id, internal_dimension_id);
         raw_open.dimensions.emplace(internal_dimension_id, std::move(raw_dimension));
@@ -518,6 +522,24 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         return raw_open;
     }
 
+    // Get the actor group stored in the level.dat file.
+
+    std::uint32_t actor_group = 0;
+
+    auto dat = get_level_dat();
+    auto* root_tag_ptr = std::get_if<NBT::CompoundTagPtr>(&dat.get_named_tag().tag_node);
+    if (!root_tag_ptr) {
+        throw std::runtime_error("level.dat root tag is not a CompoundTag.");
+    }
+    auto& root_tag = **root_tag_ptr;
+    const auto& world_start_count_it = root_tag.find("worldStartCount");
+    if (world_start_count_it != root_tag.end()) {
+        auto* world_start_count_ptr = std::get_if<NBT::LongTag>(&world_start_count_it->second);
+        if (world_start_count_ptr) {
+            actor_group = -static_cast<std::int32_t>(*world_start_count_ptr);
+        }
+    }
+
     // Add hard coded dimensions
     // TODO: What format should biome version use?
     _register_dimension(
@@ -526,7 +548,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         OVERWORLD,
         SelectionBox(-30'000'000, -64, -30'000'000, 60'000'000, 384, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"));
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"), ++actor_group);
 
     _register_dimension(
         raw_open,
@@ -534,7 +556,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_NETHER,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 128, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"));
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"), ++actor_group);
 
     _register_dimension(
         raw_open,
@@ -542,7 +564,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_END,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"));
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"), ++actor_group);
 
     //_get_dimension_bounds(dimension_id),
     //    // TODO: Is this data stored somewhere?
@@ -651,6 +673,13 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
     //         dimension_name = f"DIM{internal_dimension}"
     //         self._dimension_to_internal[dimension_name] = internal_dimension
     //         self._bounds[dimension_name] = DefaultSelection
+
+    root_tag.insert_or_assign(
+        "worldStartCount",
+        NBT::LongTag(
+            static_cast<std::uint32_t>(
+                -static_cast<int32_t>(actor_group))));
+    set_level_dat(dat);
 
     return raw_open;
 }

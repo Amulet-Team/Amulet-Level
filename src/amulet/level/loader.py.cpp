@@ -21,10 +21,8 @@ py::module init_loader(py::module m_parent)
         std::shared_ptr<Amulet::LevelLoaderPathToken>,
         Amulet::LevelLoaderToken>
         LevelLoaderPathToken(m, "LevelLoaderPathToken");
-    LevelLoaderPathToken.def(py::init(
-        [](std::string path) {
-            return Amulet::LevelLoaderPathToken(path);
-        }));
+    LevelLoaderPathToken.def(
+        py::init<std::filesystem::path>());
 
     m.def(
         "get_level",

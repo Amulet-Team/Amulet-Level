@@ -10,8 +10,8 @@ namespace Amulet {
 
 BedrockRawChunk BedrockRawDimension::encode_chunk(
     BedrockChunk& chunk,
-    std::int64_t cx,
-    std::int64_t cz)
+    std::int32_t cx,
+    std::int32_t cz)
 {
     throw std::runtime_error("NotImplementedError");
 }

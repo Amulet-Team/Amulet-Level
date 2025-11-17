@@ -139,7 +139,6 @@ public:
     AMULET_LEVEL_EXPORT void set_raw_chunk(std::int32_t cx, std::int32_t cz, BedrockRawChunk& chunk);
 
     // Decode a raw chunk to a chunk object.
-    // This will mutate the chunk data.
     // TODO: thread safety
     AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(BedrockRawChunk raw_chunk, std::int32_t cx, std::int32_t cz);
 

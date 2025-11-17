@@ -24,7 +24,6 @@ class BedrockRawDimension:
     ) -> amulet.level.bedrock.chunk.BedrockChunk:
         """
         Decode a raw chunk to a chunk object.
-        This will mutate the chunk data.
         TODO: thread safety
         """
 

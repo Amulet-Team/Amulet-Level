@@ -1,19 +1,13 @@
 #pragma once
 
-//#include <map>
-// #include <optional>
-// #include <stdexcept>
-//#include <string>
-// #include <vector>
-
-//#include <amulet/nbt/tag/named_tag.hpp>
-
-// #include <amulet/core/biome/biome.hpp>
-// #include <amulet/core/block/block.hpp>
+#include <amulet/core/biome/biome.hpp>
+#include <amulet/core/block/block.hpp>
 #include <amulet/core/chunk/chunk.hpp>
-// #include <amulet/core/chunk/component/block_component.hpp>
+#include <amulet/core/chunk/component/block_component.hpp>
 
 #include <amulet/level/dll.hpp>
+
+#include "chunk_components/bedrock_raw_chunk_component.hpp"
 
 namespace Amulet {
 
@@ -26,5 +20,19 @@ namespace detail {
     // Get the chunk's identifier.
     std::string get_bedrock_chunk_id(const BedrockChunk& chunk);
 } // namespace detail
+
+class BedrockChunkTemp : public ChunkComponentHelper<
+                             BedrockChunk,
+                             BedrockRawChunkComponent //,
+                             // BlockComponent,
+                             > {
+public:
+    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+
+    std::string get_chunk_id() const override;
+
+    using ChunkComponentHelper::ChunkComponentHelper;
+    AMULET_LEVEL_EXPORT BedrockChunkTemp();
+};
 
 } // namespace Amulet

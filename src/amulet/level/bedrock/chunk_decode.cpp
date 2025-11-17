@@ -14,7 +14,9 @@ std::unique_ptr<BedrockChunk> BedrockRawDimension::decode_chunk(
     std::int32_t cx,
     std::int32_t cz)
 {
-    throw std::runtime_error("NotImplementedError");
+    auto chunk = std::make_unique<BedrockChunkTemp>();
+    chunk->set_raw_data(std::make_shared<BedrockRawChunk>(std::move(raw_chunk)));
+    return chunk;
 }
 
 } // namespace Amulet

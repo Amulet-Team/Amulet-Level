@@ -11,7 +11,21 @@
 
 namespace Amulet {
 
-static std::map<std::string, std::function<std::unique_ptr<BedrockChunk>()>> bedrock_chunk_constructors = {};
+const std::string BedrockChunkTemp::ChunkID = "Amulet::BedrockChunkTemp";
+
+std::string BedrockChunkTemp::get_chunk_id() const { return ChunkID; }
+
+BedrockChunkTemp::BedrockChunkTemp()
+    : ChunkComponentHelper()
+{
+    BedrockRawChunkComponent::init();
+}
+
+static const ChunkNullConstructor<BedrockChunkTemp> _bctemp;
+
+static std::map<std::string, std::function<std::unique_ptr<BedrockChunk>()>> bedrock_chunk_constructors = {
+    { BedrockChunkTemp::ChunkID, []() { return std::make_unique<BedrockChunkTemp>(); } },
+};
 
 namespace detail {
     std::unique_ptr<BedrockChunk> get_bedrock_null_chunk(const std::string& chunk_id)

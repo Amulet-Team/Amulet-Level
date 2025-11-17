@@ -16,4 +16,11 @@ void init_bedrock_chunk(py::module m_parent)
 
     py::classh<Amulet::BedrockChunk, Amulet::Chunk>
         BedrockChunk(m, "BedrockChunk");
+
+    py::classh<
+        Amulet::BedrockChunkTemp,
+        Amulet::BedrockChunk,
+        Amulet::BedrockRawChunkComponent
+        >
+        BedrockChunkTemp(m, "BedrockChunkTemp");
 }

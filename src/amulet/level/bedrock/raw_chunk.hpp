@@ -20,16 +20,21 @@ private:
     std::vector<std::shared_ptr<NBT::NamedTag>> _actors;
 
 public:
+    // Constructors
     AMULET_LEVEL_EXPORT BedrockRawChunk();
     AMULET_LEVEL_EXPORT BedrockRawChunk(
         std::map<Bytes, Bytes>,
         std::vector<std::shared_ptr<NBT::NamedTag>>);
 
+    // Copy
     AMULET_LEVEL_EXPORT BedrockRawChunk(const BedrockRawChunk&);
-    AMULET_LEVEL_EXPORT BedrockRawChunk(BedrockRawChunk&&);
     AMULET_LEVEL_EXPORT BedrockRawChunk& operator=(const BedrockRawChunk&);
+
+    // Move
+    AMULET_LEVEL_EXPORT BedrockRawChunk(BedrockRawChunk&&);
     AMULET_LEVEL_EXPORT BedrockRawChunk& operator=(BedrockRawChunk&&);
 
+    // Destructor
     AMULET_LEVEL_EXPORT ~BedrockRawChunk();
 
     AMULET_LEVEL_EXPORT void serialise(BinaryWriter&) const;

@@ -4,6 +4,7 @@
 #include <amulet/utils/bytes.hpp>
 
 #include <amulet/nbt/nbt_encoding/binary.hpp>
+#include <amulet/nbt/tag/copy.hpp>
 
 #include "raw_chunk.hpp"
 
@@ -18,9 +19,29 @@ BedrockRawChunk::BedrockRawChunk(
 {
 }
 
-BedrockRawChunk::BedrockRawChunk(const BedrockRawChunk&) = default;
+// Copy
+BedrockRawChunk::BedrockRawChunk(const BedrockRawChunk& other)
+    : _data(other._data)
+    , _actors([&other] {
+        std::vector<std::shared_ptr<NBT::NamedTag>> actors;
+        for (const auto& actor : other._actors) {
+            actors.emplace_back(NBT::deep_copy(actor));
+        }
+        return actors;
+    }()) {};
+
+BedrockRawChunk& BedrockRawChunk::operator=(const BedrockRawChunk& other)
+{
+    _data = other._data;
+    _actors.clear();
+    for (const auto& actor : other._actors) {
+        _actors.emplace_back(NBT::deep_copy(actor));
+    }
+    return *this;
+};
+
+// Move
 BedrockRawChunk::BedrockRawChunk(BedrockRawChunk&&) = default;
-BedrockRawChunk& BedrockRawChunk::operator=(const BedrockRawChunk&) = default;
 BedrockRawChunk& BedrockRawChunk::operator=(BedrockRawChunk&&) = default;
 
 BedrockRawChunk::~BedrockRawChunk() = default;

@@ -72,17 +72,21 @@ BedrockRawChunk BedrockRawChunk::deserialise(BinaryReader& reader)
     case 1: {
         BedrockRawChunk chunk;
 
-        // Write data
+        // Read data
         auto data_count = reader.read_numeric<std::uint64_t>();
-        auto k = reader.read_size_and_bytes();
-        auto v = reader.read_size_and_bytes();
-        chunk._data.emplace(std::move(k), std::move(v));
+        for (std::uint64_t i = 0; i < data_count; i++) {
+            auto k = reader.read_size_and_bytes();
+            auto v = reader.read_size_and_bytes();
+            chunk._data.emplace(std::move(k), std::move(v));
+        }
 
-        // Write actors
+        // Read actors
         auto actor_count = reader.read_numeric<std::uint64_t>();
         for (std::uint64_t i = 0; i < actor_count; i++) {
             chunk._actors.emplace_back(std::make_shared<NBT::NamedTag>(NBT::decode_nbt(reader)));
         }
+
+        return chunk;
     }
     default:
         throw std::invalid_argument("Unsupported BedrockRawChunk version " + std::to_string(version_number));

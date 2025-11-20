@@ -314,10 +314,14 @@ void BedrockRawLevel::set_last_opened_version(const VersionNumber& last_opened_v
     }
     auto level_dat = get_level_dat();
     auto& data = get_level_dat_data(level_dat.get_named_tag());
+    NBT::IntListTag tag;
+    tag.reserve(last_opened_version.size());
+    for (const auto& v : last_opened_version) {
+        tag.emplace_back(static_cast<NBT::IntTag>(v));
+    }
     data.insert_or_assign(
         "lastOpenedWithVersion",
-        std::make_shared<NBT::ListTag>(
-            NBT::IntListTag(last_opened_version.begin(), last_opened_version.end())));
+        std::make_shared<NBT::ListTag>(std::move(tag)));
     set_level_dat(level_dat);
 }
 

@@ -204,14 +204,15 @@ static void add_paletted_section(
         std::map<std::vector<std::uint16_t>, size_t> stack_to_index;
 
         // For each block in the sub-chunk
+        std::vector<std::uint16_t> block_indexes;
+        block_indexes.resize(layers.size());
         for (std::uint16_t x = 0; x < 16; x++) {
             for (std::uint16_t y = 0; y < 16; y++) {
                 for (std::uint16_t z = 0; z < 16; z++) {
 
                     // Find the indexes for this block
-                    std::vector<std::uint16_t> block_indexes;
                     for (std::uint8_t layer_i = 0; layer_i < layers.size(); layer_i++) {
-                        block_indexes.emplace_back(layers[layer_i].first[(x << 8) + (z << 4) + y]);
+                        block_indexes[layer_i] = layers[layer_i].first[(x << 8) + (z << 4) + y];
                     }
 
                     // Find which palette index this maps to.
@@ -232,7 +233,7 @@ static void add_paletted_section(
                         }
                         // Add to the palette and update the cache.
                         palette_index = palette.block_stack_to_index(BlockStack(std::move(block_stack)));
-                        stack_to_index.emplace(std::move(block_indexes), palette_index);
+                        stack_to_index.emplace(block_indexes, palette_index);
                     }
 
                     // Write the index to the section

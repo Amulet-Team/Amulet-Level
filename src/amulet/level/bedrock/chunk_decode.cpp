@@ -271,7 +271,6 @@ std::unique_ptr<BedrockChunk> BedrockRawDimension::decode_chunk(
         {
             // decode block data
             // https://gist.github.com/Tomcc/a96af509e275b1af483b25c543cfbf37
-            auto min_cy = get_bounds().min_y() >> 4;
             auto it2f = data.lower_bound("\x2F\x00");
             while (it2f != data.end() && !it2f->first.empty() && it2f->first[0] == '\x2F') {
                 if (it2f->first.size() != 2) {
@@ -299,14 +298,13 @@ std::unique_ptr<BedrockChunk> BedrockRawDimension::decode_chunk(
                         *chunk->get_block_storage(),
                         std::string_view(value).substr(2),
                         static_cast<uint8_t>(value[1]),
-                        static_cast<uint8_t>(node.key()[1]));
-                    // TODO should this be offset from min_cy?
+                        _legacy_floor + node.key()[1]);
                 } else if (block_format == 1) {
                     add_paletted_section(
                         *chunk->get_block_storage(),
                         std::string_view(value).substr(1),
                         1,
-                        static_cast<uint8_t>(node.key()[1]));
+                        _legacy_floor + node.key()[1]);
                 } else if (block_format <= 7) {
                     throw std::runtime_error("NotImplementedError: Legacy block format.");
                 } else {

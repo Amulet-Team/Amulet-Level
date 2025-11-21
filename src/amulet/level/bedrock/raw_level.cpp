@@ -498,7 +498,8 @@ static void _register_dimension(
     const SelectionBox& bounds,
     const BlockStack& default_block,
     const Biome& default_biome,
-    std::uint32_t actor_group)
+    std::uint32_t actor_group,
+    std::int16_t legacy_min_cy)
 {
     if (!raw_open.dimension_ids.contains(dimension_id) && !raw_open.dimensions.contains(internal_dimension_id)) {
         // Create the raw dimension instance
@@ -510,11 +511,41 @@ static void _register_dimension(
                 bounds,
                 default_block,
                 default_biome,
-                actor_group));
+                actor_group,
+                legacy_min_cy));
 
         raw_open.dimension_ids.emplace(dimension_id, internal_dimension_id);
         raw_open.dimensions.emplace(internal_dimension_id, std::move(raw_dimension));
     }
+}
+
+static bool is_caves_and_cliffs(const NBT::CompoundTag& root_tag)
+{
+    // Is the caves and cliffs experimental toggle enabled?
+    const auto& experiments_it = root_tag.find("experiments");
+    if (experiments_it != root_tag.end()) {
+        auto* experiments_ptr = std::get_if<NBT::CompoundTagPtr>(&experiments_it->second);
+        if (experiments_ptr) {
+            auto& experiments = **experiments_ptr;
+            // caves_and_cliffs tag
+            const auto& caves_and_cliffs_it = experiments.find("caves_and_cliffs");
+            if (caves_and_cliffs_it != experiments.end()) {
+                auto* caves_and_cliffs_ptr = std::get_if<NBT::ByteTag>(&caves_and_cliffs_it->second);
+                if (caves_and_cliffs_ptr && *caves_and_cliffs_ptr) {
+                    return true;
+                }
+            }
+            // caves_and_cliffs_internal tag
+            const auto& caves_and_cliffs_internal_it = experiments.find("caves_and_cliffs_internal");
+            if (caves_and_cliffs_internal_it != experiments.end()) {
+                auto* caves_and_cliffs_internal_ptr = std::get_if<NBT::ByteTag>(&caves_and_cliffs_internal_it->second);
+                if (caves_and_cliffs_internal_ptr && *caves_and_cliffs_internal_ptr) {
+                    return true;
+                }
+            }
+        }
+    }
+    return false;
 }
 
 BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
@@ -546,13 +577,27 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
 
     // Add hard coded dimensions
     // TODO: What format should biome version use?
+
+    std::int64_t overworld_min_y = -64;
+    std::int64_t overworld_height = 384;
+    std::int16_t overworld_legacy_min_y = 0;
+
+    if (is_caves_and_cliffs(root_tag)) {
+        overworld_legacy_min_y = -4;
+    } else if (_last_opened_version < VersionNumber { 1, 18 }) {
+        overworld_min_y = 0;
+        overworld_height = 256;
+    }
+
     _register_dimension(
         raw_open,
         0,
         OVERWORLD,
-        SelectionBox(-30'000'000, -64, -30'000'000, 60'000'000, 384, 60'000'000),
+        SelectionBox(-30'000'000, overworld_min_y, -30'000'000, 60'000'000, overworld_height, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"), ++actor_group);
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"),
+        ++actor_group,
+        overworld_legacy_min_y);
 
     _register_dimension(
         raw_open,
@@ -560,7 +605,9 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_NETHER,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 128, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"), ++actor_group);
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"),
+        ++actor_group,
+        0);
 
     _register_dimension(
         raw_open,
@@ -568,42 +615,9 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_END,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000),
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-        Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"), ++actor_group);
-
-    //_get_dimension_bounds(dimension_id),
-    //    // TODO: Is this data stored somewhere?
-    //    BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
-    //    [&] {
-    //        if (dimension_id == THE_NETHER) {
-    //            return Biome("bedrock", VersionNumber { 17432626 }, "minecraft", "nether_wastes");
-    //        } else if (dimension_id == THE_END) {
-    //            return Biome("bedrock", VersionNumber { 17432626 }, "minecraft", "the_end");
-    //        } else {
-    //            return Biome("bedrock", VersionNumber { 17432626 }, "minecraft", "plains");
-    //        }
-    //    }()
-
-    // experiments = self.root_tag.compound.get_compound(
-    //     "experiments", CompoundTag()
-    //)
-    // if (
-    //     experiments.get_byte("caves_and_cliffs", ByteTag()).py_int
-    //     or experiments.get_byte("caves_and_cliffs_internal", ByteTag()).py_int
-    //     or self.version >= (1, 18)
-    //):
-    //     self._bounds[OVERWORLD] = SelectionGroup(
-    //         SelectionBox(
-    //             (-30_000_000, -64, -30_000_000), (30_000_000, 320, 30_000_000)
-    //         )
-    //     )
-    // else:
-    //     self._bounds[OVERWORLD] = DefaultSelection
-    // self._bounds[THE_NETHER] = SelectionGroup(
-    //     SelectionBox(
-    //         (-30_000_000, 0, -30_000_000), (30_000_000, 128, 30_000_000)
-    //     )
-    //)
-    // self._bounds[THE_END] = DefaultSelection
+        Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"),
+        ++actor_group,
+        0);
 
     // if b"LevelChunkMetaDataDictionary" in self.level_db:
     //     data = self.level_db[b"LevelChunkMetaDataDictionary"]

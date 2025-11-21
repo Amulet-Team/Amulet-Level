@@ -158,7 +158,8 @@ BedrockRawDimension::BedrockRawDimension(
     const SelectionBox& bounds,
     const BlockStack& default_block,
     const Biome& default_biome,
-    std::uint32_t actor_group)
+    std::uint32_t actor_group,
+    std::int16_t legacy_floor)
     : _db(std::move(db))
     , _internal_dimension_id(internal_dimension_id)
     , _dimension_id(dimension_id)
@@ -167,6 +168,7 @@ BedrockRawDimension::BedrockRawDimension(
     , _default_biome(default_biome)
     , _actor_group(actor_group)
     , _actor_index(0)
+    , _legacy_floor(legacy_floor)
 {
 }
 

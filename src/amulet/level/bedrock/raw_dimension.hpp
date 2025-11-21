@@ -77,6 +77,7 @@ private:
     Biome _default_biome;
     std::uint32_t _actor_group;
     std::atomic_uint32_t _actor_index;
+    std::int16_t _legacy_floor;
     bool _destroyed = false;
 
 public:
@@ -87,7 +88,8 @@ public:
         const SelectionBox& bounds,
         const BlockStack& default_block,
         const Biome& default_biome,
-        std::uint32_t actor_group);
+        std::uint32_t actor_group,
+        std::int16_t legacy_floor);
 
     // Destructor.
     AMULET_LEVEL_EXPORT ~BedrockRawDimension();

@@ -369,6 +369,10 @@ BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int32_t cx, std::int32_t
         }
     }
 
+    if (data.empty() && actors.empty()) {
+        throw ChunkDoesNotExist();
+    }
+
     return BedrockRawChunk(std::move(data), std::move(actors));
 }
 

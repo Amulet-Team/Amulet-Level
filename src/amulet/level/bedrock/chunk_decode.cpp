@@ -68,11 +68,16 @@ static void add_paletted_section(
     std::uint8_t count,
     std::int64_t cy)
 {
+    if (2 < count) {
+        warning("Chunk section has more than two layers. Extra layers will be discarded");
+        count = 2;
+    }
     std::vector<
         std::pair<
             std::vector<std::uint16_t>,
             std::vector<Block>>>
         layers;
+    layers.reserve(count);
     for (std::uint8_t layer_i = 0; layer_i < count; layer_i++) {
         auto [data_, _, layer_array] = decode_packed_array(data);
         data = data_;
@@ -201,43 +206,74 @@ static void add_paletted_section(
         sections.populate_section(cy);
         auto* section_buffer = sections.get_section_ref(cy).get_buffer();
 
-        std::map<std::vector<std::uint16_t>, size_t> stack_to_index;
+        auto& layer_0_palette = layers[0].second;
 
-        // For each block in the sub-chunk
-        std::vector<std::uint16_t> block_indexes;
-        block_indexes.resize(layers.size());
-        for (std::uint16_t x = 0; x < 16; x++) {
-            for (std::uint16_t y = 0; y < 16; y++) {
-                for (std::uint16_t z = 0; z < 16; z++) {
+        if (layers.size() == 1) {
+            std::map<std::uint16_t, size_t> stack_to_index;
 
-                    // Find the indexes for this block
-                    for (std::uint8_t layer_i = 0; layer_i < layers.size(); layer_i++) {
-                        block_indexes[layer_i] = layers[layer_i].first[(x << 8) + (z << 4) + y];
-                    }
+            // For each block in the sub-chunk
+            for (std::uint16_t x = 0; x < 16; x++) {
+                for (std::uint16_t y = 0; y < 16; y++) {
+                    for (std::uint16_t z = 0; z < 16; z++) {
 
-                    // Find which palette index this maps to.
-                    size_t palette_index;
-                    if (auto it = stack_to_index.find(block_indexes); it != stack_to_index.end()) {
-                        // If we have already created the block then use the cached value
-                        palette_index = it->second;
-                    } else {
-                        // Create the block stack and cache the value
-                        std::vector<Block> block_stack;
-                        for (std::uint8_t layer_i = 0; layer_i < layers.size(); layer_i++) {
-                            auto block_index = block_indexes[layer_i];
-                            auto& layer_palette = layers[layer_i].second;
-                            if (layer_palette.size() <= block_index) {
+                        // Find the indexes for this block
+                        std::uint32_t block_index = layers[0].first[(x << 8) + (z << 4) + y];
+
+                        // Find which palette index this maps to.
+                        size_t palette_index;
+                        if (auto it = stack_to_index.find(block_index); it != stack_to_index.end()) {
+                            // If we have already created the block then use the cached value
+                            palette_index = it->second;
+                        } else {
+                            // Create the block stack and cache the value
+                            if (layer_0_palette.size() <= block_index) {
                                 throw std::runtime_error("Block index is larger than the block palette");
                             }
-                            block_stack.emplace_back(layer_palette[block_index]);
+                            // Add to the palette and update the cache.
+                            palette_index = palette.block_stack_to_index(
+                                BlockStack { layer_0_palette[block_index] });
+                            stack_to_index.emplace(block_index, palette_index);
                         }
-                        // Add to the palette and update the cache.
-                        palette_index = palette.block_stack_to_index(BlockStack(std::move(block_stack)));
-                        stack_to_index.emplace(block_indexes, palette_index);
-                    }
 
-                    // Write the index to the section
-                    *(section_buffer + ((x << 8) + (y << 4) + z)) = palette_index;
+                        // Write the index to the section
+                        *(section_buffer + ((x << 8) + (y << 4) + z)) = palette_index;
+                    }
+                }
+            }
+        } else if (layers.size() == 2) {
+            auto& layer_1_palette = layers[1].second;
+            std::map<std::uint32_t, size_t> stack_to_index;
+
+            // For each block in the sub-chunk
+            for (std::uint16_t x = 0; x < 16; x++) {
+                for (std::uint16_t y = 0; y < 16; y++) {
+                    for (std::uint16_t z = 0; z < 16; z++) {
+
+                        // Find the indexes for this block
+                        const std::uint16_t src_index = (x << 8) + (z << 4) + y;
+                        std::uint16_t block_index_0 = layers[0].first[src_index];
+                        std::uint16_t block_index_1 = layers[1].first[src_index];
+                        std::uint32_t block_indexes = block_index_0 | (block_index_1 << sizeof(std::uint16_t));
+
+                        // Find which palette index this maps to.
+                        size_t palette_index;
+                        if (auto it = stack_to_index.find(block_indexes); it != stack_to_index.end()) {
+                            // If we have already created the block then use the cached value
+                            palette_index = it->second;
+                        } else {
+                            // Create the block stack and cache the value
+                            if (layer_0_palette.size() <= block_index_0 || layer_1_palette.size() <= block_index_1) {
+                                throw std::runtime_error("Block index is larger than the block palette");
+                            }
+                            // Add to the palette and update the cache.
+                            palette_index = palette.block_stack_to_index(
+                                BlockStack { layer_0_palette[block_index_0], layer_1_palette[block_index_1] });
+                            stack_to_index.emplace(block_indexes, palette_index);
+                        }
+
+                        // Write the index to the section
+                        *(section_buffer + ((x << 8) + (y << 4) + z)) = palette_index;
+                    }
                 }
             }
         }

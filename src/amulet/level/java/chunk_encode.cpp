@@ -785,7 +785,7 @@ JavaRawChunk JavaRawDimension::encode_chunk(
     } else if (auto* chunk_ = dynamic_cast<JavaChunkNA*>(&chunk)) {
         return encode_java_chunk<-1>(*chunk_, cx, cz, min_y, max_y);
     } else {
-        throw std::invalid_argument("Unsupported chunk class" + chunk.get_chunk_id());
+        throw std::invalid_argument("Unsupported Java chunk class: " + chunk.get_chunk_id());
     }
 }
 

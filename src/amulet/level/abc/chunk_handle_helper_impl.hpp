@@ -63,12 +63,12 @@ std::unique_ptr<ChunkT> ChunkHandleHelper<RawDimensionT, DimensionT, RawChunkT, 
     if (data.empty()) {
         // Empty if chunk does not exist.
         throw ChunkDoesNotExist();
-    } else if (data[0] == 'e') {
-        // 1 followed by the string if other error.
-        throw ChunkLoadError(data.substr(1));
     } else if (data[0] == 'c') {
-        // 0 followed by the chunk id if a valid chunk.
+        // c followed by the chunk id if a valid chunk.
         return get_null_chunk(data.substr(1));
+    } else if (data[0] == 'e') {
+        // e followed by the string if other error.
+        throw ChunkLoadError(data.substr(1));
     } else {
         throw std::runtime_error("Invalid chunk id prefix.");
     }
@@ -96,8 +96,11 @@ void ChunkHandleHelper<RawDimensionT, DimensionT, RawChunkT, ChunkT, get_null_ch
     std::unique_ptr<ChunkT> chunk;
     try {
         chunk = _raw_dimension->decode_chunk(std::move(raw_chunk), _cx, _cz);
-    } catch (const ChunkLoadError& e) {
+    } catch (const std::exception& e) {
         _chunk_history->set_initial_value(_key, 'e' + std::string(e.what()));
+        return;
+    } catch (...) {
+        _chunk_history->set_initial_value(_key, "e");
         return;
     }
 

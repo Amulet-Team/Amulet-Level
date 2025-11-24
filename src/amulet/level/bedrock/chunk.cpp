@@ -9,11 +9,11 @@
 
 namespace Amulet {
 
-const std::string BedrockChunk1::ChunkID = "Amulet::BedrockChunk1";
+const std::string BedrockChunk118::ChunkID = "Amulet::BedrockChunk118";
 
-std::string BedrockChunk1::get_chunk_id() const { return ChunkID; }
+std::string BedrockChunk118::get_chunk_id() const { return ChunkID; }
 
-BedrockChunk1::BedrockChunk1(
+BedrockChunk118::BedrockChunk118(
     const BlockStack& default_block,
     const Biome& default_biome)
     : ChunkComponentHelper()
@@ -31,10 +31,10 @@ BedrockChunk1::BedrockChunk1(
         default_block);
 }
 
-static const ChunkNullConstructor<BedrockChunk1> _bc1;
+static const ChunkNullConstructor<BedrockChunk118> _bc1;
 
 static std::map<std::string, std::function<std::unique_ptr<BedrockChunk>()>> bedrock_chunk_constructors = {
-    { BedrockChunk1::ChunkID, []() { return std::make_unique<BedrockChunk1>(); } },
+    { BedrockChunk118::ChunkID, []() { return std::make_unique<BedrockChunk118>(); } },
 };
 
 namespace detail {

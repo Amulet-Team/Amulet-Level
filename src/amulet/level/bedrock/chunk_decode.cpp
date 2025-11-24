@@ -285,7 +285,7 @@ std::unique_ptr<BedrockChunk> BedrockRawDimension::decode_chunk(
     std::int32_t cx,
     std::int32_t cz)
 {
-    auto chunk = std::make_unique<BedrockChunk1>(
+    auto chunk = std::make_unique<BedrockChunk118>(
         get_default_block(),
         get_default_biome());
 

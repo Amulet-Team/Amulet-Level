@@ -280,14 +280,12 @@ static void add_paletted_section(
     }
 }
 
-template <typename ChunkT>
-    requires std::is_base_of_v<BedrockChunk, ChunkT>
 static void _decode_bedrock_chunk_terrain(
     std::int16_t legacy_floor,
     std::int32_t cx,
     std::int32_t cz,
     std::map<Bytes, Bytes> data,
-    ChunkT& chunk)
+    BlockComponent& chunk)
 {
     // decode block data
     // https://gist.github.com/Tomcc/a96af509e275b1af483b25c543cfbf37

@@ -280,82 +280,143 @@ static void add_paletted_section(
     }
 }
 
+template <typename ChunkT>
+    requires std::is_base_of_v<BedrockChunk, ChunkT>
+static void _decode_bedrock_chunk_terrain(
+    std::int16_t legacy_floor,
+    std::int32_t cx,
+    std::int32_t cz,
+    std::map<Bytes, Bytes> data,
+    ChunkT& chunk)
+{
+    // decode block data
+    // https://gist.github.com/Tomcc/a96af509e275b1af483b25c543cfbf37
+    auto it2f = data.lower_bound("\x2F\x00");
+    while (it2f != data.end() && !it2f->first.empty() && it2f->first[0] == '\x2F') {
+        if (it2f->first.size() != 2) {
+            it2f++;
+            continue;
+        }
+
+        // Increment the iterator and extract the node.
+        auto node = data.extract(it2f++);
+        auto cy = static_cast<std::int64_t>(node.key()[1]);
+        auto& value = node.mapped();
+        if (value.empty()) {
+            error("SubChunkPrefix is empty. cx=" + std::to_string(cx) + ",cy=" + std::to_string(cy) + ",cz=" + std::to_string(cz));
+            continue;
+        }
+        auto block_format = static_cast<std::uint8_t>(value[0]);
+        if (block_format == 9) {
+            std::cout << "chunk version 9" << std::endl;
+            add_paletted_section(
+                *chunk.get_block_storage(),
+                std::string_view(value).substr(3),
+                static_cast<uint8_t>(value[1]),
+                value[2]);
+        } else if (block_format == 8) {
+            std::cout << "chunk version 8" << std::endl;
+            add_paletted_section(
+                *chunk.get_block_storage(),
+                std::string_view(value).substr(2),
+                static_cast<uint8_t>(value[1]),
+                legacy_floor + node.key()[1]);
+        } else if (block_format == 1) {
+            std::cout << "chunk version 1" << std::endl;
+            add_paletted_section(
+                *chunk.get_block_storage(),
+                std::string_view(value).substr(1),
+                1,
+                legacy_floor + node.key()[1]);
+        } else if (block_format <= 7) {
+            throw std::runtime_error("NotImplementedError: Legacy block format.");
+        } else {
+            error("Unknown SubChunkPrefix version. v=" + std::to_string(block_format) + ",cx=" + std::to_string(cx) + ",cy=" + std::to_string(cy) + ",cz=" + std::to_string(cz));
+            continue;
+        }
+    }
+}
+
+template <typename ChunkT>
+void _decode_bedrock_chunk_common(ChunkT& chunk, BedrockRawChunk& raw_chunk)
+{
+    // Move the remaining raw data into the chunk.
+    chunk.set_raw_data(std::make_shared<BedrockRawChunk>(std::move(raw_chunk)));
+}
+
+static std::unique_ptr<BedrockChunk> _decode_bedrock_chunk_0(
+    BedrockRawChunk& raw_chunk,
+    std::int32_t cx,
+    std::int32_t cz,
+    std::map<Bytes, Bytes>::const_iterator& it30)
+{
+    throw std::runtime_error("LegacyTerrain NotImplementedError");
+}
+
+static std::unique_ptr<BedrockChunk> _decode_bedrock_chunk_0b(
+    BedrockRawChunk& raw_chunk,
+    std::int32_t cx,
+    std::int32_t cz,
+    std::map<Bytes, Bytes>::const_iterator& it30)
+{
+    // 2D biomes with RGB
+    // TODO: extract biome and height data
+    throw std::runtime_error("LegacyTerrain NotImplementedError");
+}
+
+static std::unique_ptr<BedrockChunk> _decode_bedrock_chunk_1(
+    const BlockStack& default_block,
+    const Biome& default_biome,
+    std::int16_t legacy_floor,
+    std::int32_t cx,
+    std::int32_t cz,
+    BedrockRawChunk& raw_chunk,
+    std::map<Bytes, Bytes>::const_iterator& it2d)
+{
+    // 2D biomes
+    auto chunk = std::make_unique<BedrockChunk1>(default_block, default_biome);
+    _decode_bedrock_chunk_terrain(legacy_floor, cx, cz, raw_chunk.get_data(), *chunk);
+    // TODO: extract biome and height data
+    _decode_bedrock_chunk_common(*chunk, raw_chunk);
+    return chunk;
+}
+
+static std::unique_ptr<BedrockChunk> _decode_bedrock_chunk_118(
+    const BlockStack& default_block,
+    const Biome& default_biome,
+    std::int16_t legacy_floor,
+    std::int32_t cx,
+    std::int32_t cz,
+    BedrockRawChunk& raw_chunk)
+{
+    // 3D biomes
+    auto chunk = std::make_unique<BedrockChunk118>(default_block, default_biome);
+    _decode_bedrock_chunk_terrain(legacy_floor, cx, cz, raw_chunk.get_data(), *chunk);
+    // TODO: extract biome and height data
+    _decode_bedrock_chunk_common(*chunk, raw_chunk);
+    return chunk;
+}
+
 std::unique_ptr<BedrockChunk> BedrockRawDimension::decode_chunk(
     BedrockRawChunk raw_chunk,
     std::int32_t cx,
     std::int32_t cz)
 {
-    auto chunk = std::make_unique<BedrockChunk118>(
-        get_default_block(),
-        get_default_biome());
-
-    auto& data = raw_chunk.get_data();
+    const auto& data = raw_chunk.get_data();
 
     if (auto it30 = data.find("\x30"); it30 != data.end()) {
-        // Legacy terrain
-        throw std::runtime_error("LegacyTerrain NotImplementedError");
+        // LegacyTerrain
+        return _decode_bedrock_chunk_0(raw_chunk, cx, cz, it30);
+    } else if (auto it2e = data.find("\x2E"); it2e != data.end()) {
+        // ? TODO
+        return _decode_bedrock_chunk_0b(raw_chunk, cx, cz, it2e);
+    } else if (auto it2d = data.find("\x2D"); it2d != data.end()) {
+        // Data2D and SubChunkPrefix
+        return _decode_bedrock_chunk_1(get_default_block(), get_default_biome(), _legacy_floor, cx, cz, raw_chunk, it2d);
     } else {
-        if (auto it2b = data.find("\x2B"); it2b != data.end()) {
-            // 3D biomes
-            // TODO: extract biome and height data
-            // Remove the old data if it exists
-            data.erase("\x2D");
-        } else if (auto it2d = data.find("\x2D"); it2d != data.end()) {
-            // 2D biomes
-            // TODO: extract biome and height data
-        }
-
-        {
-            // decode block data
-            // https://gist.github.com/Tomcc/a96af509e275b1af483b25c543cfbf37
-            auto it2f = data.lower_bound("\x2F\x00");
-            while (it2f != data.end() && !it2f->first.empty() && it2f->first[0] == '\x2F') {
-                if (it2f->first.size() != 2) {
-                    it2f++;
-                    continue;
-                }
-
-                // Increment the iterator and extract the node.
-                auto node = data.extract(it2f++);
-                auto cy = static_cast<std::int64_t>(node.key()[1]);
-                auto& value = node.mapped();
-                if (value.empty()) {
-                    error("SubChunkPrefix is empty. cx=" + std::to_string(cx) + ",cy=" + std::to_string(cy) + ",cz=" + std::to_string(cz));
-                    continue;
-                }
-                auto block_format = static_cast<std::uint8_t>(value[0]);
-                if (block_format == 9) {
-                    add_paletted_section(
-                        *chunk->get_block_storage(),
-                        std::string_view(value).substr(3),
-                        static_cast<uint8_t>(value[1]),
-                        value[2]);
-                } else if (block_format == 8) {
-                    add_paletted_section(
-                        *chunk->get_block_storage(),
-                        std::string_view(value).substr(2),
-                        static_cast<uint8_t>(value[1]),
-                        _legacy_floor + node.key()[1]);
-                } else if (block_format == 1) {
-                    add_paletted_section(
-                        *chunk->get_block_storage(),
-                        std::string_view(value).substr(1),
-                        1,
-                        _legacy_floor + node.key()[1]);
-                } else if (block_format <= 7) {
-                    throw std::runtime_error("NotImplementedError: Legacy block format.");
-                } else {
-                    error("Unknown SubChunkPrefix version. v=" + std::to_string(block_format) + ",cx=" + std::to_string(cx) + ",cy=" + std::to_string(cy) + ",cz=" + std::to_string(cz));
-                    continue;
-                }
-            }
-        }
+        // Data3D and SubChunkPrefix
+        return _decode_bedrock_chunk_118(get_default_block(), get_default_biome(), _legacy_floor, cx, cz, raw_chunk);
     }
-
-    // Move the remaining raw data into the chunk.
-    chunk->set_raw_data(std::make_shared<BedrockRawChunk>(std::move(raw_chunk)));
-
-    return chunk;
 }
 
 } // namespace Amulet

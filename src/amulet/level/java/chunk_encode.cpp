@@ -141,7 +141,7 @@ JavaRawChunk encode_java_chunk(
 
     // Encode block data
     {
-        auto block_component = chunk.get_block_storage();
+        auto block_component = chunk.get_block_storage_ptr();
         auto& block_palette = block_component->get_palette();
         auto& block_sections = block_component->get_sections();
         auto version_block_data = game_version->get_block_data();
@@ -447,7 +447,7 @@ JavaRawChunk encode_java_chunk(
     //     for cy in chunk.biomes.sections:
     //         if floor_cy <= cy < ceil_cy:
     //             biome_sub_array = numpy.transpose(
-    //                 chunk.biomes.get_section(cy), (1, 2, 0)
+    //                 chunk.biomes.get_section_ptr(cy), (1, 2, 0)
     //             ).ravel()
 
     //            sub_palette_, biome_sub_array = numpy.unique(

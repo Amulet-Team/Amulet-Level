@@ -204,7 +204,7 @@ static void add_paletted_section(
         auto& palette = block_storage.get_palette();
         auto& sections = block_storage.get_sections();
         sections.populate_section(cy);
-        auto* section_buffer = sections.get_section_ref(cy).get_buffer();
+        auto* section_buffer = sections.get_section(cy).get_buffer();
 
         auto& layer_0_palette = layers[0].second;
 
@@ -308,21 +308,21 @@ static void _decode_bedrock_chunk_terrain(
         if (block_format == 9) {
             std::cout << "chunk version 9" << std::endl;
             add_paletted_section(
-                *chunk.get_block_storage(),
+                chunk.get_block_storage(),
                 std::string_view(value).substr(3),
                 static_cast<uint8_t>(value[1]),
                 value[2]);
         } else if (block_format == 8) {
             std::cout << "chunk version 8" << std::endl;
             add_paletted_section(
-                *chunk.get_block_storage(),
+                chunk.get_block_storage(),
                 std::string_view(value).substr(2),
                 static_cast<uint8_t>(value[1]),
                 legacy_floor + node.key()[1]);
         } else if (block_format == 1) {
             std::cout << "chunk version 1" << std::endl;
             add_paletted_section(
-                *chunk.get_block_storage(),
+                chunk.get_block_storage(),
                 std::string_view(value).substr(1),
                 1,
                 legacy_floor + node.key()[1]);

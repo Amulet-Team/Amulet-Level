@@ -73,11 +73,12 @@ private:
     BedrockInternalDimensionID _internal_dimension_id;
     DimensionId _dimension_id;
     SelectionBox _bounds;
+    std::int16_t _legacy_floor;
     BlockStack _default_block;
     Biome _default_biome;
     std::uint32_t _actor_group;
     std::atomic_uint32_t _actor_index;
-    std::int16_t _legacy_floor;
+    VersionNumber _max_version;
     bool _destroyed = false;
 
 public:
@@ -86,10 +87,19 @@ public:
         BedrockInternalDimensionID internal_dimension_id,
         const DimensionId& dimension_id,
         const SelectionBox& bounds,
+        std::int16_t legacy_floor,
         const BlockStack& default_block,
         const Biome& default_biome,
         std::uint32_t actor_group,
-        std::int16_t legacy_floor);
+        VersionNumber max_version);
+
+    // Copy
+    BedrockRawDimension(const BedrockRawDimension&) = delete;
+    BedrockRawDimension& operator=(const BedrockRawDimension&) = delete;
+
+    // Move
+    BedrockRawDimension(BedrockRawDimension&&) = delete;
+    BedrockRawDimension& operator=(BedrockRawDimension&&) = delete;
 
     // Destructor.
     AMULET_LEVEL_EXPORT ~BedrockRawDimension();

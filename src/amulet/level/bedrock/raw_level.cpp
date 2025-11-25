@@ -496,10 +496,11 @@ static void _register_dimension(
     const BedrockInternalDimensionID& internal_dimension_id,
     const DimensionId& dimension_id,
     const SelectionBox& bounds,
+    std::int16_t legacy_min_cy,
     const BlockStack& default_block,
     const Biome& default_biome,
     std::uint32_t actor_group,
-    std::int16_t legacy_min_cy)
+    VersionNumber max_version)
 {
     if (!raw_open.dimension_ids.contains(dimension_id) && !raw_open.dimensions.contains(internal_dimension_id)) {
         // Create the raw dimension instance
@@ -509,10 +510,11 @@ static void _register_dimension(
                 internal_dimension_id,
                 dimension_id,
                 bounds,
+                legacy_min_cy,
                 default_block,
                 default_biome,
                 actor_group,
-                legacy_min_cy));
+                max_version));
 
         raw_open.dimension_ids.emplace(dimension_id, internal_dimension_id);
         raw_open.dimensions.emplace(internal_dimension_id, std::move(raw_dimension));
@@ -594,30 +596,33 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         0,
         OVERWORLD,
         SelectionBox(-30'000'000, overworld_min_y, -30'000'000, 60'000'000, overworld_height, 60'000'000),
+        overworld_legacy_min_y,
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
         Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"),
         ++actor_group,
-        overworld_legacy_min_y);
+        get_last_opened_version());
 
     _register_dimension(
         raw_open,
         1,
         THE_NETHER,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 128, 60'000'000),
+        0,
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
         Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"),
         ++actor_group,
-        0);
+        get_last_opened_version());
 
     _register_dimension(
         raw_open,
         2,
         THE_END,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000),
+        0,
         BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
         Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"),
         ++actor_group,
-        0);
+        get_last_opened_version());
 
     // if b"LevelChunkMetaDataDictionary" in self.level_db:
     //     data = self.level_db[b"LevelChunkMetaDataDictionary"]

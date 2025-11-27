@@ -21,6 +21,21 @@ namespace detail {
     std::string get_bedrock_chunk_id(const BedrockChunk& chunk);
 } // namespace detail
 
+class BedrockChunk0 : public ChunkComponentHelper<
+                          BedrockChunk,
+                          BedrockRawChunkComponent,
+                          BlockComponent> {
+public:
+    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+
+    std::string get_chunk_id() const override;
+
+    using ChunkComponentHelper::ChunkComponentHelper;
+    AMULET_LEVEL_EXPORT BedrockChunk0(
+        const BlockStack& default_block,
+        const Biome& default_biome);
+};
+
 class BedrockChunk1 : public ChunkComponentHelper<
                           BedrockChunk,
                           BedrockRawChunkComponent,

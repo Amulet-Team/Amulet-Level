@@ -15,9 +15,10 @@ const std::string BedrockRawChunkComponent::ComponentID = "Amulet::BedrockRawChu
 std::optional<std::string> BedrockRawChunkComponent::serialise() const
 {
     if (_raw_data) {
-        BinaryWriter writer;
+        std::string buffer;
+        BaseBinaryWriter writer(buffer);
         (**_raw_data).serialise(writer);
-        return writer.get_buffer();
+        return buffer;
     } else {
         return std::nullopt;
     }

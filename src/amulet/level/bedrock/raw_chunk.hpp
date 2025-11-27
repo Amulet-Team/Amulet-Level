@@ -37,7 +37,7 @@ public:
     // Destructor
     AMULET_LEVEL_EXPORT ~BedrockRawChunk();
 
-    AMULET_LEVEL_EXPORT void serialise(BinaryWriter&) const;
+    AMULET_LEVEL_EXPORT void serialise(BaseBinaryWriter&) const;
     AMULET_LEVEL_EXPORT static BedrockRawChunk deserialise(BinaryReader&);
 
     AMULET_LEVEL_EXPORT std::map<Bytes, Bytes>& get_data();

@@ -46,7 +46,7 @@ BedrockRawChunk& BedrockRawChunk::operator=(BedrockRawChunk&&) = default;
 
 BedrockRawChunk::~BedrockRawChunk() = default;
 
-void BedrockRawChunk::serialise(BinaryWriter& writer) const
+void BedrockRawChunk::serialise(BaseBinaryWriter& writer) const
 {
     // Version
     writer.write_numeric<std::uint8_t>(1);

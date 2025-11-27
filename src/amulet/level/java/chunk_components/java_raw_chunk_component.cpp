@@ -15,7 +15,8 @@ const std::string JavaRawChunkComponent::ComponentID = "Amulet::JavaRawChunkComp
 std::optional<std::string> JavaRawChunkComponent::serialise() const
 {
     if (_raw_data) {
-        BinaryWriter writer;
+        std::string buffer;
+        BaseBinaryWriter writer(buffer);
         writer.write_numeric<std::uint8_t>(1);
         const auto& raw_data = _raw_data.value();
         writer.write_numeric<std::uint64_t>(raw_data->size());
@@ -23,7 +24,7 @@ std::optional<std::string> JavaRawChunkComponent::serialise() const
             writer.write_size_and_bytes(k);
             Amulet::NBT::encode_nbt(writer, *v);
         }
-        return writer.get_buffer();
+        return buffer;
     } else {
         return std::nullopt;
     }
@@ -31,8 +32,7 @@ std::optional<std::string> JavaRawChunkComponent::serialise() const
 void JavaRawChunkComponent::deserialise(std::optional<std::string> data)
 {
     if (data) {
-        size_t position = 0;
-        BinaryReader reader(data.value(), position);
+        BinaryReader reader(data.value());
         auto version = reader.read_numeric<std::uint8_t>();
         switch (version) {
         case 1: {

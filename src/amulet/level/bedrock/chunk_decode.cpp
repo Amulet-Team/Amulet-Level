@@ -82,8 +82,7 @@ static void add_paletted_section(
         auto [data_, _, layer_array] = decode_packed_array(data);
         data = data_;
 
-        size_t position = 0;
-        BinaryReader reader(data, position, std::endian::little, NBT::utf8_to_utf8_escape);
+        BinaryReader reader(data, 0, std::endian::little, NBT::utf8_to_utf8_escape);
 
         // Get the palette length
         std::uint32_t palette_len;
@@ -197,7 +196,7 @@ static void add_paletted_section(
         }
 
         // Update the string view.
-        data = data.substr(position);
+        data = data.substr(reader.get_position());
     }
 
     if (!layers.empty()) {

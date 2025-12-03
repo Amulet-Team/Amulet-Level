@@ -21,6 +21,7 @@ namespace detail {
     std::string get_bedrock_chunk_id(const BedrockChunk& chunk);
 } // namespace detail
 
+// LegacyTerrain
 class BedrockChunk0 : public ChunkComponentHelper<
                           BedrockChunk,
                           BedrockRawChunkComponent,
@@ -36,6 +37,7 @@ public:
         const Biome& default_biome);
 };
 
+// V1.0, SubChunkPrefix and Data2D
 class BedrockChunk1 : public ChunkComponentHelper<
                           BedrockChunk,
                           BedrockRawChunkComponent,
@@ -51,6 +53,7 @@ public:
         const Biome& default_biome);
 };
 
+// V1.18, SubChunkPrefix and Data3D
 class BedrockChunk118 : public ChunkComponentHelper<
                             BedrockChunk,
                             BedrockRawChunkComponent,

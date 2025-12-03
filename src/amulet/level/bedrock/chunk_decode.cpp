@@ -17,14 +17,10 @@ namespace Amulet {
 
 // Parse a packed array as documented here
 // https://gist.github.com/Tomcc/a96af509e275b1af483b25c543cfbf37
-static std::tuple<std::string_view, std::uint8_t, std::vector<std::uint16_t>> decode_packed_array(std::string_view data)
+static std::vector<std::uint16_t> decode_packed_array(BinaryReader& reader)
 {
-    if (data.empty()) {
-        throw std::runtime_error("Packed array is empty.");
-    }
     // Ignore LSB of data (its a flag)
-    std::uint8_t bits_per_value = data[0] >> 1;
-    data = data.substr(1);
+    std::uint8_t bits_per_value = reader.read_numeric<std::uint8_t>() >> 1;
 
     std::vector<std::uint16_t> arr;
 
@@ -32,39 +28,35 @@ static std::tuple<std::string_view, std::uint8_t, std::vector<std::uint16_t>> de
         if (6 < bits_per_value && bits_per_value != 8 && bits_per_value != 16) {
             throw std::runtime_error("Invalid bits per value: " + std::to_string(bits_per_value));
         }
+
         // Word = 4 bytes, basis of compacting.
         const std::uint8_t values_per_word = 32 / bits_per_value;
+
         // Find the number of words required to fit 4096 values.
         const std::uint16_t word_count = (4096 + values_per_word - 1) / values_per_word;
-        // Check the data is large enough
-        if ((data.size() / 4) < word_count) {
-            throw std::runtime_error("Packed array is not long enough.");
-        }
+
+        // Read the packed array
+        std::vector<std::uint32_t> packed_array;
+        reader.read_numeric_array<std::uint32_t>(packed_array, word_count);
+
+        // Unpack the array
         const std::uint32_t bit_mask = (1 << bits_per_value) - 1;
         arr.reserve(4096 + values_per_word);
-        for (std::uint16_t word_i = 0; word_i < word_count; word_i++) {
-            std::uint32_t word;
-            auto* src_ptr = data.data() + word_i * 4;
-            if constexpr (std::endian::native == std::endian::little) {
-                word = *reinterpret_cast<const std::uint32_t*>(src_ptr);
-            } else {
-                std::reverse_copy(src_ptr, src_ptr + 4, reinterpret_cast<char*>(&word));
-            }
+        for (auto word : packed_array) {
             for (std::uint8_t i = 0; i < values_per_word; i++) {
                 arr.emplace_back(word & bit_mask);
                 word >>= bits_per_value;
             }
         }
         arr.resize(4096);
-        data = data.substr(4 * word_count);
     }
 
-    return { data, bits_per_value, std::move(arr) };
+    return arr;
 }
 
 static void add_paletted_section(
+    BinaryReader& reader,
     BlockStorage& block_storage,
-    std::string_view data,
     std::uint8_t count,
     std::int64_t cy)
 {
@@ -79,10 +71,7 @@ static void add_paletted_section(
         layers;
     layers.reserve(count);
     for (std::uint8_t layer_i = 0; layer_i < count; layer_i++) {
-        auto [data_, _, layer_array] = decode_packed_array(data);
-        data = data_;
-
-        BinaryReader reader(data, 0, std::endian::little, NBT::utf8_to_utf8_escape);
+        auto layer_array = decode_packed_array(reader);
 
         // Get the palette length
         std::uint32_t palette_len;
@@ -194,9 +183,6 @@ static void add_paletted_section(
                     std::move(layer_array),
                     std::move(layer_palette)));
         }
-
-        // Update the string view.
-        data = data.substr(reader.get_position());
     }
 
     if (!layers.empty()) {
@@ -206,6 +192,7 @@ static void add_paletted_section(
         auto* section_buffer = sections.get_section(cy).get_buffer();
 
         auto& layer_0_palette = layers[0].second;
+        auto& layer_0_array = layers[0].first;
 
         if (layers.size() == 1) {
             std::map<std::uint16_t, size_t> stack_to_index;
@@ -216,7 +203,7 @@ static void add_paletted_section(
                     for (std::uint16_t z = 0; z < 16; z++) {
 
                         // Find the indexes for this block
-                        std::uint32_t block_index = layers[0].first[(x << 8) + (z << 4) + y];
+                        std::uint32_t block_index = layer_0_array[(x << 8) + (z << 4) + y];
 
                         // Find which palette index this maps to.
                         size_t palette_index;
@@ -241,6 +228,7 @@ static void add_paletted_section(
             }
         } else if (layers.size() == 2) {
             auto& layer_1_palette = layers[1].second;
+            auto& layer_1_array = layers[1].first;
             std::map<std::uint32_t, size_t> stack_to_index;
 
             // For each block in the sub-chunk
@@ -250,9 +238,9 @@ static void add_paletted_section(
 
                         // Find the indexes for this block
                         const std::uint16_t src_index = (x << 8) + (z << 4) + y;
-                        std::uint16_t block_index_0 = layers[0].first[src_index];
-                        std::uint16_t block_index_1 = layers[1].first[src_index];
-                        std::uint32_t block_indexes = block_index_0 | (block_index_1 << sizeof(std::uint16_t));
+                        std::uint16_t block_index_0 = layer_0_array[src_index];
+                        std::uint16_t block_index_1 = layer_1_array[src_index];
+                        std::uint32_t block_indexes = block_index_0 | (block_index_1 << 16);
 
                         // Find which palette index this maps to.
                         size_t palette_index;
@@ -283,7 +271,7 @@ static void _decode_bedrock_chunk_terrain(
     std::int16_t legacy_floor,
     std::int32_t cx,
     std::int32_t cz,
-    std::map<Bytes, Bytes> data,
+    std::map<Bytes, Bytes>& data,
     BlockComponent& chunk)
 {
     // decode block data
@@ -297,34 +285,32 @@ static void _decode_bedrock_chunk_terrain(
 
         // Increment the iterator and extract the node.
         auto node = data.extract(it2f++);
-        auto cy = static_cast<std::int64_t>(node.key()[1]);
+        auto cy = static_cast<std::int64_t>(node.key()[1]) + legacy_floor;
         auto& value = node.mapped();
-        if (value.empty()) {
-            error("SubChunkPrefix is empty. cx=" + std::to_string(cx) + ",cy=" + std::to_string(cy) + ",cz=" + std::to_string(cz));
-            continue;
-        }
-        auto block_format = static_cast<std::uint8_t>(value[0]);
+
+        BinaryReader reader(value, 0, std::endian::little, NBT::utf8_to_utf8_escape);
+        auto block_format = reader.read_numeric<std::uint8_t>();
         if (block_format == 9) {
-            std::cout << "chunk version 9" << std::endl;
+            auto layer_count = reader.read_numeric<std::uint8_t>();
+            cy = reader.read_numeric<std::int8_t>();
             add_paletted_section(
+                reader,
                 chunk.get_block_storage(),
-                std::string_view(value).substr(3),
-                static_cast<uint8_t>(value[1]),
-                value[2]);
+                layer_count,
+                cy);
         } else if (block_format == 8) {
-            std::cout << "chunk version 8" << std::endl;
+            auto layer_count = reader.read_numeric<std::uint8_t>();
             add_paletted_section(
+                reader,
                 chunk.get_block_storage(),
-                std::string_view(value).substr(2),
-                static_cast<uint8_t>(value[1]),
-                legacy_floor + node.key()[1]);
+                layer_count,
+                cy);
         } else if (block_format == 1) {
-            std::cout << "chunk version 1" << std::endl;
             add_paletted_section(
+                reader,
                 chunk.get_block_storage(),
-                std::string_view(value).substr(1),
                 1,
-                legacy_floor + node.key()[1]);
+                cy);
         } else if (block_format <= 7) {
             throw std::runtime_error("NotImplementedError: Legacy block format.");
         } else {

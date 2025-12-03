@@ -597,7 +597,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         OVERWORLD,
         SelectionBox(-30'000'000, overworld_min_y, -30'000'000, 60'000'000, overworld_height, 60'000'000),
         overworld_legacy_min_y,
-        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
+        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air", Block::PropertyMap { { "block_data", NBT::IntTag(0) } }) },
         Biome("bedrock", VersionNumber { 0 }, "minecraft", "plains"),
         ++actor_group,
         get_last_opened_version());
@@ -608,7 +608,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_NETHER,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 128, 60'000'000),
         0,
-        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
+        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air", Block::PropertyMap { { "block_data", NBT::IntTag(0) } }) },
         Biome("bedrock", VersionNumber { 0 }, "minecraft", "hell"),
         ++actor_group,
         get_last_opened_version());
@@ -619,7 +619,7 @@ BedrockRawLevelOpenData& BedrockRawLevel::_find_dimensions()
         THE_END,
         SelectionBox(-30'000'000, 0, -30'000'000, 60'000'000, 256, 60'000'000),
         0,
-        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air") },
+        BlockStack { Block("bedrock", VersionNumber { 17432626 }, "minecraft", "air", Block::PropertyMap { { "block_data", NBT::IntTag(0) } }) },
         Biome("bedrock", VersionNumber { 0 }, "minecraft", "the_end"),
         ++actor_group,
         get_last_opened_version());

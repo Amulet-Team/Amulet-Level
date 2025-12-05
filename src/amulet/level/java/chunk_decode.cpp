@@ -150,7 +150,7 @@ void decode_java_chunk(
 
     // blocks
     {
-        std::shared_ptr<BlockStorage> block_storage = chunk.get_block_storage();
+        std::shared_ptr<BlockStorage> block_storage = chunk.get_block_storage_ptr();
         auto& block_palette = block_storage->get_palette();
         auto& block_sections = block_storage->get_sections();
         auto version_block_data = game_version->get_block_data();

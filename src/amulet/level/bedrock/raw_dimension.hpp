@@ -16,6 +16,7 @@
 #include <amulet/level/dll.hpp>
 
 #include "chunk.hpp"
+#include "raw_chunk.hpp"
 
 namespace Amulet {
 
@@ -72,10 +73,12 @@ private:
     BedrockInternalDimensionID _internal_dimension_id;
     DimensionId _dimension_id;
     SelectionBox _bounds;
+    std::int16_t _legacy_floor;
     BlockStack _default_block;
     Biome _default_biome;
     std::uint32_t _actor_group;
     std::atomic_uint32_t _actor_index;
+    VersionNumber _max_version;
     bool _destroyed = false;
 
 public:
@@ -84,9 +87,19 @@ public:
         BedrockInternalDimensionID internal_dimension_id,
         const DimensionId& dimension_id,
         const SelectionBox& bounds,
+        std::int16_t legacy_floor,
         const BlockStack& default_block,
         const Biome& default_biome,
-        std::uint32_t actor_group);
+        std::uint32_t actor_group,
+        VersionNumber max_version);
+
+    // Copy
+    BedrockRawDimension(const BedrockRawDimension&) = delete;
+    BedrockRawDimension& operator=(const BedrockRawDimension&) = delete;
+
+    // Move
+    BedrockRawDimension(BedrockRawDimension&&) = delete;
+    BedrockRawDimension& operator=(BedrockRawDimension&&) = delete;
 
     // Destructor.
     AMULET_LEVEL_EXPORT ~BedrockRawDimension();
@@ -138,9 +151,8 @@ public:
     AMULET_LEVEL_EXPORT void set_raw_chunk(std::int32_t cx, std::int32_t cz, BedrockRawChunk& chunk);
 
     // Decode a raw chunk to a chunk object.
-    // This will mutate the chunk data.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(const BedrockRawChunk& raw_chunk, std::int32_t cx, std::int32_t cz);
+    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> decode_chunk(BedrockRawChunk raw_chunk, std::int32_t cx, std::int32_t cz);
 
     // Encode a chunk object to its raw data.
     // This will mutate the chunk data.

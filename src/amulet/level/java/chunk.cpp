@@ -71,7 +71,7 @@ JavaChunk1444::JavaChunk1444(
     : ChunkComponentHelper()
 {
     if (data_version < 1444 || 1465 < data_version) {
-        throw std::invalid_argument("data version must be between 1443 and 1465");
+        throw std::invalid_argument("data version must be between 1444 and 1465");
     }
     VersionNumber version_number(std::initializer_list<std::int64_t> { data_version });
     VersionRange version_range("java", version_number, version_number);

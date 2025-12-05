@@ -68,7 +68,12 @@ public:
 
     // The maximum game version the level has been opened with.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT const VersionNumber get_max_game_version() override;
+    AMULET_LEVEL_EXPORT VersionNumber get_max_game_version() override;
+
+    // Get the suggested maximum block version this level can accept.
+    // Note that the real max version may be higher.
+    // External Read:SharedReadWrite lock required.
+    AMULET_LEVEL_EXPORT VersionNumber get_max_block_version() override;
 
     // Is this level a supported version.
     // This is true for all versions we support and false for snapshots and unsupported newer versions.

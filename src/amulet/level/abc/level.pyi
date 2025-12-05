@@ -188,6 +188,14 @@ class LevelMetadata:
         """
 
     @property
+    def max_block_version(self) -> amulet.core.version.VersionNumber:
+        """
+        Get the suggested maximum block version this level can accept.
+        Note that on some platforms the real max version may be higher.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
     def max_game_version(self) -> amulet.core.version.VersionNumber:
         """
         The maximum game version the level has been opened with.

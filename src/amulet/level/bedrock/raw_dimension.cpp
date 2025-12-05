@@ -4,76 +4,14 @@
 #include <string_view>
 #include <variant>
 
+#include <amulet/io/binary_reader.hpp>
+
 #include <amulet/leveldb.hpp>
 #include <leveldb/write_batch.h>
 
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 
 #include "raw_dimension.hpp"
-
-namespace {
-
-template <std::endian Endianness = std::endian::little>
-class KeyWriter {
-private:
-    std::string& _data;
-
-public:
-    KeyWriter(std::string& data)
-        : _data(data)
-    {
-    }
-
-    // Fix the endianness of the numeric value and write it to the buffer.
-    template <typename T>
-    void write_numeric(const T& value)
-    {
-        if constexpr (std::endian::native == Endianness) {
-            _data.append(reinterpret_cast<const char*>(&value), sizeof(T));
-        } else {
-            const size_t data_size = _data.size() + sizeof(T);
-            _data.resize(data_size);
-            char* src = (char*)&value;
-            char* dst = _data.data() + data_size;
-            for (size_t i = 0; i < sizeof(T); i++) {
-                *(dst - i - 1) = *(src + i);
-            }
-        }
-    }
-};
-
-template <std::endian Endianness = std::endian::little>
-class KeyReader {
-private:
-    const char* _data;
-    size_t _index;
-
-public:
-    KeyReader(const char* data, size_t index = 0)
-        : _data(data)
-        , _index(index)
-    {
-    }
-
-    template <typename T>
-        requires std::is_integral_v<T>
-    T read_numeric()
-    {
-        const char* src_ptr = _data + _index;
-        _index += sizeof(T);
-        T value;
-
-        if constexpr (Endianness == std::endian::native) {
-            std::memcpy(&value, src_ptr, sizeof(T));
-        } else {
-            std::reverse_copy(src_ptr, src_ptr + sizeof(T), reinterpret_cast<char*>(&value));
-        }
-
-        return value;
-    }
-};
-
-}
 
 namespace Amulet {
 
@@ -84,7 +22,7 @@ BedrockChunkCoordIterator::BedrockChunkCoordIterator(
     , _it(_it_ptr->get_iterator())
 {
     if (dimension_id != 0) {
-        KeyWriter dimension_id_writer(_dimension_id);
+        TemplateBaseBinaryWriter<StaticLittleEndian, false> dimension_id_writer(_dimension_id);
         dimension_id_writer.write_numeric<std::int32_t>(dimension_id);
     }
 }
@@ -145,9 +83,9 @@ const std::pair<std::int32_t, std::int32_t> BedrockChunkCoordIterator::get_coord
     if (key.size() != 9 + _dimension_id.size()) {
         throw std::runtime_error("Chunk version key is not valid");
     }
-    KeyReader key_reader(key.data());
-    auto cx = key_reader.read_numeric<std::int32_t>();
-    auto cz = key_reader.read_numeric<std::int32_t>();
+    TemplateBinaryReader<StaticLittleEndian, false> key_reader({ key.data(), key.size() }, 0);
+    auto cx = key_reader.read_numeric<std::int32_t, false>();
+    auto cz = key_reader.read_numeric<std::int32_t, false>();
     return std::make_pair(cx, cz);
 }
 
@@ -156,17 +94,21 @@ BedrockRawDimension::BedrockRawDimension(
     BedrockInternalDimensionID internal_dimension_id,
     const DimensionId& dimension_id,
     const SelectionBox& bounds,
+    std::int16_t legacy_floor,
     const BlockStack& default_block,
     const Biome& default_biome,
-    std::uint32_t actor_group)
+    std::uint32_t actor_group,
+    VersionNumber max_version)
     : _db(std::move(db))
     , _internal_dimension_id(internal_dimension_id)
     , _dimension_id(dimension_id)
     , _bounds(bounds)
+    , _legacy_floor(legacy_floor)
     , _default_block(default_block)
     , _default_biome(default_biome)
     , _actor_group(actor_group)
     , _actor_index(0)
+    , _max_version(std::move(max_version))
 {
 }
 
@@ -213,7 +155,7 @@ BedrockChunkCoordIterator BedrockRawDimension::all_chunk_coords() const
 static std::string get_key_prefix(std::int32_t dimension, std::int32_t cx, std::int32_t cz)
 {
     std::string key;
-    KeyWriter writer(key);
+    TemplateBaseBinaryWriter<StaticLittleEndian, false> writer(key);
     writer.write_numeric<std::int32_t>(cx);
     writer.write_numeric<std::int32_t>(cz);
     if (dimension != 0) {
@@ -367,6 +309,10 @@ BedrockRawChunk BedrockRawDimension::get_raw_chunk(std::int32_t cx, std::int32_t
         }
     }
 
+    if (data.empty() && actors.empty()) {
+        throw ChunkDoesNotExist();
+    }
+
     return BedrockRawChunk(std::move(data), std::move(actors));
 }
 
@@ -409,10 +355,12 @@ void BedrockRawDimension::set_raw_chunk(std::int32_t cx, std::int32_t cz, Bedroc
 
         for (std::uint32_t i = 0; i < actors.size(); i++, actor_index++) {
             std::string actor_key;
-            actor_key.reserve(8);
-            KeyWriter<std::endian::big> actor_key_writer(actor_key);
-            actor_key_writer.write_numeric<std::uint32_t>(_actor_group);
-            actor_key_writer.write_numeric<std::uint32_t>(actor_index);
+            {
+                actor_key.reserve(8);
+                TemplateBaseBinaryWriter<StaticBigEndian, false> actor_key_writer(actor_key);
+                actor_key_writer.write_numeric<std::uint32_t>(_actor_group);
+                actor_key_writer.write_numeric<std::uint32_t>(actor_index);
+            }
 
             auto& actor = actors[i];
 

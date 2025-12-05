@@ -11,8 +11,8 @@
 #include <amulet/level/abc/history.hpp>
 #include <amulet/level/abc/level.hpp>
 
-#include "raw_level.hpp"
 #include "dimension.hpp"
+#include "raw_level.hpp"
 
 namespace Amulet {
 
@@ -74,7 +74,11 @@ public:
 
     // The maximum game version the level has been opened with.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT const VersionNumber get_max_game_version() override;
+    AMULET_LEVEL_EXPORT VersionNumber get_max_game_version() override;
+
+    // Get the maximum block version this level can accept.
+    // External Read:SharedReadWrite lock required.
+    AMULET_LEVEL_EXPORT VersionNumber get_max_block_version() override;
 
     // Is this level a supported version.
     // This is true for all versions we support and false for snapshots and unsupported newer versions.

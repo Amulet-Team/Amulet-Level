@@ -41,10 +41,15 @@ const std::string JavaLevel::get_platform()
     return _raw_level->get_platform();
 }
 
-const VersionNumber JavaLevel::get_max_game_version()
+VersionNumber JavaLevel::get_max_game_version()
 {
     OrderedLockGuard<ThreadAccessMode::Read, ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     return _raw_level->get_data_version();
+}
+
+VersionNumber JavaLevel::get_max_block_version()
+{
+    return get_max_game_version();
 }
 
 bool JavaLevel::is_supported()

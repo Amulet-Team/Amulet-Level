@@ -131,7 +131,6 @@ py::module init_bedrock_raw_dimension(py::module m_parent)
         py::arg("cx"),
         py::arg("cz"),
         py::doc("Decode a raw chunk to a chunk object.\n"
-                "This will mutate the chunk data.\n"
                 "TODO: thread safety"));
     BedrockRawDimension.def(
         "encode_chunk",

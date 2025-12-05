@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-import collections.abc
-
 import amulet.core.chunk
-import amulet.nbt
+import amulet.core.chunk.component.block_component
+import amulet.level.bedrock.chunk_components
 
-__all__: list[str] = ["BedrockChunk", "BedrockRawChunk"]
+__all__: list[str] = ["BedrockChunk", "BedrockChunk118"]
 
 class BedrockChunk(amulet.core.chunk.Chunk):
     pass
 
-class BedrockRawChunk:
-    @property
-    def actors(self) -> collections.abc.MutableSequence[amulet.nbt.NamedTag]: ...
-    @property
-    def data(self) -> collections.abc.MutableMapping[bytes, bytes]: ...
+class BedrockChunk118(
+    BedrockChunk,
+    amulet.level.bedrock.chunk_components.BedrockRawChunkComponent,
+    amulet.core.chunk.component.block_component.BlockComponent,
+):
+    pass

@@ -6,6 +6,7 @@ import amulet.core.biome
 import amulet.core.block
 import amulet.core.selection.box
 import amulet.level.bedrock.chunk
+import amulet.level.bedrock.raw_chunk
 import amulet.utils.lock
 
 __all__: list[str] = ["BedrockChunkCoordIterator", "BedrockRawDimension"]
@@ -17,13 +18,12 @@ class BedrockChunkCoordIterator:
 class BedrockRawDimension:
     def decode_chunk(
         self,
-        raw_chunk: amulet.level.bedrock.chunk.BedrockRawChunk,
+        raw_chunk: amulet.level.bedrock.raw_chunk.BedrockRawChunk,
         cx: typing.SupportsInt,
         cz: typing.SupportsInt,
     ) -> amulet.level.bedrock.chunk.BedrockChunk:
         """
         Decode a raw chunk to a chunk object.
-        This will mutate the chunk data.
         TODO: thread safety
         """
 
@@ -46,7 +46,7 @@ class BedrockRawDimension:
         chunk: amulet.level.bedrock.chunk.BedrockChunk,
         cx: typing.SupportsInt,
         cz: typing.SupportsInt,
-    ) -> amulet.level.bedrock.chunk.BedrockRawChunk:
+    ) -> amulet.level.bedrock.raw_chunk.BedrockRawChunk:
         """
         Encode a chunk object to its raw data.
         This will mutate the chunk data.
@@ -63,7 +63,7 @@ class BedrockRawDimension:
 
     def get_raw_chunk(
         self, cx: typing.SupportsInt, cz: typing.SupportsInt
-    ) -> amulet.level.bedrock.chunk.BedrockRawChunk:
+    ) -> amulet.level.bedrock.raw_chunk.BedrockRawChunk:
         """
         Get the raw chunk from this dimension.
         External Read:SharedReadWrite lock required.
@@ -99,7 +99,7 @@ class BedrockRawDimension:
         self,
         cx: typing.SupportsInt,
         cz: typing.SupportsInt,
-        chunk: amulet.level.bedrock.chunk.BedrockRawChunk,
+        chunk: amulet.level.bedrock.raw_chunk.BedrockRawChunk,
     ) -> None:
         """
         Set the chunk in this dimension from raw data.

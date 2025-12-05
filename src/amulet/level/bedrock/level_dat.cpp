@@ -74,8 +74,7 @@ void BedrockLevelDat::set_named_tag(const NBT::NamedTag& named_tag)
 // Construct from the binary data
 BedrockLevelDat BedrockLevelDat::from_binary(std::string_view buffer)
 {
-    size_t position = 0;
-    BinaryReader reader(buffer, position, std::endian::little, NBT::utf8_to_utf8_escape);
+    BinaryReader reader(buffer, 0, std::endian::little, NBT::utf8_to_utf8_escape);
     auto version = reader.read_numeric<std::uint32_t>();
     auto size = reader.read_numeric<std::uint32_t>();
     auto named_tag = NBT::decode_nbt(reader);
@@ -109,7 +108,8 @@ BedrockLevelDat BedrockLevelDat::from_file(std::filesystem::path path)
 // Convert to binary.
 std::string BedrockLevelDat::to_binary() const
 {
-    BinaryWriter writer(std::endian::little, NBT::utf8_escape_to_utf8);
+    std::string buffer;
+    BaseBinaryWriter writer(buffer, std::endian::little, NBT::utf8_escape_to_utf8);
     writer.write_numeric<std::uint32_t>(_version);
     writer.write_numeric<std::uint32_t>(0); // size
     NBT::encode_nbt(writer, *_named_tag);
@@ -117,7 +117,6 @@ std::string BedrockLevelDat::to_binary() const
     // Write the size to the end
     writer.write_numeric<std::uint32_t>(writer.get_buffer().size() - 8);
     // Copy it to the correct location
-    std::string buffer = writer.get_buffer();
     std::memcpy(&buffer[4], &buffer[buffer.size() - 4], 4);
     // Crop off the end value
     buffer.resize(buffer.size() - 4);

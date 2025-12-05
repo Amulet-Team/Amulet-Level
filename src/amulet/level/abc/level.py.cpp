@@ -40,6 +40,13 @@ py::module init_level(py::module m_parent)
         py::call_guard<py::gil_scoped_release>(),
         py::doc("The maximum game version the level has been opened with.\n"
                 "External Read:SharedReadWrite lock required."));
+    LevelMetadata.def_property_readonly(
+        "max_block_version",
+        &Amulet::LevelMetadata::get_max_block_version,
+        py::call_guard<py::gil_scoped_release>(),
+        py::doc("Get the suggested maximum block version this level can accept.\n"
+                "Note that on some platforms the real max version may be higher.\n"
+                "External Read:SharedReadWrite lock required."));
     LevelMetadata.def(
         "is_supported",
         &Amulet::LevelMetadata::is_supported,

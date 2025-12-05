@@ -13,9 +13,10 @@ const std::string DataVersionComponent::ComponentID = "Amulet::DataVersionCompon
 std::optional<std::string> DataVersionComponent::serialise() const
 {
     if (_data_version) {
-        BinaryWriter writer;
+        std::string buffer;
+        TemplateBaseBinaryWriter<StaticLittleEndian, false> writer(buffer);
         writer.write_numeric<std::int64_t>(_data_version.value());
-        return writer.get_buffer();
+        return buffer;
     } else {
         return std::nullopt;
     }
@@ -23,8 +24,7 @@ std::optional<std::string> DataVersionComponent::serialise() const
 void DataVersionComponent::deserialise(std::optional<std::string> data)
 {
     if (data) {
-        size_t position = 0;
-        BinaryReader reader(data.value(), position);
+        TemplateBinaryReader<StaticLittleEndian, false> reader(data.value());
         _data_version = reader.read_numeric<std::int64_t>();
     } else {
         _data_version = std::nullopt;

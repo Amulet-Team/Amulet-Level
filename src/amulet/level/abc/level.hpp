@@ -38,7 +38,7 @@ public:
 
     // The maximum game version the level has been opened with.
     // External Read:SharedReadWrite lock required.
-    virtual const VersionNumber get_max_game_version() = 0;
+    virtual VersionNumber get_max_game_version() = 0;
 
     // Is this level a supported version.
     // This is true for all versions we support and false for snapshots, betas and unsupported newer versions.

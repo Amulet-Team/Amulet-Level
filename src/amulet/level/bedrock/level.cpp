@@ -53,7 +53,7 @@ const std::string BedrockLevel::get_platform()
     return _raw_level->get_platform();
 }
 
-const VersionNumber BedrockLevel::get_max_game_version()
+VersionNumber BedrockLevel::get_max_game_version()
 {
     OrderedLockGuard<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     return _raw_level->get_last_opened_version();

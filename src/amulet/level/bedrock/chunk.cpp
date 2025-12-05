@@ -26,8 +26,8 @@ BedrockChunk0::BedrockChunk0(
     BlockComponent::init(
         VersionRange(
             "bedrock",
-            VersionNumber({ 0 }),
-            VersionNumber({ std::numeric_limits<std::int64_t>::max() })),
+            VersionNumber({ -1 }),
+            VersionNumber({ -1 })),
         SectionShape(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16),
@@ -44,8 +44,8 @@ BedrockChunk1::BedrockChunk1(
     BlockComponent::init(
         VersionRange(
             "bedrock",
-            VersionNumber({ 0 }),
-            VersionNumber({ std::numeric_limits<std::int64_t>::max() })),
+            VersionNumber({ -1 }),
+            VersionNumber({ 4294967295 })),
         SectionShape(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16),
@@ -62,8 +62,8 @@ BedrockChunk118::BedrockChunk118(
     BlockComponent::init(
         VersionRange(
             "bedrock",
-            VersionNumber({ 0 }),
-            VersionNumber({ std::numeric_limits<std::int64_t>::max() })),
+            VersionNumber({ -1 }),
+            VersionNumber({ 4294967295 })),
         SectionShape(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16),

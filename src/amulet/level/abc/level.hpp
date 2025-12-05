@@ -40,6 +40,11 @@ public:
     // External Read:SharedReadWrite lock required.
     virtual VersionNumber get_max_game_version() = 0;
 
+    // Get the suggested maximum block version this level can accept.
+    // Note that on some platforms the real max version may be higher.
+    // External Read:SharedReadWrite lock required.
+    virtual VersionNumber get_max_block_version() = 0;
+
     // Is this level a supported version.
     // This is true for all versions we support and false for snapshots, betas and unsupported newer versions.
     // External Read:SharedReadWrite lock required.

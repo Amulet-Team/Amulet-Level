@@ -47,6 +47,11 @@ VersionNumber JavaLevel::get_max_game_version()
     return _raw_level->get_data_version();
 }
 
+VersionNumber JavaLevel::get_max_block_version()
+{
+    return get_max_game_version();
+}
+
 bool JavaLevel::is_supported()
 {
     return _raw_level->is_supported();

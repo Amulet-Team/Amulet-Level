@@ -6,6 +6,8 @@
 #include <stdexcept>
 #include <string>
 
+#include <amulet/game/game.hpp>
+
 #include "level.hpp"
 
 namespace Amulet {
@@ -57,6 +59,11 @@ VersionNumber BedrockLevel::get_max_game_version()
 {
     OrderedLockGuard<Amulet::ThreadAccessMode::Read, Amulet::ThreadShareMode::SharedReadWrite> lock(_raw_level->get_mutex());
     return _raw_level->get_last_opened_version();
+}
+
+VersionNumber BedrockLevel::get_max_block_version()
+{
+    return game::get_game_version("bedrock", get_max_game_version())->get_max_known_block_version();
 }
 
 bool BedrockLevel::is_supported()

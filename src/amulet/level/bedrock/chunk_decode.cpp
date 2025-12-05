@@ -284,7 +284,8 @@ static void _decode_bedrock_chunk_terrain(
         }
 
         // Increment the iterator and extract the node.
-        auto node = data.extract(it2f++);
+        auto extract_it = it2f++;
+        auto node = data.extract(extract_it);
         auto cy = static_cast<std::int64_t>(node.key()[1]) + legacy_floor;
         auto& value = node.mapped();
 

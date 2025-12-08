@@ -361,21 +361,21 @@ void decode_java_chunk(
             auto& block_entity_list = std::get<CompoundListTag>(*block_entity_tag);
 
             for (auto& block_entity_ptr : block_entity_list) {
-                auto block_id = pop_tag<StringTag>(*block_entity_ptr, "id", []() { return ""; });
-                if (block_id.empty()) {
+                auto block_entity_id = pop_tag<StringTag>(*block_entity_ptr, "id", []() { return ""; });
+                if (block_entity_id.empty()) {
                     continue;
                 }
 
                 // Get the namespace and base name
                 std::string namespace_;
                 std::string base_name;
-                auto colon_index = block_id.find_first_of(':');
+                auto colon_index = block_entity_id.find_first_of(':');
                 if (colon_index == std::string::npos) {
                     namespace_ = "minecraft";
-                    base_name = block_id;
+                    base_name = block_entity_id;
                 } else {
-                    namespace_ = block_id.substr(0, colon_index);
-                    base_name = block_id.substr(colon_index + 1);
+                    namespace_ = block_entity_id.substr(0, colon_index);
+                    base_name = block_entity_id.substr(colon_index + 1);
                 }
 
                 std::int32_t x = pop_tag<IntTag>(*block_entity_ptr, "x", []() { return 0; }) - cx * 16;

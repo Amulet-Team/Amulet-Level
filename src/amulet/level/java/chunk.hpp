@@ -12,6 +12,7 @@
 #include <amulet/core/block/block.hpp>
 #include <amulet/core/chunk/chunk.hpp>
 #include <amulet/core/chunk/component/block_component.hpp>
+#include <amulet/core/chunk/component/block_entity_component.hpp>
 
 #include <amulet/level/dll.hpp>
 
@@ -29,8 +30,8 @@ class JavaChunkNA : public ChunkComponentHelper<
                         DataVersionComponent,
                         // LastUpdateComponent,
                         // JavaLegacyVersionComponent,
-                        BlockComponent //,
-                        // BlockEntityComponent,
+                        BlockComponent,
+                        BlockEntityComponent //,
                         // EntityComponent,
                         // Biome2DComponent,
                         // Height2DComponent,
@@ -53,8 +54,8 @@ class JavaChunk0 : public ChunkComponentHelper<
                        // LastUpdateComponent,
                        // TerrainPopulatedComponent,
                        // LightPopulatedComponent,
-                       BlockComponent //,
-                       // BlockEntityComponent,
+                       BlockComponent,
+                       BlockEntityComponent //,
                        // EntityComponent,
                        // Biome2DComponent,
                        // Height2DComponent,
@@ -77,8 +78,8 @@ class JavaChunk1444 : public ChunkComponentHelper<
                           DataVersionComponent,
                           // LastUpdateComponent,
                           // StatusStringComponent,
-                          BlockComponent //,
-                          // BlockEntityComponent,
+                          BlockComponent,
+                          BlockEntityComponent //,
                           // EntityComponent,
                           // Biome2DComponent,
                           // Height2DComponent,
@@ -101,8 +102,8 @@ class JavaChunk1466 : public ChunkComponentHelper<
                           DataVersionComponent,
                           // LastUpdateComponent,
                           // StatusStringComponent,
-                          BlockComponent //,
-                          // BlockEntityComponent,
+                          BlockComponent,
+                          BlockEntityComponent //,
                           // EntityComponent,
                           // Biome2DComponent,
                           // NamedHeight2DComponent,
@@ -125,8 +126,8 @@ class JavaChunk2203 : public ChunkComponentHelper<
                           DataVersionComponent,
                           // LastUpdateComponent,
                           // StatusStringComponent,
-                          BlockComponent //,
-                          // BlockEntityComponent,
+                          BlockComponent,
+                          BlockEntityComponent //,
                           // EntityComponent,
                           // Biome3DComponent,
                           // NamedHeight2DComponent,

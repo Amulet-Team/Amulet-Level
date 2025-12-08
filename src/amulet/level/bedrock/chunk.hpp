@@ -4,6 +4,7 @@
 #include <amulet/core/block/block.hpp>
 #include <amulet/core/chunk/chunk.hpp>
 #include <amulet/core/chunk/component/block_component.hpp>
+#include <amulet/core/chunk/component/block_entity_component.hpp>
 
 #include <amulet/level/dll.hpp>
 
@@ -25,7 +26,8 @@ namespace detail {
 class BedrockChunk0 : public ChunkComponentHelper<
                           BedrockChunk,
                           BedrockRawChunkComponent,
-                          BlockComponent> {
+                          BlockComponent,
+                          BlockEntityComponent> {
 public:
     AMULET_LEVEL_EXPORT static const std::string ChunkID;
 
@@ -41,7 +43,8 @@ public:
 class BedrockChunk1 : public ChunkComponentHelper<
                           BedrockChunk,
                           BedrockRawChunkComponent,
-                          BlockComponent> {
+                          BlockComponent,
+                          BlockEntityComponent> {
 public:
     AMULET_LEVEL_EXPORT static const std::string ChunkID;
 
@@ -57,7 +60,8 @@ public:
 class BedrockChunk118 : public ChunkComponentHelper<
                             BedrockChunk,
                             BedrockRawChunkComponent,
-                            BlockComponent> {
+                            BlockComponent,
+                            BlockEntityComponent> {
 public:
     AMULET_LEVEL_EXPORT static const std::string ChunkID;
 

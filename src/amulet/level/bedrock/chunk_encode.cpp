@@ -281,12 +281,39 @@ static const VersionNumber SubChunkVersion8 { 1, 4, 2 };
 // Version not verified
 static const VersionNumber SubChunkVersion0 { 1, 0, 0 };
 
+static void _encode_bedrock_block_entities(
+    BlockEntityStorage& block_entity_storage,
+    std::map<Bytes, Bytes>& raw_chunk_data,
+    std::int64_t cx,
+    std::int64_t cz)
+{
+    if (!block_entity_storage.empty()) {
+        std::string buffer;
+        BaseBinaryWriter writer(buffer, std::endian::little, NBT::utf8_escape_to_utf8);
+        for (auto& [coord, block_entity] : block_entity_storage.get_block_entities()) {
+            auto& node = block_entity->get_nbt()->tag_node;
+            if (!std::holds_alternative<CompoundTagPtr>(node)) {
+                continue;
+            }
+            auto& block_entity_tag = *std::get<CompoundTagPtr>(node);
+            block_entity_tag.insert_or_assign("id", StringTag(block_entity->get_base_name()));
+            block_entity_tag.insert_or_assign("x", IntTag(static_cast<std::int32_t>(std::get<0>(coord)) + cx * 16));
+            block_entity_tag.insert_or_assign("y", IntTag(std::get<1>(coord)));
+            block_entity_tag.insert_or_assign("z", IntTag(static_cast<std::int32_t>(std::get<2>(coord)) + cz * 16));
+            NBT::encode_nbt(writer, *block_entity->get_nbt());
+        }
+        raw_chunk_data.insert_or_assign("1", std::move(buffer));
+    }
+}
+
 template <typename ChunkT>
 BedrockRawChunk _encode_bedrock_chunk(
     const VersionNumber& max_version,
     std::int16_t legacy_floor,
     const Block& default_block,
-    ChunkT& chunk)
+    ChunkT& chunk,
+    std::int64_t cx,
+    std::int64_t cz)
 {
     // Extract the raw chunk data
     auto raw_chunk_ptr = chunk.get_raw_data();
@@ -294,7 +321,7 @@ BedrockRawChunk _encode_bedrock_chunk(
         throw std::runtime_error("raw_data pointer is empty");
     }
     auto& raw_chunk = *raw_chunk_ptr;
-    auto& data = raw_chunk.get_data();
+    auto& raw_chunk_data = raw_chunk.get_data();
 
     if constexpr (std::is_same_v<ChunkT, BedrockChunk0>) {
         // LegacyTerrain
@@ -313,10 +340,10 @@ BedrockRawChunk _encode_bedrock_chunk(
             // Encode block data
             if (SubChunkVersion9 <= max_version) {
                 // sub-chunk version 9
-                _encode_bedrock_palette_chunk_terrain<9>(legacy_floor, default_block, chunk, data);
+                _encode_bedrock_palette_chunk_terrain<9>(legacy_floor, default_block, chunk, raw_chunk_data);
             } else if (SubChunkVersion8 <= max_version) {
                 // sub-chunk version 8
-                _encode_bedrock_palette_chunk_terrain<8>(legacy_floor, default_block, chunk, data);
+                _encode_bedrock_palette_chunk_terrain<8>(legacy_floor, default_block, chunk, raw_chunk_data);
             }
             // else if (VersionNumber {} < max_version) {
             //     // sub-chunk version 1
@@ -327,6 +354,8 @@ BedrockRawChunk _encode_bedrock_chunk(
             }
         }
     }
+
+    _encode_bedrock_block_entities(*chunk.get_block_entity_storage(), raw_chunk_data, cx, cz);
 
     // Return the raw chunk data.
     // Move is needed here because raw_chunk is a refernce.
@@ -339,11 +368,11 @@ BedrockRawChunk BedrockRawDimension::encode_chunk(
     std::int32_t cz)
 {
     if (auto* chunk_ = dynamic_cast<BedrockChunk118*>(&chunk)) {
-        return _encode_bedrock_chunk(_max_version, _legacy_floor, _default_block.at(0), *chunk_);
+        return _encode_bedrock_chunk(_max_version, _legacy_floor, _default_block.at(0), *chunk_, cx, cz);
     } else if (auto* chunk_ = dynamic_cast<BedrockChunk1*>(&chunk)) {
-        return _encode_bedrock_chunk(_max_version, _legacy_floor, _default_block.at(0), *chunk_);
+        return _encode_bedrock_chunk(_max_version, _legacy_floor, _default_block.at(0), *chunk_, cx, cz);
     } else if (auto* chunk_ = dynamic_cast<BedrockChunk0*>(&chunk)) {
-        return _encode_bedrock_chunk(_max_version, _legacy_floor, _default_block.at(0), *chunk_);
+        return _encode_bedrock_chunk(_max_version, _legacy_floor, _default_block.at(0), *chunk_, cx, cz);
     } else {
         throw std::invalid_argument("Unsupported Bedrock chunk class: " + chunk.get_chunk_id());
     }

@@ -7,11 +7,26 @@
 #include <amulet/nbt/nbt_encoding/binary.hpp>
 #include <amulet/nbt/string_encoding/string_encoding.hpp>
 
+#include <amulet/core/chunk/component/block_entity_component.hpp>
+
 #include "chunk.hpp"
 #include "raw_chunk.hpp"
 #include "raw_dimension.hpp"
 
 using namespace Amulet::NBT;
+
+namespace {
+template <typename tagT>
+tagT pop_tag(CompoundTag& compound, std::string name, std::function<tagT()> get_default)
+{
+    auto node = compound.extract(name);
+    if (
+        node && std::holds_alternative<tagT>(node.mapped())) {
+        return std::get<tagT>(node.mapped());
+    }
+    return get_default();
+}
+} // namespace
 
 namespace Amulet {
 
@@ -320,9 +335,61 @@ static void _decode_bedrock_chunk_terrain(
     }
 }
 
-template <typename ChunkT>
-void _decode_bedrock_chunk_common(ChunkT& chunk, BedrockRawChunk& raw_chunk)
+static void _decode_bedrock_block_entities(
+    BlockEntityStorage& storage,
+    const std::string& buffer,
+    std::int64_t cx,
+    std::int64_t cz)
 {
+    BinaryReader reader(buffer, 0, std::endian::little, NBT::utf8_to_utf8_escape);
+    while (reader.has_more_data()) {
+        auto named_tag = NBT::decode_nbt(reader);
+        if (!std::holds_alternative<CompoundTagPtr>(named_tag.tag_node)) {
+            continue;
+        }
+        auto& tag = *std::get<CompoundTagPtr>(named_tag.tag_node);
+
+        auto block_entity_id = pop_tag<StringTag>(tag, "id", []() { return ""; });
+        if (block_entity_id.empty()) {
+            continue;
+        }
+
+        std::int32_t x = pop_tag<IntTag>(tag, "x", []() { return 0; }) - cx * 16;
+        std::int32_t y = pop_tag<IntTag>(tag, "y", []() { return 0; });
+        std::int32_t z = pop_tag<IntTag>(tag, "z", []() { return 0; }) - cz * 16;
+
+        if (x < 0 || 16 <= x || z < 0 || 16 <= z) {
+            // block entity is not in this chunk.
+            continue;
+        }
+
+        storage.set(
+            BlockEntityChunkCoord(static_cast<std::uint16_t>(x), static_cast<int64_t>(y), static_cast<std::uint16_t>(z)),
+            BlockEntity(
+                "bedrock",
+                std::initializer_list<std::int64_t> { -1 },
+                "minecraft",
+                block_entity_id,
+                std::make_shared<NamedTag>(std::move(named_tag))));
+    }
+}
+
+template <typename ChunkT>
+void _decode_bedrock_chunk_common(
+    ChunkT& chunk,
+    std::int32_t cx,
+    std::int32_t cz,
+    BedrockRawChunk& raw_chunk)
+{
+    // Decode block entities
+    auto block_entity_node = raw_chunk.get_data().extract("1");
+    if (block_entity_node) {
+        _decode_bedrock_block_entities(
+            *chunk.get_block_entity_storage(),
+            block_entity_node.mapped(),
+            cx, cz);
+    }
+
     // Move the remaining raw data into the chunk.
     chunk.set_raw_data(std::make_shared<BedrockRawChunk>(std::move(raw_chunk)));
 }
@@ -360,7 +427,7 @@ static std::unique_ptr<BedrockChunk> _decode_bedrock_chunk_1(
     auto chunk = std::make_unique<BedrockChunk1>(default_block, default_biome);
     _decode_bedrock_chunk_terrain(legacy_floor, cx, cz, raw_chunk.get_data(), *chunk);
     // TODO: extract biome and height data
-    _decode_bedrock_chunk_common(*chunk, raw_chunk);
+    _decode_bedrock_chunk_common(*chunk, cx, cz, raw_chunk);
     return chunk;
 }
 
@@ -376,7 +443,7 @@ static std::unique_ptr<BedrockChunk> _decode_bedrock_chunk_118(
     auto chunk = std::make_unique<BedrockChunk118>(default_block, default_biome);
     _decode_bedrock_chunk_terrain(legacy_floor, cx, cz, raw_chunk.get_data(), *chunk);
     // TODO: extract biome and height data
-    _decode_bedrock_chunk_common(*chunk, raw_chunk);
+    _decode_bedrock_chunk_common(*chunk, cx, cz, raw_chunk);
     return chunk;
 }
 

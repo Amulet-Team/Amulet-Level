@@ -289,28 +289,28 @@ JavaRawChunk encode_java_chunk(
         }
     }
 
-    // if 2844 <= DataVersion:
-    //     BlockEntities = ("region", [("block_entities", ListTag)], ListTag)
-    // else:
-    //     BlockEntities = (
-    //         "region",
-    //         [("Level", CompoundTag), ("TileEntities", ListTag)],
-    //         ListTag,
-    //     )
-    // encoded_block_entities = []
-    // for entity in chunk.block_entities:
-    //     nbt = self._encode_block_entity(
-    //         entity,
-    //         EntityIDType.namespace_str_id,
-    //         EntityCoordType.xyz_int,
-    //     )
-    //     if nbt is not None:
-    //         encoded_block_entities.append(nbt.compound)
-    // set_layer_obj(
-    //     data,
-    //     BlockEntities,
-    //     ListTag(encoded_block_entities)
-    //)
+    // Block Entities
+    {
+        CompoundListTag block_entities_tag;
+        for (auto& [coord, block_entity] : chunk.get_block_entity_storage()->get_block_entities()) {
+            auto& node = block_entity->get_nbt()->tag_node;
+            if (!std::holds_alternative<CompoundTagPtr>(node)) {
+                continue;
+            }
+            auto block_entity_tag = std::get<CompoundTagPtr>(node);
+            block_entity_tag->insert_or_assign("id", StringTag(block_entity->get_namespace() + ":" + block_entity->get_base_name()));
+            block_entity_tag->insert_or_assign("x", IntTag(static_cast<std::int32_t>(std::get<0>(coord)) + cx * 16));
+            block_entity_tag->insert_or_assign("y", IntTag(std::get<1>(coord)));
+            block_entity_tag->insert_or_assign("z", IntTag(static_cast<std::int32_t>(std::get<2>(coord)) + cz * 16));
+            block_entities_tag.emplace_back(std::move(block_entity_tag));
+        }
+        auto block_entities_tag_ptr = std::make_shared<ListTag>(std::move(block_entities_tag));
+        if constexpr (2844 <= DataVersion) {
+            level_tag.insert_or_assign("block_entities", std::move(block_entities_tag_ptr));
+        } else {
+            level_tag.insert_or_assign("TileEntities", std::move(block_entities_tag_ptr));
+        }
+    }
 
     // if amulet.entity_support:
     //     entities = chunk.entities

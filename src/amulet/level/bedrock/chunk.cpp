@@ -33,6 +33,13 @@ BedrockChunk0::BedrockChunk0(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(
+        VersionRange(
+            "bedrock",
+            VersionNumber({ -1 }),
+            VersionNumber({ -1 })),
+        16,
+        16);
 }
 
 BedrockChunk1::BedrockChunk1(
@@ -51,6 +58,13 @@ BedrockChunk1::BedrockChunk1(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(
+        VersionRange(
+            "bedrock",
+            VersionNumber({ -1 }),
+            VersionNumber({ -1 })),
+        16,
+        16);
 }
 
 BedrockChunk118::BedrockChunk118(
@@ -69,6 +83,13 @@ BedrockChunk118::BedrockChunk118(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(
+        VersionRange(
+            "bedrock",
+            VersionNumber({ -1 }),
+            VersionNumber({ -1 })),
+        16,
+        16);
 }
 
 static const ChunkNullConstructor<BedrockChunk0> _bc0;

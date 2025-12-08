@@ -6,6 +6,7 @@ import amulet.core.biome
 import amulet.core.block
 import amulet.core.chunk
 import amulet.core.chunk.component.block_component
+import amulet.core.chunk.component.block_entity_component
 import amulet.level.java.chunk_components
 
 __all__: list[str] = [
@@ -25,6 +26,7 @@ class JavaChunk0(
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
     amulet.core.chunk.component.block_component.BlockComponent,
+    amulet.core.chunk.component.block_entity_component.BlockEntityComponent,
 ):
     def __init__(
         self,
@@ -38,6 +40,7 @@ class JavaChunk1444(
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
     amulet.core.chunk.component.block_component.BlockComponent,
+    amulet.core.chunk.component.block_entity_component.BlockEntityComponent,
 ):
     def __init__(
         self,
@@ -51,6 +54,7 @@ class JavaChunk1466(
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
     amulet.core.chunk.component.block_component.BlockComponent,
+    amulet.core.chunk.component.block_entity_component.BlockEntityComponent,
 ):
     def __init__(
         self,
@@ -64,6 +68,7 @@ class JavaChunk2203(
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
     amulet.core.chunk.component.block_component.BlockComponent,
+    amulet.core.chunk.component.block_entity_component.BlockEntityComponent,
 ):
     def __init__(
         self,
@@ -77,6 +82,7 @@ class JavaChunkNA(
     amulet.level.java.chunk_components.JavaRawChunkComponent,
     amulet.level.java.chunk_components.DataVersionComponent,
     amulet.core.chunk.component.block_component.BlockComponent,
+    amulet.core.chunk.component.block_entity_component.BlockEntityComponent,
 ):
     def __init__(
         self,

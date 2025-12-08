@@ -40,6 +40,13 @@ JavaChunkNA::JavaChunkNA(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(
+        VersionRange(
+            "bedrock",
+            VersionNumber({ -1 }),
+            VersionNumber({ -1 })),
+        16,
+        16);
 }
 
 JavaChunk0::JavaChunk0(
@@ -62,6 +69,7 @@ JavaChunk0::JavaChunk0(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(version_range, 16, 16);
 }
 
 JavaChunk1444::JavaChunk1444(
@@ -84,6 +92,7 @@ JavaChunk1444::JavaChunk1444(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(version_range, 16, 16);
 }
 
 JavaChunk1466::JavaChunk1466(
@@ -106,6 +115,7 @@ JavaChunk1466::JavaChunk1466(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(version_range, 16, 16);
 }
 
 JavaChunk2203::JavaChunk2203(
@@ -128,6 +138,7 @@ JavaChunk2203::JavaChunk2203(
             static_cast<std::uint16_t>(16),
             static_cast<std::uint16_t>(16)),
         default_block);
+    BlockEntityComponent::init(version_range, 16, 16);
 }
 
 static const ChunkNullConstructor<JavaChunkNA> _jcna;

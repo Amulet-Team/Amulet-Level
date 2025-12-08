@@ -14,6 +14,7 @@
 #include <amulet/nbt/tag/named_tag.hpp>
 
 #include <amulet/core/block/block.hpp>
+#include <amulet/core/block_entity/block_entity.hpp>
 #include <amulet/core/chunk/chunk.hpp>
 #include <amulet/core/version/version.hpp>
 
@@ -347,32 +348,58 @@ void decode_java_chunk(
         }
     }
 
-    // Block entities TODO
-    // if 2844 <= DataVersion:
-    //     BlockEntities = ("region", [("block_entities", ListTag)], ListTag)
-    // else:
-    //     BlockEntities = (
-    //         "region",
-    //         [("Level", CompoundTag), ("TileEntities", ListTag)],
-    //         ListTag,
-    //     )
-    // def _decode_block_entity_list(block_entities: ListTag) -> List["BlockEntity"]:
-    //     entities_out = []
-    //     if block_entities.list_data_type == CompoundTag.tag_id:
-    //         for nbt in block_entities:
-    //             if not isinstance(nbt, CompoundTag):
-    //                 continue
-    //             entity = self._decode_block_entity(
-    //                 NamedTag(nbt),
-    //                 EntityIDType.namespace_str_id,
-    //                 EntityCoordType.xyz_int,
-    //             )
-    //             if entity is not None:
-    //                 entities_out.append(entity)
-    //     return entities_out
-    // chunk.block_entities = _decode_block_entity_list(
-    //     get_layer_obj(data, BlockEntities, pop_last=True)
-    //)
+    // Block Entities
+    {
+        ListTagPtr block_entity_tag;
+        if constexpr (2844 <= DataVersion) {
+            block_entity_tag = pop_tag<ListTagPtr>(level_tag, "block_entities", []() { return nullptr; });
+        } else {
+            block_entity_tag = pop_tag<ListTagPtr>(level_tag, "TileEntities", []() { return nullptr; });
+        }
+        if (block_entity_tag && std::holds_alternative<CompoundListTag>(*block_entity_tag)) {
+            auto block_entity_storage = chunk.get_block_entity_storage();
+            auto& block_entity_list = std::get<CompoundListTag>(*block_entity_tag);
+
+            for (auto& block_entity_ptr : block_entity_list) {
+                auto block_id = pop_tag<StringTag>(*block_entity_ptr, "id", []() { return ""; });
+                if (block_id.empty()) {
+                    continue;
+                }
+
+                // Get the namespace and base name
+                std::string namespace_;
+                std::string base_name;
+                auto colon_index = block_id.find_first_of(':');
+                if (colon_index == std::string::npos) {
+                    namespace_ = "minecraft";
+                    base_name = block_id;
+                } else {
+                    namespace_ = block_id.substr(0, colon_index);
+                    base_name = block_id.substr(colon_index + 1);
+                }
+
+                std::int32_t x = pop_tag<IntTag>(*block_entity_ptr, "x", []() { return 0; }) - cx * 16;
+                std::int32_t y = pop_tag<IntTag>(*block_entity_ptr, "y", []() { return 0; });
+                std::int32_t z = pop_tag<IntTag>(*block_entity_ptr, "z", []() { return 0; }) - cz * 16;
+
+                if (x < 0 || 16 <= x || z < 0 || 16 <= z) {
+                    // block entity is not in this chunk.
+                    continue;
+                }
+
+                block_entity_storage->set(
+                    BlockEntityChunkCoord(static_cast<std::uint16_t>(x), static_cast<int64_t>(y), static_cast<std::uint16_t>(z)),
+                    BlockEntity(
+                        "java",
+                        std::initializer_list<std::int64_t> { data_version },
+                        namespace_,
+                        base_name,
+                        std::make_shared<NBT::NamedTag>(
+                            "",
+                            std::move(block_entity_ptr))));
+            }
+        }
+    }
 
     // Entities TODO
     // def _decode_entity_list(entities: ListTag) -> list["Entity"]:

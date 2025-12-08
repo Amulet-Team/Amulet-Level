@@ -299,9 +299,9 @@ JavaRawChunk encode_java_chunk(
             }
             auto block_entity_tag = std::get<CompoundTagPtr>(node);
             block_entity_tag->insert_or_assign("id", StringTag(block_entity->get_namespace() + ":" + block_entity->get_base_name()));
-            block_entity_tag->insert_or_assign("x", IntTag(std::get<0>(coord)));
+            block_entity_tag->insert_or_assign("x", IntTag(static_cast<std::int32_t>(std::get<0>(coord)) + cx * 16));
             block_entity_tag->insert_or_assign("y", IntTag(std::get<1>(coord)));
-            block_entity_tag->insert_or_assign("z", IntTag(std::get<2>(coord)));
+            block_entity_tag->insert_or_assign("z", IntTag(static_cast<std::int32_t>(std::get<2>(coord)) + cz * 16));
             block_entities_tag.emplace_back(std::move(block_entity_tag));
         }
         auto block_entities_tag_ptr = std::make_shared<ListTag>(std::move(block_entities_tag));

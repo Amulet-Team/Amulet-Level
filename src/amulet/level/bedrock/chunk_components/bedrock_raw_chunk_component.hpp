@@ -13,7 +13,7 @@
 
 namespace Amulet {
 
-class BedrockRawChunkComponent {
+class AMULET_LEVEL_EXPORT BedrockRawChunkComponent {
 private:
     std::optional<std::shared_ptr<BedrockRawChunk>> _raw_data;
 
@@ -32,12 +32,12 @@ protected:
     }
     
     // Serialise the component data
-    AMULET_LEVEL_EXPORT std::optional<std::string> serialise() const;
+    std::optional<std::string> serialise() const;
     // Deserialise the component
-    AMULET_LEVEL_EXPORT void deserialise(std::optional<std::string>);
+    void deserialise(std::optional<std::string>);
 
 public:
-    AMULET_LEVEL_EXPORT static const std::string ComponentID;
+    static const std::string ComponentID;
 
     // This is subject to change as data gets moved into the chunk class.
     // Do not rely on data in here existing.

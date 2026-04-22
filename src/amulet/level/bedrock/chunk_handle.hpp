@@ -15,7 +15,15 @@ namespace Amulet {
 
 class BedrockDimension;
 
-class BedrockChunkHandle : public ChunkHandleHelper<
+extern template class ChunkHandleHelper<
+    BedrockRawDimension,
+    BedrockDimension,
+    BedrockRawChunk,
+    BedrockChunk,
+    detail::get_bedrock_null_chunk,
+    detail::get_bedrock_chunk_id>;
+
+class AMULET_LEVEL_EXPORT BedrockChunkHandle : public ChunkHandleHelper<
                             BedrockRawDimension,
                             BedrockDimension,
                             BedrockRawChunk,
@@ -27,10 +35,10 @@ private:
 
 public:
     // Get a unique copy of the chunk data.
-    AMULET_LEVEL_EXPORT std::unique_ptr<BedrockChunk> get_bedrock_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt);
+    std::unique_ptr<BedrockChunk> get_bedrock_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt);
 
     // Overwrite the chunk data.
-    AMULET_LEVEL_EXPORT void set_bedrock_chunk(const BedrockChunk&);
+    void set_bedrock_chunk(const BedrockChunk&);
 };
 
 } // namespace Amulet

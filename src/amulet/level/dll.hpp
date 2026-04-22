@@ -8,14 +8,6 @@
             #define AMULET_LEVEL_EXPORT __declspec(dllimport)
         #endif
     #else
-        #define AMULET_LEVEL_EXPORT
-    #endif
-#endif
-
-#if !defined(AMULET_LEVEL_EXPORT_EXCEPTION)
-    #if defined(_LIBCPP_EXCEPTION)
-        #define AMULET_LEVEL_EXPORT_EXCEPTION __attribute__((visibility("default")))
-    #else
-        #define AMULET_LEVEL_EXPORT_EXCEPTION
+        #define AMULET_LEVEL_EXPORT __attribute__((visibility("default")))
     #endif
 #endif

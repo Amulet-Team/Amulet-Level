@@ -105,6 +105,8 @@ static LevelData& get_level_data(const std::shared_ptr<LevelLoaderToken>& token)
     return levels[token];
 }
 
+NoValidLevelLoader::~NoValidLevelLoader() noexcept {}
+
 std::shared_ptr<Level> get_level(std::shared_ptr<LevelLoaderToken> token)
 {
     // Get the level storage

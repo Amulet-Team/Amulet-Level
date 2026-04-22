@@ -19,24 +19,24 @@ public:
     virtual bool operator==(const LevelLoaderToken&) const = 0;
 };
 
-class LevelLoaderPathToken : public LevelLoaderToken {
+class AMULET_LEVEL_EXPORT LevelLoaderPathToken : public LevelLoaderToken {
 public:
     std::filesystem::path path;
-    AMULET_LEVEL_EXPORT LevelLoaderPathToken(std::filesystem::path path);
-    AMULET_LEVEL_EXPORT LevelLoaderPathToken(const LevelLoaderPathToken& token) = default;
+    LevelLoaderPathToken(std::filesystem::path path);
+    LevelLoaderPathToken(const LevelLoaderPathToken& token) = default;
     std::string repr() const override;
     size_t hash() const override;
     bool operator==(const LevelLoaderToken&) const override;
 };
 
-class LevelLoader {
+class AMULET_LEVEL_EXPORT LevelLoader {
 public:
     // The name of the loader.
     std::string name;
     // The function to load the level.
     std::function<std::unique_ptr<Level>(const LevelLoaderToken&)> loader;
 
-    AMULET_LEVEL_EXPORT LevelLoader(
+    LevelLoader(
         const std::string& name,
         std::function<std::unique_ptr<Level>(const LevelLoaderToken&)> loader);
 };
@@ -50,17 +50,19 @@ struct std::hash<Amulet::LevelLoaderToken> {
 
 namespace Amulet {
 
-class LevelLoaderRegister {
+class AMULET_LEVEL_EXPORT LevelLoaderRegister {
 private:
     std::shared_ptr<LevelLoader> _loader;
 
 public:
-    AMULET_LEVEL_EXPORT LevelLoaderRegister(std::shared_ptr<LevelLoader>);
-    AMULET_LEVEL_EXPORT ~LevelLoaderRegister();
+    LevelLoaderRegister(std::shared_ptr<LevelLoader>);
+    ~LevelLoaderRegister();
 };
 
-class NoValidLevelLoader : public std::runtime_error {
+class AMULET_LEVEL_EXPORT NoValidLevelLoader : public std::runtime_error {
+public:
     using std::runtime_error::runtime_error;
+    ~NoValidLevelLoader() noexcept override;
 };
 
 AMULET_LEVEL_EXPORT std::shared_ptr<Level> get_level(std::shared_ptr<LevelLoaderToken>);

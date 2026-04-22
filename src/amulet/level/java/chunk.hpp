@@ -24,7 +24,7 @@ using JavaRawChunk = std::map<std::string, Amulet::NBT::NamedTag>;
 
 class JavaChunk : public Chunk { };
 
-class JavaChunkNA : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT JavaChunkNA : public ChunkComponentHelper<
                         JavaChunk,
                         JavaRawChunkComponent,
                         DataVersionComponent,
@@ -37,17 +37,17 @@ class JavaChunkNA : public ChunkComponentHelper<
                         // Height2DComponent,
                         > {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT JavaChunkNA(
+    JavaChunkNA(
         const BlockStack& default_block,
         const Biome& default_biome);
 };
 
-class JavaChunk0 : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT JavaChunk0 : public ChunkComponentHelper<
                        JavaChunk,
                        JavaRawChunkComponent,
                        DataVersionComponent,
@@ -61,18 +61,18 @@ class JavaChunk0 : public ChunkComponentHelper<
                        // Height2DComponent,
                        > {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT JavaChunk0(
+    JavaChunk0(
         std::int64_t data_version,
         const BlockStack& default_block,
         const Biome& default_biome);
 };
 
-class JavaChunk1444 : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT JavaChunk1444 : public ChunkComponentHelper<
                           JavaChunk,
                           JavaRawChunkComponent,
                           DataVersionComponent,
@@ -85,18 +85,18 @@ class JavaChunk1444 : public ChunkComponentHelper<
                           // Height2DComponent,
                           > {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT JavaChunk1444(
+    JavaChunk1444(
         std::int64_t data_version,
         const BlockStack& default_block,
         const Biome& default_biome);
 };
 
-class JavaChunk1466 : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT JavaChunk1466 : public ChunkComponentHelper<
                           JavaChunk,
                           JavaRawChunkComponent,
                           DataVersionComponent,
@@ -109,18 +109,18 @@ class JavaChunk1466 : public ChunkComponentHelper<
                           // NamedHeight2DComponent,
                           > {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT JavaChunk1466(
+    JavaChunk1466(
         std::int64_t data_version,
         const BlockStack& default_block,
         const Biome& default_biome);
 };
 
-class JavaChunk2203 : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT JavaChunk2203 : public ChunkComponentHelper<
                           JavaChunk,
                           JavaRawChunkComponent,
                           DataVersionComponent,
@@ -133,12 +133,12 @@ class JavaChunk2203 : public ChunkComponentHelper<
                           // NamedHeight2DComponent,
                           > {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT JavaChunk2203(
+    JavaChunk2203(
         std::int64_t data_version,
         const BlockStack& default_block,
         const Biome& default_biome);

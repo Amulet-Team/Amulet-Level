@@ -8,7 +8,7 @@
 
 namespace Amulet {
 
-template class ChunkHandleHelper<
+template class AMULET_LEVEL_EXPORT ChunkHandleHelper<
     JavaRawDimension,
     JavaDimension,
     JavaRawChunk,

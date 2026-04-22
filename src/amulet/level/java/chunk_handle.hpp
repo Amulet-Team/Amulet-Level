@@ -20,8 +20,7 @@ extern template class ChunkHandleHelper<
     JavaRawChunk,
     JavaChunk,
     detail::get_java_null_chunk,
-    detail::get_java_chunk_id
->
+    detail::get_java_chunk_id>;
 
 class AMULET_LEVEL_EXPORT JavaChunkHandle : public ChunkHandleHelper<
     JavaRawDimension, 

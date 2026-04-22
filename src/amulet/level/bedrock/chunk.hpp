@@ -23,52 +23,52 @@ namespace detail {
 } // namespace detail
 
 // LegacyTerrain
-class BedrockChunk0 : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT BedrockChunk0 : public ChunkComponentHelper<
                           BedrockChunk,
                           BedrockRawChunkComponent,
                           BlockComponent,
                           BlockEntityComponent> {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT BedrockChunk0(
+    BedrockChunk0(
         const BlockStack& default_block,
         const Biome& default_biome);
 };
 
 // V1.0, SubChunkPrefix and Data2D
-class BedrockChunk1 : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT BedrockChunk1 : public ChunkComponentHelper<
                           BedrockChunk,
                           BedrockRawChunkComponent,
                           BlockComponent,
                           BlockEntityComponent> {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT BedrockChunk1(
+    BedrockChunk1(
         const BlockStack& default_block,
         const Biome& default_biome);
 };
 
 // V1.18, SubChunkPrefix and Data3D
-class BedrockChunk118 : public ChunkComponentHelper<
+class AMULET_LEVEL_EXPORT BedrockChunk118 : public ChunkComponentHelper<
                             BedrockChunk,
                             BedrockRawChunkComponent,
                             BlockComponent,
                             BlockEntityComponent> {
 public:
-    AMULET_LEVEL_EXPORT static const std::string ChunkID;
+    static const std::string ChunkID;
 
     std::string get_chunk_id() const override;
 
     using ChunkComponentHelper::ChunkComponentHelper;
-    AMULET_LEVEL_EXPORT BedrockChunk118(
+    BedrockChunk118(
         const BlockStack& default_block,
         const Biome& default_biome);
 };

@@ -64,7 +64,7 @@ public:
     }
 };
 
-class JavaRawLevel {
+class AMULET_LEVEL_EXPORT JavaRawLevel {
 private:
     OrderedMutex _public_mutex;
     std::filesystem::path _path;
@@ -99,27 +99,27 @@ public:
     JavaRawLevel& operator=(const JavaRawLevel&) = delete;
     JavaRawLevel(JavaRawLevel&&) = delete;
     JavaRawLevel& operator=(JavaRawLevel&&) = delete;
-    AMULET_LEVEL_EXPORT ~JavaRawLevel();
+    ~JavaRawLevel();
 
     // Load an existing Java level from the given directory.
     // Thread safe.
-    AMULET_LEVEL_EXPORT static std::unique_ptr<JavaRawLevel> load(const std::filesystem::path&);
+    static std::unique_ptr<JavaRawLevel> load(const std::filesystem::path&);
 
     // Create a new Java level at the given directory.
     // Thread safe.
-    AMULET_LEVEL_EXPORT static std::unique_ptr<JavaRawLevel> create(const JavaCreateArgsV1&);
+    static std::unique_ptr<JavaRawLevel> create(const JavaCreateArgsV1&);
 
     // External mutex
     // Thread safe.
-    AMULET_LEVEL_EXPORT OrderedMutex& get_mutex();
+    OrderedMutex& get_mutex();
 
     // Is the level open.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT bool is_open() const;
+    bool is_open() const;
 
     // Reload the metadata. This can only be called when the level is closed.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void reload_metadata();
+    void reload_metadata();
 
     // An event emitted when the level is opened.
     Event<> opened;
@@ -127,7 +127,7 @@ public:
     // Open the level.
     // opened event will be emitted when complete.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void open();
+    void open();
 
     // An event emitted when the level is closed.
     Event<> closed;
@@ -135,7 +135,7 @@ public:
     // Close the level.
     // closed event will be emitted when complete.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void close();
+    void close();
 
     // An event emitted when the level is reloaded.
     Event<> reloaded;
@@ -143,76 +143,76 @@ public:
     // Reload the level.
     // This is like closing and re-opening without releasing the session.lock file.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void reload();
+    void reload();
 
     // The path to the level directory.
     // Thread safe.
-    AMULET_LEVEL_EXPORT const std::filesystem::path& get_path() const;
+    const std::filesystem::path& get_path() const;
 
     // The NamedTag stored in the level.dat file. Returns a unique copy.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT Amulet::NBT::NamedTag get_level_dat() const;
+    Amulet::NBT::NamedTag get_level_dat() const;
 
     // Set the level.dat NamedTag
     // This calls `reload` if the data version changed.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void set_level_dat(const Amulet::NBT::NamedTag&);
+    void set_level_dat(const Amulet::NBT::NamedTag&);
 
     // The platform identifier. "java"
     // Thread safe.
-    AMULET_LEVEL_EXPORT std::string get_platform() const;
+    std::string get_platform() const;
 
     // The game data version that the level was last opened in.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT VersionNumber get_data_version() const;
+    VersionNumber get_data_version() const;
 
     // Set the maximum game version.
     // If the game version is different this will call `reload`.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void set_data_version(const VersionNumber&);
+    void set_data_version(const VersionNumber&);
 
     // Is this level a supported version.
     // This is true for all versions we support and false for snapshots and unsupported newer versions.
     // TODO: thread safety
-    AMULET_LEVEL_EXPORT bool is_supported() const;
+    bool is_supported() const;
 
     // Get the thumbnail for the level.
     // This depends upon python so the GIL must be held.
     // Thread safe.
-    AMULET_LEVEL_EXPORT PIL::Image::Image get_thumbnail() const;
+    PIL::Image::Image get_thumbnail() const;
 
     // The time when the level was lasted edited.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT std::chrono::system_clock::time_point get_modified_time() const;
+    std::chrono::system_clock::time_point get_modified_time() const;
 
     // The name of the level.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT std::string get_level_name() const;
+    std::string get_level_name() const;
 
     // Set the level name.
     // External ReadWrite:Unique lock required.
-    AMULET_LEVEL_EXPORT void set_level_name(const std::string&);
+    void set_level_name(const std::string&);
 
     // The identifiers for all dimensions in this level.
     // External Read:SharedReadWrite lock required.
     // External Read:SharedReadOnly lock optional.
-    AMULET_LEVEL_EXPORT std::vector<std::string> get_dimension_ids();
+    std::vector<std::string> get_dimension_ids();
 
     // Get the raw dimension object for a specific dimension.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT std::shared_ptr<JavaRawDimension> get_dimension(const DimensionId&);
+    std::shared_ptr<JavaRawDimension> get_dimension(const DimensionId&);
 
     // Compact the level.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT void compact();
+    void compact();
 
     // Overridden block ids.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT std::shared_ptr<IdRegistry> get_block_id_override();
+    std::shared_ptr<IdRegistry> get_block_id_override();
 
     // Overridden biome ids.
     // External Read:SharedReadWrite lock required.
-    AMULET_LEVEL_EXPORT std::shared_ptr<IdRegistry> get_biome_id_override();
+    std::shared_ptr<IdRegistry> get_biome_id_override();
 };
 
 } // namespace Amulet

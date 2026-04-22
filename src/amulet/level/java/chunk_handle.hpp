@@ -14,7 +14,7 @@ namespace Amulet {
 
 class JavaDimension;
 
-class JavaChunkHandle : public ChunkHandleHelper<
+class AMULET_LEVEL_EXPORT JavaChunkHandle : public ChunkHandleHelper<
     JavaRawDimension, 
     JavaDimension,
     JavaRawChunk,
@@ -27,10 +27,10 @@ private:
 
 public:
     // Get a unique copy of the chunk data.
-    AMULET_LEVEL_EXPORT std::unique_ptr<JavaChunk> get_java_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt);
+    std::unique_ptr<JavaChunk> get_java_chunk(std::optional<std::set<std::string>> component_ids = std::nullopt);
 
     // Overwrite the chunk data.
-    AMULET_LEVEL_EXPORT void set_java_chunk(const JavaChunk&);
+    void set_java_chunk(const JavaChunk&);
 };
 
 } // namespace Amulet

@@ -15,14 +15,6 @@ namespace Amulet {
 
 class BedrockDimension;
 
-extern template class ChunkHandleHelper<
-    BedrockRawDimension,
-    BedrockDimension,
-    BedrockRawChunk,
-    BedrockChunk,
-    detail::get_bedrock_null_chunk,
-    detail::get_bedrock_chunk_id>;
-
 class AMULET_LEVEL_EXPORT BedrockChunkHandle : public ChunkHandleHelper<
                             BedrockRawDimension,
                             BedrockDimension,

@@ -15,7 +15,7 @@ template <
     typename ChunkT,
     std::unique_ptr<ChunkT> (&get_null_chunk)(const std::string&),
     std::string (&get_chunk_id)(const ChunkT&)>
-class ChunkHandleHelper : public ChunkHandle {
+class AMULET_CORE_EXPORT ChunkHandleHelper : public ChunkHandle {
 private:
     std::shared_ptr<RawDimensionT> _raw_dimension;
 

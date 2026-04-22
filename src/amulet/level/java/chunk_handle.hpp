@@ -14,14 +14,6 @@ namespace Amulet {
 
 class JavaDimension;
 
-extern template class ChunkHandleHelper<
-    JavaRawDimension,
-    JavaDimension,
-    JavaRawChunk,
-    JavaChunk,
-    detail::get_java_null_chunk,
-    detail::get_java_chunk_id>;
-
 class AMULET_LEVEL_EXPORT JavaChunkHandle : public ChunkHandleHelper<
     JavaRawDimension, 
     JavaDimension,

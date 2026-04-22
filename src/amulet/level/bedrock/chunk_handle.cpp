@@ -8,7 +8,7 @@
 
 namespace Amulet {
 
-template class AMULET_LEVEL_EXPORT ChunkHandleHelper<
+template class ChunkHandleHelper<
     BedrockRawDimension,
     BedrockDimension,
     BedrockRawChunk,

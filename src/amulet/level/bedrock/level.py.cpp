@@ -38,7 +38,6 @@ py::module init_bedrock_level(py::module m_parent)
     BedrockLevel.def_property_readonly(
         "raw_level",
         &Amulet::BedrockLevel::get_raw_level,
-        py::keep_alive<0, 1>(),
         py::doc(
             "Access the raw level instance.\n"
             "Before calling any mutating functions, the caller must call :meth:`purge` (optionally saving before)\n"

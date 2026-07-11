@@ -21,13 +21,11 @@ void init_bedrock_raw_chunk(py::module m_parent)
         "data",
         [](Amulet::BedrockRawChunk& self) {
             return pyext::make_mutable_mapping(self.get_data());
-        },
-        py::keep_alive<0, 1>());
+        });
 
     BedrockRawChunk.def_property_readonly(
         "actors",
         [](Amulet::BedrockRawChunk& self) {
             return pyext::make_mutable_sequence(self.get_actors());
-        },
-        py::keep_alive<0, 1>());
+        });
 }

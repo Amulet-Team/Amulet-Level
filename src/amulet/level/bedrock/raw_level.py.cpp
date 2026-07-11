@@ -61,7 +61,6 @@ py::module init_bedrock_raw_level(py::module m_parent)
     BedrockRawLevel.def_property_readonly(
         "lock",
         &Amulet::BedrockRawLevel::get_mutex,
-        py::keep_alive<0, 1>(),
         py::doc("The public lock\n"
                 "Thread safe."));
     BedrockRawLevel.def(

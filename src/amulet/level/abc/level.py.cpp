@@ -18,7 +18,6 @@ py::module init_level(py::module m_parent)
     LevelMetadata.def_property_readonly(
         "lock",
         &Amulet::LevelMetadata::get_mutex,
-        py::keep_alive<0, 1>(),
         py::doc("The external mutex for the level.\n"
                 "Thread safe."));
     LevelMetadata.def(

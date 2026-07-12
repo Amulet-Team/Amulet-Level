@@ -13,7 +13,9 @@ __all__: list[str] = ["Dimension", "DimensionId"]
 
 class Dimension:
     def get_chunk_handle(
-        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> amulet.level.abc.chunk_handle.ChunkHandle:
         """
         Get the chunk handle for the given chunk in this dimension.

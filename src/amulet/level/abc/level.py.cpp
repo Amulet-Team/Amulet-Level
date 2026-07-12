@@ -18,7 +18,6 @@ py::module init_level(py::module m_parent)
     LevelMetadata.def_property_readonly(
         "lock",
         &Amulet::LevelMetadata::get_mutex,
-        py::keep_alive<0, 1>(),
         py::doc("The external mutex for the level.\n"
                 "Thread safe."));
     LevelMetadata.def(
@@ -36,14 +35,16 @@ py::module init_level(py::module m_parent)
                 "External Read:SharedReadWrite lock required."));
     LevelMetadata.def_property_readonly(
         "max_game_version",
-        &Amulet::LevelMetadata::get_max_game_version,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::LevelMetadata::get_max_game_version,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("The maximum game version the level has been opened with.\n"
                 "External Read:SharedReadWrite lock required."));
     LevelMetadata.def_property_readonly(
         "max_block_version",
-        &Amulet::LevelMetadata::get_max_block_version,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::LevelMetadata::get_max_block_version,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("Get the suggested maximum block version this level can accept.\n"
                 "Note that on some platforms the real max version may be higher.\n"
                 "External Read:SharedReadWrite lock required."));
@@ -60,14 +61,16 @@ py::module init_level(py::module m_parent)
                 "External Read:SharedReadWrite lock required."));
     LevelMetadata.def_property_readonly(
         "level_name",
-        &Amulet::LevelMetadata::get_level_name,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::LevelMetadata::get_level_name,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("The name of the level\n"
                 "External Read:SharedReadWrite lock required."));
     LevelMetadata.def_property_readonly(
         "modified_time",
-        &Amulet::LevelMetadata::get_modified_time,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::LevelMetadata::get_modified_time,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("The time when the level was last modified.\n"
                 "External Read:SharedReadWrite lock required."));
     LevelMetadata.def_property_readonly(

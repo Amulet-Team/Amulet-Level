@@ -10,7 +10,9 @@ __all__: list[str] = ["JavaDimension", "JavaInternalDimensionID"]
 
 class JavaDimension(amulet.level.abc.dimension.Dimension):
     def get_chunk_handle(
-        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> amulet.level.java.chunk_handle.JavaChunkHandle:
         """
         Get the chunk handle for the given chunk in this dimension.

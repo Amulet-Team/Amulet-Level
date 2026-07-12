@@ -10,8 +10,8 @@ __all__: list[str] = ["decode_long_array", "encode_long_array"]
 
 def decode_long_array(
     long_array: collections.abc.Buffer,
-    size: typing.SupportsInt,
-    bits_per_entry: typing.SupportsInt,
+    size: typing.SupportsInt | typing.SupportsIndex,
+    bits_per_entry: typing.SupportsInt | typing.SupportsIndex,
     dense: bool = True,
 ) -> numpy.ndarray:
     """
@@ -26,9 +26,9 @@ def decode_long_array(
 
 def encode_long_array(
     array: collections.abc.Buffer,
-    bits_per_entry: None | typing.SupportsInt = None,
+    bits_per_entry: None | typing.SupportsInt | typing.SupportsIndex = None,
     dense: bool = True,
-    min_bits_per_entry: typing.SupportsInt = 1,
+    min_bits_per_entry: typing.SupportsInt | typing.SupportsIndex = 1,
 ) -> numpy.typing.NDArray[numpy.uint64]:
     """
     Encode a long array (from BlockStates or Heightmaps)

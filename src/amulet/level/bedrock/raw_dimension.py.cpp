@@ -52,7 +52,6 @@ py::module init_bedrock_raw_dimension(py::module m_parent)
     BedrockRawDimension.def_property_readonly(
         "lock",
         &Amulet::BedrockRawDimension::get_mutex,
-        py::keep_alive<0, 1>(),
         py::doc("The public lock\n"
                 "Thread safe."));
     BedrockRawDimension.def_property_readonly(

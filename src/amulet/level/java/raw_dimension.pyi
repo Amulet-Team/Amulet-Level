@@ -22,8 +22,8 @@ class JavaRawDimension:
     def decode_chunk(
         self,
         raw_chunk: collections.abc.Mapping[str, amulet.nbt.NamedTag],
-        cx: typing.SupportsInt,
-        cz: typing.SupportsInt,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> amulet.level.java.chunk.JavaChunk:
         """
         Decode a raw chunk to a chunk object.
@@ -31,7 +31,11 @@ class JavaRawDimension:
         TODO: thread safety
         """
 
-    def delete_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> None:
+    def delete_chunk(
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
+    ) -> None:
         """
         Delete the chunk from this dimension.
         External ReadWrite:SharedReadWrite lock required.
@@ -48,8 +52,8 @@ class JavaRawDimension:
     def encode_chunk(
         self,
         chunk: amulet.level.java.chunk.JavaChunk,
-        cx: typing.SupportsInt,
-        cz: typing.SupportsInt,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> dict[str, amulet.nbt.NamedTag]:
         """
         Encode a chunk object to its raw data.
@@ -58,14 +62,20 @@ class JavaRawDimension:
         """
 
     def get_raw_chunk(
-        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> dict[str, amulet.nbt.NamedTag]:
         """
         Get the raw chunk from this dimension.
         External Read:SharedReadWrite lock required.
         """
 
-    def has_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> bool:
+    def has_chunk(
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
+    ) -> bool:
         """
         Does the chunk exist in this dimension.
         External Read:SharedReadWrite lock required.
@@ -81,8 +91,8 @@ class JavaRawDimension:
 
     def set_raw_chunk(
         self,
-        cx: typing.SupportsInt,
-        cz: typing.SupportsInt,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
         chunk: collections.abc.Mapping[str, amulet.nbt.NamedTag],
     ) -> None:
         """

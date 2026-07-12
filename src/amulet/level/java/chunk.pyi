@@ -21,6 +21,19 @@ __all__: list[str] = [
 class JavaChunk(amulet.core.chunk.Chunk):
     pass
 
+class JavaChunkNA(
+    JavaChunk,
+    amulet.level.java.chunk_components.JavaRawChunkComponent,
+    amulet.level.java.chunk_components.DataVersionComponent,
+    amulet.core.chunk.component.block_component.BlockComponent,
+    amulet.core.chunk.component.block_entity_component.BlockEntityComponent,
+):
+    def __init__(
+        self,
+        default_block: amulet.core.block.BlockStack,
+        default_biome: amulet.core.biome.Biome,
+    ) -> None: ...
+
 class JavaChunk0(
     JavaChunk,
     amulet.level.java.chunk_components.JavaRawChunkComponent,
@@ -30,7 +43,7 @@ class JavaChunk0(
 ):
     def __init__(
         self,
-        data_version: typing.SupportsInt,
+        data_version: typing.SupportsInt | typing.SupportsIndex,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...
@@ -44,7 +57,7 @@ class JavaChunk1444(
 ):
     def __init__(
         self,
-        data_version: typing.SupportsInt,
+        data_version: typing.SupportsInt | typing.SupportsIndex,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...
@@ -58,7 +71,7 @@ class JavaChunk1466(
 ):
     def __init__(
         self,
-        data_version: typing.SupportsInt,
+        data_version: typing.SupportsInt | typing.SupportsIndex,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...
@@ -72,20 +85,7 @@ class JavaChunk2203(
 ):
     def __init__(
         self,
-        data_version: typing.SupportsInt,
-        default_block: amulet.core.block.BlockStack,
-        default_biome: amulet.core.biome.Biome,
-    ) -> None: ...
-
-class JavaChunkNA(
-    JavaChunk,
-    amulet.level.java.chunk_components.JavaRawChunkComponent,
-    amulet.level.java.chunk_components.DataVersionComponent,
-    amulet.core.chunk.component.block_component.BlockComponent,
-    amulet.core.chunk.component.block_entity_component.BlockEntityComponent,
-):
-    def __init__(
-        self,
+        data_version: typing.SupportsInt | typing.SupportsIndex,
         default_block: amulet.core.block.BlockStack,
         default_biome: amulet.core.biome.Biome,
     ) -> None: ...

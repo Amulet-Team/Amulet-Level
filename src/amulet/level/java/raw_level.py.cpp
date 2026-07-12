@@ -62,7 +62,6 @@ py::module init_java_raw_level(py::module m_parent)
     JavaRawLevel.def_property_readonly(
         "lock",
         &Amulet::JavaRawLevel::get_mutex,
-        py::keep_alive<0, 1>(),
         py::doc("The public lock\n"
                 "Thread safe."));
     JavaRawLevel.def(
@@ -209,14 +208,16 @@ py::module init_java_raw_level(py::module m_parent)
                 "External Read:SharedReadWrite lock required."));
     JavaRawLevel.def_property_readonly(
         "block_id_override",
-        &Amulet::JavaRawLevel::get_block_id_override,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::JavaRawLevel::get_block_id_override,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("Overridden block ids.\n"
                 "External Read:SharedReadWrite lock required."));
     JavaRawLevel.def_property_readonly(
         "biome_id_override",
-        &Amulet::JavaRawLevel::get_biome_id_override,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::JavaRawLevel::get_biome_id_override,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("Overridden biome ids.\n"
                 "External Read:SharedReadWrite lock required."));
 

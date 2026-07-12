@@ -213,14 +213,16 @@ py::module init_bedrock_raw_level(py::module m_parent)
                 "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def_property_readonly(
         "block_id_override",
-        &Amulet::BedrockRawLevel::get_block_id_override,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::get_block_id_override,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("Overridden block ids.\n"
                 "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def_property_readonly(
         "biome_id_override",
-        &Amulet::BedrockRawLevel::get_biome_id_override,
-        py::call_guard<py::gil_scoped_release>(),
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::get_biome_id_override,
+            py::call_guard<py::gil_scoped_release>()),
         py::doc("Overridden biome ids.\n"
                 "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def_property_readonly(

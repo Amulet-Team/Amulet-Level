@@ -19,15 +19,19 @@ class BedrockRawDimension:
     def decode_chunk(
         self,
         raw_chunk: amulet.level.bedrock.raw_chunk.BedrockRawChunk,
-        cx: typing.SupportsInt,
-        cz: typing.SupportsInt,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> amulet.level.bedrock.chunk.BedrockChunk:
         """
         Decode a raw chunk to a chunk object.
         TODO: thread safety
         """
 
-    def delete_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> None:
+    def delete_chunk(
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
+    ) -> None:
         """
         Delete the chunk from this dimension.
         External ReadWrite:SharedReadWrite lock required.
@@ -44,8 +48,8 @@ class BedrockRawDimension:
     def encode_chunk(
         self,
         chunk: amulet.level.bedrock.chunk.BedrockChunk,
-        cx: typing.SupportsInt,
-        cz: typing.SupportsInt,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> amulet.level.bedrock.raw_chunk.BedrockRawChunk:
         """
         Encode a chunk object to its raw data.
@@ -54,7 +58,9 @@ class BedrockRawDimension:
         """
 
     def get_chunk(
-        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> amulet.level.bedrock.chunk.BedrockChunk:
         """
         Get and decode the chunk.
@@ -62,14 +68,20 @@ class BedrockRawDimension:
         """
 
     def get_raw_chunk(
-        self, cx: typing.SupportsInt, cz: typing.SupportsInt
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
     ) -> amulet.level.bedrock.raw_chunk.BedrockRawChunk:
         """
         Get the raw chunk from this dimension.
         External Read:SharedReadWrite lock required.
         """
 
-    def has_chunk(self, cx: typing.SupportsInt, cz: typing.SupportsInt) -> bool:
+    def has_chunk(
+        self,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
+    ) -> bool:
         """
         Does the chunk exist in this dimension.
         External Read:SharedReadWrite lock required.
@@ -85,8 +97,8 @@ class BedrockRawDimension:
 
     def set_chunk(
         self,
-        cx: typing.SupportsInt,
-        cz: typing.SupportsInt,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
         chunk: amulet.level.bedrock.chunk.BedrockChunk,
     ) -> None:
         """
@@ -97,8 +109,8 @@ class BedrockRawDimension:
 
     def set_raw_chunk(
         self,
-        cx: typing.SupportsInt,
-        cz: typing.SupportsInt,
+        cx: typing.SupportsInt | typing.SupportsIndex,
+        cz: typing.SupportsInt | typing.SupportsIndex,
         chunk: amulet.level.bedrock.raw_chunk.BedrockRawChunk,
     ) -> None:
         """

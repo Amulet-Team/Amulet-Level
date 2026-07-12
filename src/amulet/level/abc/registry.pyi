@@ -14,10 +14,12 @@ class IdRegistry:
     External synchronisation is required with this class.
     """
 
-    def __contains__(self, item: typing.SupportsInt) -> bool: ...
+    def __contains__(self, item: typing.SupportsInt | typing.SupportsIndex) -> bool: ...
     def __eq__(self, other: typing.Any) -> bool | types.NotImplementedType: ...
     @typing.overload
-    def __getitem__(self, index: typing.SupportsInt) -> tuple[str, str]:
+    def __getitem__(
+        self, index: typing.SupportsInt | typing.SupportsIndex
+    ) -> tuple[str, str]:
         """
         Convert a numerical id to its namespaced id.
         External shared lock required.
@@ -45,13 +47,17 @@ class IdRegistry:
         """
 
     @typing.overload
-    def get(self, key: typing.SupportsInt) -> tuple[str, str] | None: ...
+    def get(
+        self, key: typing.SupportsInt | typing.SupportsIndex
+    ) -> tuple[str, str] | None: ...
     @typing.overload
     def get(
-        self, key: typing.SupportsInt, default: tuple[str, str]
+        self, key: typing.SupportsInt | typing.SupportsIndex, default: tuple[str, str]
     ) -> tuple[str, str]: ...
     @typing.overload
-    def get[T](self, key: typing.SupportsInt, default: T) -> tuple[str, str] | T: ...
+    def get[T](
+        self, key: typing.SupportsInt | typing.SupportsIndex, default: T
+    ) -> tuple[str, str] | T: ...
     def items(self) -> collections.abc.ItemsView[int, tuple[str, str]]: ...
     def keys(self) -> collections.abc.KeysView[int]: ...
     @typing.overload
@@ -69,14 +75,16 @@ class IdRegistry:
         """
 
     def numerical_id_to_namespace_id(
-        self, index: typing.SupportsInt
+        self, index: typing.SupportsInt | typing.SupportsIndex
     ) -> tuple[str, str]:
         """
         Convert a numerical id to its namespaced id.
         External shared lock required.
         """
 
-    def register_id(self, index: typing.SupportsInt, name: tuple[str, str]) -> None:
+    def register_id(
+        self, index: typing.SupportsInt | typing.SupportsIndex, name: tuple[str, str]
+    ) -> None:
         """
         Convert a namespaced id to its numerical id.
         External unique lock required.

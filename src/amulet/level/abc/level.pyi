@@ -16,18 +16,76 @@ __all__: list[str] = [
     "ReloadableLevel",
 ]
 
-class CompactibleLevel:
-    def compact(self) -> None:
+class LevelMetadata:
+    def is_open(self) -> bool:
         """
-        Compact the level data to reduce file size.
-        External ReadWrite:SharedReadWrite lock required.
+        Has the level been opened.
+        External Read:SharedReadWrite lock required.
+
+        :return: True if the level is open otherwise False.
         """
 
-class DiskLevel:
-    @property
-    def path(self) -> str:
+    def is_supported(self) -> bool:
         """
-        The path to the level on disk.
+        Is this level a supported version.
+        This is true for all versions we support and false for snapshots, betas and unsupported newer versions.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def level_name(self) -> str:
+        """
+        The name of the level
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def lock(self) -> amulet.utils.lock.OrderedLock:
+        """
+        The external mutex for the level.
+        Thread safe.
+        """
+
+    @property
+    def max_block_version(self) -> amulet.core.version.VersionNumber:
+        """
+        Get the suggested maximum block version this level can accept.
+        Note that on some platforms the real max version may be higher.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def max_game_version(self) -> amulet.core.version.VersionNumber:
+        """
+        The maximum game version the level has been opened with.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def modified_time(self) -> datetime.datetime:
+        """
+        The time when the level was last modified.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def platform(self) -> str:
+        """
+        The platform string for the level.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def sub_chunk_size(self) -> int:
+        """
+        The size of the sub-chunk. Must be a cube.
+        External Read:SharedReadWrite lock required.
+        """
+
+    @property
+    def thumbnail(self) -> PIL.Image.Image:
+        """
+        The thumbnail for the level.
         External Read:SharedReadWrite lock required.
         """
 
@@ -157,76 +215,18 @@ class Level(LevelMetadata):
         Thread safe.
         """
 
-class LevelMetadata:
-    def is_open(self) -> bool:
+class CompactibleLevel:
+    def compact(self) -> None:
         """
-        Has the level been opened.
-        External Read:SharedReadWrite lock required.
-
-        :return: True if the level is open otherwise False.
+        Compact the level data to reduce file size.
+        External ReadWrite:SharedReadWrite lock required.
         """
 
-    def is_supported(self) -> bool:
-        """
-        Is this level a supported version.
-        This is true for all versions we support and false for snapshots, betas and unsupported newer versions.
-        External Read:SharedReadWrite lock required.
-        """
-
+class DiskLevel:
     @property
-    def level_name(self) -> str:
+    def path(self) -> str:
         """
-        The name of the level
-        External Read:SharedReadWrite lock required.
-        """
-
-    @property
-    def lock(self) -> amulet.utils.lock.OrderedLock:
-        """
-        The external mutex for the level.
-        Thread safe.
-        """
-
-    @property
-    def max_block_version(self) -> amulet.core.version.VersionNumber:
-        """
-        Get the suggested maximum block version this level can accept.
-        Note that on some platforms the real max version may be higher.
-        External Read:SharedReadWrite lock required.
-        """
-
-    @property
-    def max_game_version(self) -> amulet.core.version.VersionNumber:
-        """
-        The maximum game version the level has been opened with.
-        External Read:SharedReadWrite lock required.
-        """
-
-    @property
-    def modified_time(self) -> datetime.datetime:
-        """
-        The time when the level was last modified.
-        External Read:SharedReadWrite lock required.
-        """
-
-    @property
-    def platform(self) -> str:
-        """
-        The platform string for the level.
-        External Read:SharedReadWrite lock required.
-        """
-
-    @property
-    def sub_chunk_size(self) -> int:
-        """
-        The size of the sub-chunk. Must be a cube.
-        External Read:SharedReadWrite lock required.
-        """
-
-    @property
-    def thumbnail(self) -> PIL.Image.Image:
-        """
-        The thumbnail for the level.
+        The path to the level on disk.
         External Read:SharedReadWrite lock required.
         """
 

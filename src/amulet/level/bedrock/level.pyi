@@ -23,7 +23,7 @@ class BedrockLevel(
         """
 
     def get_dimension(
-        self, dimension_id: str | typing.SupportsInt
+        self, dimension_id: str | typing.SupportsInt | typing.SupportsIndex
     ) -> amulet.level.bedrock.dimension.BedrockDimension:
         """
         Get a dimension.

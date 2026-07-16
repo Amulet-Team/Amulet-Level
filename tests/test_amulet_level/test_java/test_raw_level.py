@@ -73,9 +73,13 @@ class JavaRawLevelTestCase(TestCase):
                 raw_level_1.open()
                 try:
                     level_names = []
+
                     def on_level_name_changed():
                         level_names.append(raw_level_1.level_name)
-                    level_name_change_token = raw_level_1.level_name_changed.connect(on_level_name_changed)
+
+                    level_name_change_token = raw_level_1.level_name_changed.connect(
+                        on_level_name_changed
+                    )
                     raw_level_1.level_name = "HelloWorld"
                     self.assertEqual("HelloWorld", raw_level_1.level_name)
                     self.assertEqual(

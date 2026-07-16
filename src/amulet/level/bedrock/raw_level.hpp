@@ -190,7 +190,7 @@ public:
 
     // Event emitted when the level name changes.
     // Thread safe.
-    Event<> level_name_changed;
+    Event<std::string> level_name_changed;
 
     // The identifiers for all dimensions in this level.
     // External Read:SharedReadWrite lock required.

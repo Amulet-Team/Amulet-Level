@@ -286,8 +286,11 @@ void BedrockRawLevel::set_level_dat(const BedrockLevelDat& level_dat)
     // Reload the level if the data version changed.
     if (_last_opened_version != _get_last_opened_version()) {
         reload();
-    } else if (old_level_name != get_level_name()) {
-        level_name_changed.dispatch();
+    } else {
+        auto level_name = get_level_name();
+        if (old_level_name != level_name) {
+            level_name_changed.dispatch(std::move(level_name));
+        }
     }
 }
 

@@ -74,8 +74,8 @@ class JavaRawLevelTestCase(TestCase):
                 try:
                     level_names = []
 
-                    def on_level_name_changed():
-                        level_names.append(raw_level_1.level_name)
+                    def on_level_name_changed(level_name: str) -> None:
+                        level_names.append(level_name)
 
                     level_name_change_token = raw_level_1.level_name_changed.connect(
                         on_level_name_changed

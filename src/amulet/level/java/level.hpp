@@ -30,7 +30,7 @@ public:
 class AMULET_LEVEL_EXPORT JavaLevel : public Level, public CompactibleLevel, public DiskLevel, public ReloadableLevel {
 private:
     std::unique_ptr<JavaRawLevel> _raw_level;
-    EventToken<> _level_name_changed_token;
+    EventToken<std::string> _level_name_changed_token;
 
     // Data that is only valid when the level is open.
     std::unique_ptr<JavaLevelOpenData> _open_data;

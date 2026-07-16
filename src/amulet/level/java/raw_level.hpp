@@ -191,7 +191,7 @@ public:
 
     // Event emitted when the level name changes.
     // Thread safe.
-    Event<> level_name_changed;
+    Event<std::string> level_name_changed;
 
     // Set the level name.
     // External ReadWrite:Unique lock required.

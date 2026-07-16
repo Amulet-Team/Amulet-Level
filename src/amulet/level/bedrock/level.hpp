@@ -33,7 +33,7 @@ private:
 
     // Data that is only valid when the level is open.
     std::unique_ptr<BedrockLevelOpenData> _open_data;
-    EventToken<> _level_name_changed_token;
+    EventToken<std::string> _level_name_changed_token;
 
     // Validate _open_data is valid and return a reference.
     // External Read:SharedReadWrite lock required.

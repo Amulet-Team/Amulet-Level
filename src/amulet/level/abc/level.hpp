@@ -60,7 +60,7 @@ public:
 
     // Event emitted when the level name changes.
     // Thread safe.
-    Event<> level_name_changed;
+    Event<std::string> level_name_changed;
 
     // The time when the level was last modified.
     // External Read:SharedReadWrite lock required.

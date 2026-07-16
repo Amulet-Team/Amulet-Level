@@ -148,7 +148,7 @@ class BedrockRawLevel:
     @level_name.setter
     def level_name(self, arg1: str) -> None: ...
     @property
-    def level_name_changed(self) -> amulet.utils.event.Event[()]:
+    def level_name_changed(self) -> amulet.utils.event.Event[str]:
         """
         Event emitted when the level name changes.
         Thread safe.

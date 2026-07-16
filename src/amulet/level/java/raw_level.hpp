@@ -189,6 +189,10 @@ public:
     // External Read:SharedReadWrite lock required.
     std::string get_level_name() const;
 
+    // Event emitted when the level name changes.
+    // Thread safe.
+    Event<> level_name_changed;
+
     // Set the level name.
     // External ReadWrite:Unique lock required.
     void set_level_name(const std::string&);

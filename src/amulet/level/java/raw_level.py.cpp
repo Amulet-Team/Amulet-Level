@@ -185,6 +185,12 @@ py::module init_java_raw_level(py::module m_parent)
                 "Setter:\n"
                 "Set the level name.\n"
                 "External ReadWrite:Unique lock required."));
+    Amulet::def_event(
+        JavaRawLevel,
+        "level_name_changed",
+        &Amulet::JavaRawLevel::level_name_changed,
+        py::doc("Event emitted when the level name changes.\n"
+                "Thread safe."));
     JavaRawLevel.def_property_readonly(
         "dimension_ids",
         py::cpp_function(

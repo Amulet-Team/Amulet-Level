@@ -243,6 +243,9 @@ void JavaRawLevel::set_level_dat(const Amulet::NBT::NamedTag& level_dat)
     if (!is_open()) {
         throw std::runtime_error("Level is not open.");
     }
+
+    auto old_level_name = get_level_name();
+
     // Copy the level.dat to internal storage
     _level_dat = Amulet::NBT::deep_copy(level_dat);
 
@@ -252,6 +255,8 @@ void JavaRawLevel::set_level_dat(const Amulet::NBT::NamedTag& level_dat)
     // Reload the level if the data version changed.
     if (_data_version != _get_data_version()) {
         reload();
+    } else if (old_level_name != get_level_name()) {
+        level_name_changed.dispatch();
     }
 }
 

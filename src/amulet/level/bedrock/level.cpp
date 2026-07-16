@@ -27,11 +27,13 @@ BedrockLevelOpenData& BedrockLevel::_get_open_data()
 
 BedrockLevel::BedrockLevel(std::unique_ptr<BedrockRawLevel> raw_level)
     : _raw_level(std::move(raw_level))
+    , _level_name_changed_token(_raw_level->level_name_changed.connect([this]() { level_name_changed.dispatch(); }))
 {
 }
 
 BedrockLevel::~BedrockLevel()
 {
+    _raw_level->level_name_changed.disconnect(_level_name_changed_token);
     close();
 }
 

@@ -13,11 +13,13 @@ JavaLevelOpenData::JavaLevelOpenData()
 
 JavaLevel::JavaLevel(std::unique_ptr<JavaRawLevel> raw_level)
     : _raw_level(std::move(raw_level))
+    , _level_name_changed_token(_raw_level->level_name_changed.connect([this]() { level_name_changed.dispatch(); }))
 {
 }
 
 JavaLevel::~JavaLevel()
 {
+    _raw_level->level_name_changed.disconnect(_level_name_changed_token);
     close();
 }
 

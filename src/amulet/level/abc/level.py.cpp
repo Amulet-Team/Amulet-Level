@@ -227,7 +227,7 @@ py::module init_level(py::module m_parent)
         "path",
         [](Amulet::DiskLevel& self) { return self.get_path().string(); },
         py::doc("The path to the level on disk.\n"
-                "External Read:SharedReadWrite lock required."));
+                "Thread safe."));
 
     py::class_<Amulet::ReloadableLevel, std::shared_ptr<Amulet::ReloadableLevel>> ReloadableLevel(m, "ReloadableLevel");
     ReloadableLevel.def(

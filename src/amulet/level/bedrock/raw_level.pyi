@@ -151,7 +151,7 @@ class BedrockRawLevel:
     def level_name_changed(self) -> amulet.utils.event.Event[str]:
         """
         Event emitted when the level name changes.
-        Thread safe.
+        Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
         """
 
     @property

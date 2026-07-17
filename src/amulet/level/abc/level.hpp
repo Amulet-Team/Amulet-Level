@@ -59,7 +59,7 @@ public:
     virtual const std::string get_level_name() = 0;
 
     // Event emitted when the level name changes.
-    // Thread safe.
+    // Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
     Event<std::string> level_name_changed;
 
     // The time when the level was last modified.

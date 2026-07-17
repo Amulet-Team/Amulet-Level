@@ -30,20 +30,24 @@ public:
 class AMULET_LEVEL_EXPORT JavaLevel : public Level, public CompactibleLevel, public DiskLevel, public ReloadableLevel {
 private:
     std::unique_ptr<JavaRawLevel> _raw_level;
-    EventToken<std::string> _level_name_changed_token;
 
     // Data that is only valid when the level is open.
     std::unique_ptr<JavaLevelOpenData> _open_data;
+    // Internal mutex to protect _open_data.
+    std::shared_mutex _open_data_mutex;
+    
+    // Event handlers
+    EventToken<std::string> _level_name_changed_token;
+    EventToken<> _on_open_token;
+    void _on_open();
+    EventToken<> _on_close_token;
+    void _on_close();
+    EventToken<> _on_reload_token;
+    void _on_reload();
 
     // Validate _open_data is valid and return a reference.
-    // External Read:SharedReadWrite lock required.
-    JavaLevelOpenData& _get_open_data()
-    {
-        if (!_open_data) {
-            throw std::runtime_error("The level is not open.");
-        }
-        return *_open_data;
-    }
+    // Shared _open_data_mutex required.
+    JavaLevelOpenData& _get_open_data();
 
     JavaLevel(std::unique_ptr<JavaRawLevel>);
 

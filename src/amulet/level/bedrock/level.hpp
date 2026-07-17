@@ -33,10 +33,20 @@ private:
 
     // Data that is only valid when the level is open.
     std::unique_ptr<BedrockLevelOpenData> _open_data;
+    // Internal mutex to protect _open_data.
+    std::shared_mutex _open_data_mutex;
+    
+    // Event handlers
     EventToken<std::string> _level_name_changed_token;
+    EventToken<> _on_open_token;
+    void _on_open();
+    EventToken<> _on_close_token;
+    void _on_close();
+    EventToken<> _on_reload_token;
+    void _on_reload();
 
     // Validate _open_data is valid and return a reference.
-    // External Read:SharedReadWrite lock required.
+    // Shared _open_data_mutex required.
     BedrockLevelOpenData& _get_open_data();
 
     BedrockLevel(std::unique_ptr<BedrockRawLevel>);

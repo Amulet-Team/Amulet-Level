@@ -28,12 +28,18 @@ BedrockLevelOpenData& BedrockLevel::_get_open_data()
 BedrockLevel::BedrockLevel(std::unique_ptr<BedrockRawLevel> raw_level)
     : _raw_level(std::move(raw_level))
     , _level_name_changed_token(_raw_level->level_name_changed.connect([this](std::string level_name) { level_name_changed.dispatch(std::move(level_name)); }))
+    , _on_open_token(_raw_level->opened.connect([this]() { _on_open(); }))
+    , _on_close_token(_raw_level->closed.connect([this]() { _on_close(); }))
+    , _on_reload_token(_raw_level->reloaded.connect([this]() { _on_reload(); }))
 {
 }
 
 BedrockLevel::~BedrockLevel()
 {
     _raw_level->level_name_changed.disconnect(_level_name_changed_token);
+    _raw_level->opened.disconnect(_on_open_token);
+    _raw_level->closed.disconnect(_on_close_token);
+    _raw_level->reloaded.disconnect(_on_reload_token);
     close();
 }
 
@@ -49,6 +55,7 @@ std::unique_ptr<BedrockLevel> BedrockLevel::load(const std::filesystem::path& pa
 
 bool BedrockLevel::is_open()
 {
+    std::shared_lock lock(_open_data_mutex);
     return bool(_open_data);
 }
 
@@ -100,24 +107,30 @@ const std::filesystem::path& BedrockLevel::get_path()
     return _raw_level->get_path();
 }
 
+void BedrockLevel::_on_open()
+{
+    {
+        std::lock_guard lock(_open_data_mutex);
+        if (_open_data) {
+            throw std::runtime_error("Level open state desynced from raw level.");
+        }
+        _open_data = std::make_unique<BedrockLevelOpenData>();
+    }
+    opened.dispatch();
+}
+
 void BedrockLevel::open()
 {
-    if (_open_data) {
-        return;
-    }
-    {
-        OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::Unique> lock(_raw_level->get_mutex());
-        _raw_level->open();
-    }
-    _open_data = std::make_unique<BedrockLevelOpenData>();
-    opened.dispatch();
+    OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::Unique> lock(_raw_level->get_mutex());
+    _raw_level->open();
 }
 
 void BedrockLevel::purge()
 {
     {
+        std::shared_lock lock1(_open_data_mutex);
         auto& open_data = _get_open_data();
-        std::lock_guard lock(open_data.history_manager.get_mutex());
+        std::lock_guard lock2(open_data.history_manager.get_mutex());
         open_data.history_manager.reset();
     }
     purged.dispatch();
@@ -132,24 +145,30 @@ void BedrockLevel::save()
     }
 }
 
-void BedrockLevel::close()
+void BedrockLevel::_on_close()
 {
-    if (!_open_data) {
-        return;
-    }
-    _open_data = nullptr;
     {
-        OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::Unique> lock(_raw_level->get_mutex());
-        _raw_level->close();
+        std::lock_guard lock(_open_data_mutex);
+        if (!_open_data) {
+            throw std::runtime_error("Level open state desynced from raw level.");
+        }
+        _open_data = nullptr;
     }
     closed.dispatch();
+}
+
+void BedrockLevel::close()
+{
+    OrderedLockGuard<Amulet::ThreadAccessMode::ReadWrite, Amulet::ThreadShareMode::Unique> lock(_raw_level->get_mutex());
+    _raw_level->close();
 }
 
 void BedrockLevel::create_restore_point()
 {
     {
+        std::shared_lock lock1(_open_data_mutex);
         auto& open_data = _get_open_data();
-        std::lock_guard lock(open_data.history_manager.get_mutex());
+        std::lock_guard lock2(open_data.history_manager.get_mutex());
         open_data.history_manager.create_undo_bin();
     }
     history_changed.dispatch();
@@ -157,16 +176,18 @@ void BedrockLevel::create_restore_point()
 
 size_t BedrockLevel::get_undo_count()
 {
+    std::shared_lock lock1(_open_data_mutex);
     auto& open_data = _get_open_data();
-    std::shared_lock lock(open_data.history_manager.get_mutex());
+    std::shared_lock lock2(open_data.history_manager.get_mutex());
     return open_data.history_manager.get_undo_count();
 }
 
 void BedrockLevel::undo()
 {
     {
+        std::shared_lock lock1(_open_data_mutex);
         auto& open_data = _get_open_data();
-        std::lock_guard lock(open_data.history_manager.get_mutex());
+        std::lock_guard lock2(open_data.history_manager.get_mutex());
         open_data.history_manager.undo();
     }
     history_changed.dispatch();
@@ -174,16 +195,18 @@ void BedrockLevel::undo()
 
 size_t BedrockLevel::get_redo_count()
 {
+    std::shared_lock lock1(_open_data_mutex);
     auto& open_data = _get_open_data();
-    std::shared_lock lock(open_data.history_manager.get_mutex());
+    std::shared_lock lock2(open_data.history_manager.get_mutex());
     return open_data.history_manager.get_redo_count();
 }
 
 void BedrockLevel::redo()
 {
     {
+        std::shared_lock lock1(_open_data_mutex);
         auto& open_data = _get_open_data();
-        std::lock_guard lock(open_data.history_manager.get_mutex());
+        std::lock_guard lock2(open_data.history_manager.get_mutex());
         open_data.history_manager.redo();
     }
     history_changed.dispatch();
@@ -191,11 +214,13 @@ void BedrockLevel::redo()
 
 bool BedrockLevel::get_history_enabled()
 {
+    std::shared_lock lock(_open_data_mutex);
     return *_get_open_data().history_enabled;
 }
 
 void BedrockLevel::set_history_enabled(bool history_enabled)
 {
+    std::shared_lock lock(_open_data_mutex);
     *_get_open_data().history_enabled = history_enabled;
     history_enabled_changed.dispatch();
 }
@@ -208,6 +233,7 @@ std::vector<std::string> BedrockLevel::get_dimension_ids()
 
 std::shared_ptr<BedrockDimension> BedrockLevel::get_bedrock_dimension(std::variant<DimensionId, BedrockInternalDimensionID> dimension_id)
 {
+    std::shared_lock lock(_open_data_mutex);
     auto& open_data = _get_open_data();
     {
         // Find the dimension with a shared lock.
@@ -260,21 +286,24 @@ void BedrockLevel::reload_metadata()
     _raw_level->reload_metadata();
 }
 
-void BedrockLevel::reload()
+void BedrockLevel::_on_reload()
 {
     {
+        std::lock_guard lock1(_open_data_mutex);
         // purge loaded data.
         auto& open_data = _get_open_data();
-        std::lock_guard lock(open_data.history_manager.get_mutex());
+        std::lock_guard lock2(open_data.history_manager.get_mutex());
         open_data.history_manager.reset();
-    }
-    {
-        // reload the raw level.
-        std::lock_guard lock(_raw_level->get_mutex());
-        _raw_level->reload();
     }
     reloaded.dispatch();
     history_changed.dispatch();
+}
+
+void BedrockLevel::reload()
+{
+    // reload the raw level.
+    std::lock_guard lock(_raw_level->get_mutex());
+    _raw_level->reload();
 }
 
 BedrockRawLevel& BedrockLevel::get_raw_level()

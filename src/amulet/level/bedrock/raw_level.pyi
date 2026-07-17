@@ -92,7 +92,12 @@ class BedrockRawLevel:
         """
 
     @property
-    def closed(self) -> amulet.utils.event.Event[()]: ...
+    def closed(self) -> amulet.utils.event.Event[()]:
+        """
+        An event emitted when the level is closed.
+        Thread safe. Level locks may be held in directly connected handlers.
+        """
+
     @property
     def dimension_ids(self) -> list[str]:
         """
@@ -151,7 +156,7 @@ class BedrockRawLevel:
     def level_name_changed(self) -> amulet.utils.event.Event[str]:
         """
         Event emitted when the level name changes.
-        Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
+        Thread safe. Level locks may be held in directly connected handlers.
         """
 
     @property
@@ -176,7 +181,12 @@ class BedrockRawLevel:
         """
 
     @property
-    def opened(self) -> amulet.utils.event.Event[()]: ...
+    def opened(self) -> amulet.utils.event.Event[()]:
+        """
+        An event emitted when the level is opened.
+        Thread safe. Level locks may be held in directly connected handlers.
+        """
+
     @property
     def path(self) -> str:
         """
@@ -192,7 +202,12 @@ class BedrockRawLevel:
         """
 
     @property
-    def reloaded(self) -> amulet.utils.event.Event[()]: ...
+    def reloaded(self) -> amulet.utils.event.Event[()]:
+        """
+        An event emitted when the level is reloaded.
+        Thread safe. Level locks may be held in directly connected handlers.
+        """
+
     @property
     def thumbnail(self) -> PIL.Image.Image:
         """

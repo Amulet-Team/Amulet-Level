@@ -122,6 +122,7 @@ public:
     void reload_metadata();
 
     // An event emitted when the level is opened.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> opened;
 
     // Open the level.
@@ -130,6 +131,7 @@ public:
     void open();
 
     // An event emitted when the level is closed.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> closed;
 
     // Close the level.
@@ -138,6 +140,7 @@ public:
     void close();
 
     // An event emitted when the level is reloaded.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> reloaded;
 
     // Reload the level.
@@ -190,7 +193,7 @@ public:
     std::string get_level_name() const;
 
     // Event emitted when the level name changes.
-    // Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<std::string> level_name_changed;
 
     // Set the level name.

@@ -114,7 +114,12 @@ class JavaRawLevel:
         """
 
     @property
-    def closed(self) -> amulet.utils.event.Event[()]: ...
+    def closed(self) -> amulet.utils.event.Event[()]:
+        """
+        An event emitted when the level is closed.
+        Thread safe. Level locks may be held in directly connected handlers.
+        """
+
     @property
     def data_version(self) -> amulet.core.version.VersionNumber:
         """
@@ -189,7 +194,12 @@ class JavaRawLevel:
         """
 
     @property
-    def opened(self) -> amulet.utils.event.Event[()]: ...
+    def opened(self) -> amulet.utils.event.Event[()]:
+        """
+        An event emitted when the level is opened.
+        Thread safe. Level locks may be held in directly connected handlers.
+        """
+
     @property
     def path(self) -> str:
         """
@@ -205,7 +215,12 @@ class JavaRawLevel:
         """
 
     @property
-    def reloaded(self) -> amulet.utils.event.Event[()]: ...
+    def reloaded(self) -> amulet.utils.event.Event[()]:
+        """
+        An event emitted when the level is reloaded.
+        Thread safe. Level locks may be held in directly connected handlers.
+        """
+
     @property
     def thumbnail(self) -> PIL.Image.Image:
         """

@@ -71,7 +71,7 @@ py::module init_level(py::module m_parent)
         "level_name_changed",
         &Amulet::LevelMetadata::level_name_changed,
         py::doc("Event emitted when the level name changes.\n"
-                "Thread safe. Emitted with raw level locked in ReadWrite:Unique mode."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     LevelMetadata.def_property_readonly(
         "modified_time",
         py::cpp_function(
@@ -95,7 +95,7 @@ py::module init_level(py::module m_parent)
         "opened",
         &Amulet::Level::opened,
         py::doc("Event emitted when the level is opened.\n"
-                "Thread safe."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     Level.def(
         "open",
         &Amulet::Level::open,
@@ -109,7 +109,7 @@ py::module init_level(py::module m_parent)
         "purged",
         &Amulet::Level::purged,
         py::doc("Event emitted when the level is purged\n"
-                "Thread safe."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     Level.def(
         "purge",
         &Amulet::Level::purge,
@@ -127,7 +127,7 @@ py::module init_level(py::module m_parent)
         "closed",
         &Amulet::Level::closed,
         py::doc("Event emitted when the level is closed.\n"
-                "Thread safe."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     Level.def(
         "close",
         &Amulet::Level::close,
@@ -141,7 +141,7 @@ py::module init_level(py::module m_parent)
         "history_changed",
         &Amulet::Level::history_changed,
         py::doc("An event emitted when the undo or redo count changes.\n"
-                "Thread safe."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     Level.def(
         "create_restore_point",
         &Amulet::Level::create_restore_point,
@@ -187,7 +187,7 @@ py::module init_level(py::module m_parent)
         "history_enabled_changed",
         &Amulet::Level::history_enabled_changed,
         py::doc("An event emitted when set_history_enabled is called.\n"
-                "Thread safe."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     Level.def_property(
         "history_enabled",
         &Amulet::Level::get_history_enabled,
@@ -242,7 +242,7 @@ py::module init_level(py::module m_parent)
         "reloaded",
         &Amulet::ReloadableLevel::reloaded,
         py::doc("Event emitted when the level is reloaded.\n"
-                "Thread safe."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     ReloadableLevel.def(
         "reload",
         &Amulet::ReloadableLevel::reload,

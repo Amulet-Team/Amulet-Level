@@ -71,7 +71,7 @@ py::module init_level(py::module m_parent)
         "level_name_changed",
         &Amulet::LevelMetadata::level_name_changed,
         py::doc("Event emitted when the level name changes.\n"
-                "Thread safe."));
+                "Thread safe. Emitted with raw level locked in ReadWrite:Unique mode."));
     LevelMetadata.def_property_readonly(
         "modified_time",
         py::cpp_function(

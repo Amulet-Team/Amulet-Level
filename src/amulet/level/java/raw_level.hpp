@@ -190,7 +190,7 @@ public:
     std::string get_level_name() const;
 
     // Event emitted when the level name changes.
-    // Thread safe.
+    // Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
     Event<std::string> level_name_changed;
 
     // Set the level name.

@@ -189,7 +189,7 @@ public:
     void set_level_name(const std::string&);
 
     // Event emitted when the level name changes.
-    // Thread safe.
+    // Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
     Event<std::string> level_name_changed;
 
     // The identifiers for all dimensions in this level.

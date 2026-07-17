@@ -189,7 +189,7 @@ py::module init_bedrock_raw_level(py::module m_parent)
         "level_name_changed",
         &Amulet::BedrockRawLevel::level_name_changed,
         py::doc("Event emitted when the level name changes.\n"
-                "Thread safe."));
+                "Thread safe. Emitted with raw level locked in ReadWrite:Unique mode."));
     BedrockRawLevel.def_property_readonly(
         "dimension_ids",
         py::cpp_function(

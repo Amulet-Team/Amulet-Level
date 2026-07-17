@@ -78,7 +78,9 @@ py::module init_bedrock_raw_level(py::module m_parent)
     Amulet::def_event(
         BedrockRawLevel,
         "opened",
-        &Amulet::BedrockRawLevel::opened);
+        &Amulet::BedrockRawLevel::opened,
+        py::doc("An event emitted when the level is opened.\n"
+                "Thread safe. Level locks may be held in directly connected handlers."));
     BedrockRawLevel.def(
         "open",
         &Amulet::BedrockRawLevel::open,
@@ -89,7 +91,9 @@ py::module init_bedrock_raw_level(py::module m_parent)
     Amulet::def_event(
         BedrockRawLevel,
         "closed",
-        &Amulet::BedrockRawLevel::closed);
+        &Amulet::BedrockRawLevel::closed,
+        py::doc("An event emitted when the level is closed.\n"
+                "Thread safe. Level locks may be held in directly connected handlers."));
     BedrockRawLevel.def(
         "close",
         &Amulet::BedrockRawLevel::close,
@@ -100,7 +104,9 @@ py::module init_bedrock_raw_level(py::module m_parent)
     Amulet::def_event(
         BedrockRawLevel,
         "reloaded",
-        &Amulet::BedrockRawLevel::reloaded);
+        &Amulet::BedrockRawLevel::reloaded,
+        py::doc("An event emitted when the level is reloaded.\n"
+                "Thread safe. Level locks may be held in directly connected handlers."));
     BedrockRawLevel.def(
         "reload",
         &Amulet::BedrockRawLevel::reload,
@@ -189,7 +195,7 @@ py::module init_bedrock_raw_level(py::module m_parent)
         "level_name_changed",
         &Amulet::BedrockRawLevel::level_name_changed,
         py::doc("Event emitted when the level name changes.\n"
-                "Thread safe. Emitted with raw level locked in ReadWrite:Unique mode."));
+                "Thread safe. Level locks may be held in directly connected handlers."));
     BedrockRawLevel.def_property_readonly(
         "dimension_ids",
         py::cpp_function(

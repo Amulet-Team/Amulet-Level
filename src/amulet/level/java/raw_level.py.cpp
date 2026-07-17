@@ -79,7 +79,9 @@ py::module init_java_raw_level(py::module m_parent)
     Amulet::def_event(
         JavaRawLevel,
         "opened",
-        &Amulet::JavaRawLevel::opened);
+        &Amulet::JavaRawLevel::opened,
+        py::doc("An event emitted when the level is opened.\n"
+                "Thread safe. Level locks may be held in directly connected handlers."));
     JavaRawLevel.def(
         "open",
         &Amulet::JavaRawLevel::open,
@@ -90,7 +92,9 @@ py::module init_java_raw_level(py::module m_parent)
     Amulet::def_event(
         JavaRawLevel,
         "closed",
-        &Amulet::JavaRawLevel::closed);
+        &Amulet::JavaRawLevel::closed,
+        py::doc("An event emitted when the level is closed.\n"
+                "Thread safe. Level locks may be held in directly connected handlers."));
     JavaRawLevel.def(
         "close",
         &Amulet::JavaRawLevel::close,
@@ -101,7 +105,9 @@ py::module init_java_raw_level(py::module m_parent)
     Amulet::def_event(
         JavaRawLevel,
         "reloaded",
-        &Amulet::JavaRawLevel::reloaded);
+        &Amulet::JavaRawLevel::reloaded,
+        py::doc("An event emitted when the level is reloaded.\n"
+                "Thread safe. Level locks may be held in directly connected handlers."));
     JavaRawLevel.def(
         "reload",
         &Amulet::JavaRawLevel::reload,

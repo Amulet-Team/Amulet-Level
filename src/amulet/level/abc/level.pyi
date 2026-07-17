@@ -43,7 +43,7 @@ class LevelMetadata:
     def level_name_changed(self) -> amulet.utils.event.Event[str]:
         """
         Event emitted when the level name changes.
-        Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
+        Thread safe. Level locks may be held in directly connected handlers.
         """
 
     @property
@@ -178,14 +178,14 @@ class Level(LevelMetadata):
     def closed(self) -> amulet.utils.event.Event[()]:
         """
         Event emitted when the level is closed.
-        Thread safe.
+        Thread safe. Level locks may be held in directly connected handlers.
         """
 
     @property
     def history_changed(self) -> amulet.utils.event.Event[()]:
         """
         An event emitted when the undo or redo count changes.
-        Thread safe.
+        Thread safe. Level locks may be held in directly connected handlers.
         """
 
     @property
@@ -205,21 +205,21 @@ class Level(LevelMetadata):
     def history_enabled_changed(self) -> amulet.utils.event.Event[()]:
         """
         An event emitted when set_history_enabled is called.
-        Thread safe.
+        Thread safe. Level locks may be held in directly connected handlers.
         """
 
     @property
     def opened(self) -> amulet.utils.event.Event[()]:
         """
         Event emitted when the level is opened.
-        Thread safe.
+        Thread safe. Level locks may be held in directly connected handlers.
         """
 
     @property
     def purged(self) -> amulet.utils.event.Event[()]:
         """
         Event emitted when the level is purged
-        Thread safe.
+        Thread safe. Level locks may be held in directly connected handlers.
         """
 
 class CompactibleLevel:
@@ -256,5 +256,5 @@ class ReloadableLevel:
     def reloaded(self) -> amulet.utils.event.Event[()]:
         """
         Event emitted when the level is reloaded.
-        Thread safe.
+        Thread safe. Level locks may be held in directly connected handlers.
         """

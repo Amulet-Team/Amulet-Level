@@ -59,7 +59,7 @@ public:
     virtual const std::string get_level_name() = 0;
 
     // Event emitted when the level name changes.
-    // Thread safe. Emitted with raw level locked in ReadWrite:Unique mode.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<std::string> level_name_changed;
 
     // The time when the level was last modified.
@@ -74,7 +74,7 @@ public:
 class Level : public LevelMetadata {
 public:
     // Event emitted when the level is opened.
-    // Thread safe.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> opened;
 
     // Open the level.
@@ -83,7 +83,7 @@ public:
     virtual void open() = 0;
 
     // Event emitted when the level is purged
-    // Thread safe.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> purged;
 
     // Clear all unsaved changes and restore points.
@@ -95,7 +95,7 @@ public:
     virtual void save() = 0;
 
     // Event emitted when the level is closed
-    // Thread safe.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> closed;
 
     // Close the level.
@@ -104,7 +104,7 @@ public:
     virtual void close() = 0;
 
     // Event emitted when the undo or redo count changes.
-    // Thread safe.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> history_changed;
 
     // Create a new history restore point.
@@ -133,7 +133,7 @@ public:
     virtual void redo() = 0;
 
     // Event emitted when set_history_enabled is called.
-    // Thread safe.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> history_enabled_changed;
 
     // Get if the history system is enabled.
@@ -184,7 +184,7 @@ public:
     virtual void reload_metadata() = 0;
 
     // Event emitted when the level is reloaded.
-    // Thread safe.
+    // Thread safe. Level locks may be held in directly connected handlers.
     Event<> reloaded;
 
     // Reload the level.

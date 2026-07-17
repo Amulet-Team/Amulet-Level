@@ -170,7 +170,7 @@ public:
     virtual ~DiskLevel() = default;
 
     // The path to the level on disk.
-    // External Read:SharedReadWrite lock required.
+    // Thread safe.
     virtual const std::filesystem::path& get_path() = 0;
 };
 

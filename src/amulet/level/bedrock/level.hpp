@@ -101,7 +101,7 @@ public:
     // DiskLevel
 
     // The path to the level on disk.
-    // External Read:SharedReadWrite lock required.
+    // Thread safe.
     const std::filesystem::path& get_path() override;
 
     // Level

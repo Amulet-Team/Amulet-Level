@@ -6,6 +6,7 @@
 #include <memory>
 #include <variant>
 
+#include <amulet/utils/event.hpp>
 #include <amulet/utils/image.hpp>
 
 #include <amulet/level/abc/history.hpp>
@@ -32,6 +33,7 @@ private:
 
     // Data that is only valid when the level is open.
     std::unique_ptr<BedrockLevelOpenData> _open_data;
+    EventToken<std::string> _level_name_changed_token;
 
     // Validate _open_data is valid and return a reference.
     // External Read:SharedReadWrite lock required.

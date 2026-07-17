@@ -66,6 +66,12 @@ py::module init_level(py::module m_parent)
             py::call_guard<py::gil_scoped_release>()),
         py::doc("The name of the level\n"
                 "External Read:SharedReadWrite lock required."));
+    Amulet::def_event(
+        LevelMetadata,
+        "level_name_changed",
+        &Amulet::LevelMetadata::level_name_changed,
+        py::doc("Event emitted when the level name changes.\n"
+                "Thread safe."));
     LevelMetadata.def_property_readonly(
         "modified_time",
         py::cpp_function(

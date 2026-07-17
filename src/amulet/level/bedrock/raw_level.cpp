@@ -275,6 +275,8 @@ void BedrockRawLevel::set_level_dat(const BedrockLevelDat& level_dat)
         throw std::runtime_error("Level is not open.");
     }
 
+    auto old_level_name = get_level_name();
+
     // Copy the level.dat to internal storage
     _level_dat = level_dat.deep_copy();
 
@@ -284,6 +286,11 @@ void BedrockRawLevel::set_level_dat(const BedrockLevelDat& level_dat)
     // Reload the level if the data version changed.
     if (_last_opened_version != _get_last_opened_version()) {
         reload();
+    } else {
+        auto level_name = get_level_name();
+        if (old_level_name != level_name) {
+            level_name_changed.dispatch(std::move(level_name));
+        }
     }
 }
 

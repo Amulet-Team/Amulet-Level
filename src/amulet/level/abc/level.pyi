@@ -40,6 +40,13 @@ class LevelMetadata:
         """
 
     @property
+    def level_name_changed(self) -> amulet.utils.event.Event[str]:
+        """
+        Event emitted when the level name changes.
+        Thread safe.
+        """
+
+    @property
     def lock(self) -> amulet.utils.lock.OrderedLock:
         """
         The external mutex for the level.

@@ -58,6 +58,10 @@ public:
     // External Read:SharedReadWrite lock required.
     virtual const std::string get_level_name() = 0;
 
+    // Event emitted when the level name changes.
+    // Thread safe.
+    Event<std::string> level_name_changed;
+
     // The time when the level was last modified.
     // External Read:SharedReadWrite lock required.
     virtual std::chrono::system_clock::time_point get_modified_time() = 0;

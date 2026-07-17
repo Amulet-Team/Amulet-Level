@@ -234,7 +234,7 @@ class DiskLevel:
     def path(self) -> str:
         """
         The path to the level on disk.
-        External Read:SharedReadWrite lock required.
+        Thread safe.
         """
 
 class ReloadableLevel:

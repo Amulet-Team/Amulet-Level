@@ -23,5 +23,5 @@ class JavaRawChunkComponent:
 
     @raw_data.setter
     def raw_data(
-        self, arg1: collections.abc.Mapping[str, amulet.nbt.NamedTag]
+        self, arg0: collections.abc.Mapping[str, amulet.nbt.NamedTag]
     ) -> None: ...

@@ -26,6 +26,7 @@ py::module init_java_chunk_handle(py::module m_parent)
         py::name("get_chunk"),
         py::is_method(JavaChunkHandle),
         py::arg("component_ids") = py::none(),
+        py::returns_non_null(),
         py::doc("Get a unique copy of the chunk data."));
     JavaChunkHandle.def(
         "set_chunk",

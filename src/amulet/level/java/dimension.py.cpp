@@ -21,6 +21,7 @@ py::module init_java_dimension(py::module m_parent)
         py::is_method(JavaDimension),
         py::arg("cx"),
         py::arg("cz"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc(
             "Get the chunk handle for the given chunk in this dimension.\n"

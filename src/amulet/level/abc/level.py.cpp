@@ -37,14 +37,16 @@ py::module init_level(py::module m_parent)
         "max_game_version",
         py::cpp_function(
             &Amulet::LevelMetadata::get_max_game_version,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(LevelMetadata)),
         py::doc("The maximum game version the level has been opened with.\n"
                 "External Read:SharedReadWrite lock required."));
     LevelMetadata.def_property_readonly(
         "max_block_version",
         py::cpp_function(
             &Amulet::LevelMetadata::get_max_block_version,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(LevelMetadata)),
         py::doc("Get the suggested maximum block version this level can accept.\n"
                 "Note that on some platforms the real max version may be higher.\n"
                 "External Read:SharedReadWrite lock required."));
@@ -63,7 +65,8 @@ py::module init_level(py::module m_parent)
         "level_name",
         py::cpp_function(
             &Amulet::LevelMetadata::get_level_name,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(LevelMetadata)),
         py::doc("The name of the level\n"
                 "External Read:SharedReadWrite lock required."));
     Amulet::def_event(
@@ -76,7 +79,8 @@ py::module init_level(py::module m_parent)
         "modified_time",
         py::cpp_function(
             &Amulet::LevelMetadata::get_modified_time,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(LevelMetadata)),
         py::doc("The time when the level was last modified.\n"
                 "External Read:SharedReadWrite lock required."));
     LevelMetadata.def_property_readonly(
@@ -210,6 +214,7 @@ py::module init_level(py::module m_parent)
         "get_dimension",
         &Amulet::Level::get_dimension,
         py::arg("dimension_id"),
+        py::returns_non_null(),
         py::doc("Get a dimension.\n"
                 "External Read:SharedReadWrite lock required.\n"
                 "External ReadWrite:SharedReadWrite lock required when calling code in Dimension (and its children) that need write permission."));

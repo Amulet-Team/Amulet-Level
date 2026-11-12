@@ -134,7 +134,7 @@ class JavaRawLevel:
         """
 
     @data_version.setter
-    def data_version(self, arg1: amulet.core.version.VersionNumber) -> None: ...
+    def data_version(self, arg0: amulet.core.version.VersionNumber) -> None: ...
     @property
     def dimension_ids(self) -> list[str]:
         """
@@ -157,7 +157,7 @@ class JavaRawLevel:
         """
 
     @level_dat.setter
-    def level_dat(self, arg1: amulet.nbt.NamedTag) -> None: ...
+    def level_dat(self, arg0: amulet.nbt.NamedTag) -> None: ...
     @property
     def level_name(self) -> str:
         """
@@ -171,7 +171,7 @@ class JavaRawLevel:
         """
 
     @level_name.setter
-    def level_name(self, arg1: str) -> None: ...
+    def level_name(self, arg0: str) -> None: ...
     @property
     def level_name_changed(self) -> amulet.utils.event.Event[str]:
         """

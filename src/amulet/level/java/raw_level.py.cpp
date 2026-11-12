@@ -47,6 +47,7 @@ py::module init_java_raw_level(py::module m_parent)
         "load",
         &Amulet::JavaRawLevel::load,
         py::arg("path"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Load an existing Java level from the given directory.\n"
                 "Thread safe."));
@@ -56,6 +57,7 @@ py::module init_java_raw_level(py::module m_parent)
             return Amulet::JavaRawLevel::create(args);
         },
         py::arg("args"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Create a new Java level at the given directory.\n"
                 "Thread safe."));
@@ -126,10 +128,12 @@ py::module init_java_raw_level(py::module m_parent)
         "level_dat",
         py::cpp_function(
             &Amulet::JavaRawLevel::get_level_dat,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(JavaRawLevel)),
         py::cpp_function(
             &Amulet::JavaRawLevel::set_level_dat,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(JavaRawLevel)),
         py::doc("Getter:\n"
                 "The NamedTag stored in the level.dat file. Returns a unique copy.\n"
                 "External Read:SharedReadWrite lock required.\n"
@@ -148,6 +152,8 @@ py::module init_java_raw_level(py::module m_parent)
         &Amulet::JavaRawLevel::get_data_version,
         py::cpp_function(
             &Amulet::JavaRawLevel::set_data_version,
+            py::is_method(JavaRawLevel),
+            py::returns_non_null(),
             py::call_guard<py::gil_scoped_release>()),
         py::doc("Getter:\n"
                 "The game data version that the level was last opened in.\n"
@@ -173,17 +179,20 @@ py::module init_java_raw_level(py::module m_parent)
         "modified_time",
         py::cpp_function(
             &Amulet::JavaRawLevel::get_modified_time,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(JavaRawLevel)),
         py::doc("The time when the level was lasted edited.\n"
                 "External Read:SharedReadWrite lock required."));
     JavaRawLevel.def_property(
         "level_name",
         py::cpp_function(
             &Amulet::JavaRawLevel::get_level_name,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(JavaRawLevel)),
         py::cpp_function(
             &Amulet::JavaRawLevel::set_level_name,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(JavaRawLevel)),
         py::doc("Getter:\n"
                 "The name of the level.\n"
                 "External Read:SharedReadWrite lock required.\n"
@@ -201,7 +210,8 @@ py::module init_java_raw_level(py::module m_parent)
         "dimension_ids",
         py::cpp_function(
             &Amulet::JavaRawLevel::get_dimension_ids,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(JavaRawLevel)),
         py::doc("The identifiers for all dimensions in this level.\n"
                 "External Read:SharedReadWrite lock required.\n"
                 "External Read:SharedReadOnly lock optional."));
@@ -209,6 +219,7 @@ py::module init_java_raw_level(py::module m_parent)
         "get_dimension",
         &Amulet::JavaRawLevel::get_dimension,
         py::arg("dimension_id"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Get the raw dimension object for a specific dimension.\n"
                 "External Read:SharedReadWrite lock required."));
@@ -222,6 +233,8 @@ py::module init_java_raw_level(py::module m_parent)
         "block_id_override",
         py::cpp_function(
             &Amulet::JavaRawLevel::get_block_id_override,
+            py::is_method(JavaRawLevel),
+            py::returns_non_null(),
             py::call_guard<py::gil_scoped_release>()),
         py::doc("Overridden block ids.\n"
                 "External Read:SharedReadWrite lock required."));
@@ -229,6 +242,8 @@ py::module init_java_raw_level(py::module m_parent)
         "biome_id_override",
         py::cpp_function(
             &Amulet::JavaRawLevel::get_biome_id_override,
+            py::is_method(JavaRawLevel),
+            py::returns_non_null(),
             py::call_guard<py::gil_scoped_release>()),
         py::doc("Overridden biome ids.\n"
                 "External Read:SharedReadWrite lock required."));

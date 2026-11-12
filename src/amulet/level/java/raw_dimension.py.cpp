@@ -95,6 +95,7 @@ py::module init_java_raw_dimension(py::module m_parent)
         py::arg("raw_chunk"),
         py::arg("cx"),
         py::arg("cz"),
+        py::returns_non_null(),
         py::doc("Decode a raw chunk to a chunk object.\n"
                 "This will mutate the chunk data.\n"
                 "TODO: thread safety"));

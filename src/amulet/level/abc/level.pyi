@@ -200,7 +200,7 @@ class Level(LevelMetadata):
         """
 
     @history_enabled.setter
-    def history_enabled(self, arg1: bool) -> None: ...
+    def history_enabled(self, arg0: bool) -> None: ...
     @property
     def history_enabled_changed(self) -> amulet.utils.event.Event[()]:
         """

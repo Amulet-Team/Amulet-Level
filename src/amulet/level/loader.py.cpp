@@ -27,11 +27,13 @@ py::module init_loader(py::module m_parent)
     m.def(
         "get_level",
         py::overload_cast<std::shared_ptr<Amulet::LevelLoaderToken>>(&Amulet::get_level),
-        py::arg("token"));
+        py::arg("token").none(false),
+        py::returns_non_null());
     m.def(
         "get_level",
         py::overload_cast<std::filesystem::path>(&Amulet::get_level),
-        py::arg("path").noconvert());
+        py::arg("path").noconvert(),
+        py::returns_non_null());
 
     return m;
 }

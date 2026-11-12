@@ -24,6 +24,7 @@ py::module init_bedrock_chunk_handle(py::module m_parent)
         py::name("get_chunk"),
         py::is_method(BedrockChunkHandle),
         py::arg("component_ids") = py::none(),
+        py::returns_non_null(),
         py::doc("Get a unique copy of the chunk data."));
     BedrockChunkHandle.def(
         "set_chunk",

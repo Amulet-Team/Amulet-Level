@@ -67,7 +67,10 @@ py::module init_bedrock_level_dat(py::module m_parent)
 
     BedrockLevelDat.def_property(
         "named_tag",
-        &Amulet::BedrockLevelDat::get_named_tag_ptr,
+        py::cpp_function(
+            &Amulet::BedrockLevelDat::get_named_tag_ptr,
+            py::is_method(BedrockLevelDat),
+            py::returns_non_null()),
         [](Amulet::BedrockLevelDat& self, pyext::PyObjectCpp<Amulet::NBT::NamedTag> tag) {
             self.set_named_tag(get_named_tag_ptr(tag));
         });

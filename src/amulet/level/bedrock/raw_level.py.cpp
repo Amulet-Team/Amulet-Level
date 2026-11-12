@@ -47,6 +47,7 @@ py::module init_bedrock_raw_level(py::module m_parent)
         &Amulet::BedrockRawLevel::load,
         py::arg("path"),
         py::call_guard<py::gil_scoped_release>(),
+        py::returns_non_null(),
         py::doc("Load an existing Bedrock level from the given directory.\n"
                 "Thread safe."));
     //    BedrockRawLevel.def_static(
@@ -125,10 +126,12 @@ py::module init_bedrock_raw_level(py::module m_parent)
         "level_dat",
         py::cpp_function(
             &Amulet::BedrockRawLevel::get_level_dat,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel)),
         py::cpp_function(
             &Amulet::BedrockRawLevel::set_level_dat,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel)),
         py::doc("Getter:\n"
                 "The NamedTag stored in the level.dat file. Returns a unique copy.\n"
                 "External Read:SharedReadWrite lock required.\n"
@@ -147,7 +150,8 @@ py::module init_bedrock_raw_level(py::module m_parent)
         &Amulet::BedrockRawLevel::get_last_opened_version,
         py::cpp_function(
             &Amulet::BedrockRawLevel::set_last_opened_version,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel)),
         py::doc("Getter:\n"
                 "The game version that the level was last opened in.\n"
                 "External Read:SharedReadWrite lock required.\n"
@@ -172,17 +176,20 @@ py::module init_bedrock_raw_level(py::module m_parent)
         "modified_time",
         py::cpp_function(
             &Amulet::BedrockRawLevel::get_modified_time,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel)),
         py::doc("The time when the level was lasted edited.\n"
                 "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def_property(
         "level_name",
         py::cpp_function(
             &Amulet::BedrockRawLevel::get_level_name,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel)),
         py::cpp_function(
             &Amulet::BedrockRawLevel::set_level_name,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel)),
         py::doc("Getter:\n"
                 "The name of the level.\n"
                 "External Read:SharedReadWrite lock required.\n"
@@ -200,7 +207,8 @@ py::module init_bedrock_raw_level(py::module m_parent)
         "dimension_ids",
         py::cpp_function(
             &Amulet::BedrockRawLevel::get_dimension_ids,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel)),
         py::doc("The identifiers for all dimensions in this level.\n"
                 "External Read:SharedReadWrite lock required.\n"
                 "External Read:SharedReadOnly lock optional."));
@@ -214,6 +222,7 @@ py::module init_bedrock_raw_level(py::module m_parent)
                 dimension_id);
         },
         py::arg("dimension_id"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Get the raw dimension object for a specific dimension.\n"
                 "External Read:SharedReadWrite lock required."));
@@ -227,21 +236,27 @@ py::module init_bedrock_raw_level(py::module m_parent)
         "block_id_override",
         py::cpp_function(
             &Amulet::BedrockRawLevel::get_block_id_override,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel),
+            py::returns_non_null()),
         py::doc("Overridden block ids.\n"
                 "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def_property_readonly(
         "biome_id_override",
         py::cpp_function(
             &Amulet::BedrockRawLevel::get_biome_id_override,
-            py::call_guard<py::gil_scoped_release>()),
+            py::call_guard<py::gil_scoped_release>(),
+            py::is_method(BedrockRawLevel),
+            py::returns_non_null()),
         py::doc("Overridden biome ids.\n"
                 "External Read:SharedReadWrite lock required."));
     BedrockRawLevel.def_property_readonly(
         "leveldb",
-        &Amulet::BedrockRawLevel::get_leveldb,
+        py::cpp_function(
+            &Amulet::BedrockRawLevel::get_leveldb,
+            py::returns_non_null()),
         py::doc("Get the LevelDB database.\n"
-                "External Read::SharedReadWrite lock required."));
+                "External Read:SharedReadWrite lock required."));
 
     return m;
 }

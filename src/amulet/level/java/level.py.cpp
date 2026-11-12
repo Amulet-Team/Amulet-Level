@@ -21,6 +21,7 @@ py::module init_java_level(py::module m_parent)
         "load",
         &Amulet::JavaLevel::load,
         py::arg("path"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Load an existing Java level from the given directory.\n"
                 "Thread safe."));
@@ -30,6 +31,7 @@ py::module init_java_level(py::module m_parent)
             return Amulet::JavaLevel::create(args);
         },
         py::arg("args"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Create a new Java level at the given directory.\n"
                 "Thread safe."));
@@ -45,6 +47,7 @@ py::module init_java_level(py::module m_parent)
         py::name("get_dimension"),
         py::is_method(JavaLevel),
         py::arg("dimension_id"),
+        py::returns_non_null(),
         py::doc("Get a dimension.\n"
                 "External Read:SharedReadWrite lock required.\n"
                 "External ReadWrite:SharedReadWrite lock required when calling code in Dimension (and its children) that need write permission."));

@@ -120,7 +120,7 @@ class BedrockRawLevel:
         """
 
     @last_opened_version.setter
-    def last_opened_version(self, arg1: amulet.core.version.VersionNumber) -> None: ...
+    def last_opened_version(self, arg0: amulet.core.version.VersionNumber) -> None: ...
     @property
     def level_dat(self) -> amulet.level.bedrock.level_dat.BedrockLevelDat:
         """
@@ -136,7 +136,7 @@ class BedrockRawLevel:
 
     @level_dat.setter
     def level_dat(
-        self, arg1: amulet.level.bedrock.level_dat.BedrockLevelDat
+        self, arg0: amulet.level.bedrock.level_dat.BedrockLevelDat
     ) -> None: ...
     @property
     def level_name(self) -> str:
@@ -151,7 +151,7 @@ class BedrockRawLevel:
         """
 
     @level_name.setter
-    def level_name(self, arg1: str) -> None: ...
+    def level_name(self, arg0: str) -> None: ...
     @property
     def level_name_changed(self) -> amulet.utils.event.Event[str]:
         """
@@ -163,7 +163,7 @@ class BedrockRawLevel:
     def leveldb(self) -> amulet.leveldb.LevelDB:
         """
         Get the LevelDB database.
-        External Read::SharedReadWrite lock required.
+        External Read:SharedReadWrite lock required.
         """
 
     @property

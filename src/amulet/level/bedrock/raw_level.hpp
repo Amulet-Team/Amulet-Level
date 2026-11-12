@@ -218,7 +218,7 @@ public:
     std::shared_ptr<IdRegistry> get_biome_id_override();
 
     // Get the LevelDB database.
-    // External Read::SharedReadWrite lock required.
+    // External Read:SharedReadWrite lock required.
     std::shared_ptr<LevelDB> get_leveldb();
 };
 

@@ -19,6 +19,7 @@ py::module init_bedrock_dimension(py::module m_parent)
         py::arg("cx"),
         py::arg("cz"),
         py::call_guard<py::gil_scoped_release>(),
+        py::returns_non_null(),
         py::doc(
             "Get the chunk handle for the given chunk in this dimension.\n"
             "Thread safe.\n"

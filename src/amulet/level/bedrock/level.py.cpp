@@ -23,6 +23,7 @@ py::module init_bedrock_level(py::module m_parent)
         "load",
         &Amulet::BedrockLevel::load,
         py::arg("path"),
+        py::returns_non_null(),
         py::call_guard<py::gil_scoped_release>(),
         py::doc("Load an existing Bedrock level from the given directory.\n"
                 "Thread safe."));
@@ -47,6 +48,7 @@ py::module init_bedrock_level(py::module m_parent)
         py::name("get_dimension"),
         py::is_method(BedrockLevel),
         py::arg("dimension_id"),
+        py::returns_non_null(),
         py::doc("Get a dimension.\n"
                 "External Read:SharedReadWrite lock required.\n"
                 "External ReadWrite:SharedReadWrite lock required when calling code in Dimension (and its children) that need write permission."));

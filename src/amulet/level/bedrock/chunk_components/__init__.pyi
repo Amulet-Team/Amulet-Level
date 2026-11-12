@@ -17,5 +17,5 @@ class BedrockRawChunkComponent:
 
     @raw_data.setter
     def raw_data(
-        self, arg1: amulet.level.bedrock.raw_chunk.BedrockRawChunk
+        self, raw_data: amulet.level.bedrock.raw_chunk.BedrockRawChunk
     ) -> None: ...

@@ -59,6 +59,7 @@ py::module init_chunk_handle(py::module m_parent)
             return self.get_chunk(std::move(component_ids));
         },
         py::arg("component_ids") = py::none(),
+        py::returns_non_null(),
         py::doc(
             "Get a unique copy of the chunk data.\n"
             "\n"

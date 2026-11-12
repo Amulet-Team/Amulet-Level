@@ -25,8 +25,14 @@ void init_bedrock_raw_chunk_component(py::module m)
         &Amulet::BedrockRawChunkComponent::ComponentID);
     BedrockRawChunkComponent.def_property(
         "raw_data",
-        &Amulet::BedrockRawChunkComponent::get_raw_data,
-        &Amulet::BedrockRawChunkComponent::set_raw_data,
+        py::cpp_function(
+            &Amulet::BedrockRawChunkComponent::get_raw_data,
+            py::returns_non_null(),
+            py::is_method(BedrockRawChunkComponent)),
+        py::cpp_function(
+            &Amulet::BedrockRawChunkComponent::set_raw_data,
+            py::is_method(BedrockRawChunkComponent),
+            py::arg("raw_data").none(false)),
         py::doc(
             "This is subject to change as data gets moved into the chunk class.\n"
             "Do not rely on data in here existing."));
